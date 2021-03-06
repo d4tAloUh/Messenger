@@ -7,6 +7,8 @@ import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 interface IOwnProps {
     loadChatsList: () => Promise<void>;
     chatsList?: IChatListElement[];
+    selectChat: (el: IChatListElement) => void;
+    selectedChatId?: string;
 }
 
 class ChatsList extends React.Component<IOwnProps> {
@@ -16,12 +18,19 @@ class ChatsList extends React.Component<IOwnProps> {
     }
 
     render() {
-        const {chatsList} = this.props;
+        const {chatsList, selectChat, selectedChatId} = this.props;
 
         return (
             <div className={styles.wrapper}>
                 <LoaderWrapper loading={!chatsList}>
-                    {chatsList?.map(chat => <ChatListElement key={chat.id} elementData={chat} />)}
+                    {chatsList?.map(chat => (
+                        <ChatListElement
+                            key={chat.id}
+                            elementData={chat}
+                            onClick={() => selectChat(chat)}
+                            selected={selectedChatId === chat.id}
+                        />
+                    ))}
                 </LoaderWrapper>
             </div>
         );

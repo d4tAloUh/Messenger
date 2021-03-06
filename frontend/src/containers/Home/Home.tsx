@@ -21,12 +21,15 @@ interface IPropsFromDispatch {
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
         removeChatsList: typeof chatsListActions.removeChatsList;
+        setSelected: typeof chatsListActions.setSelected;
+        removeSelected: typeof chatsListActions.removeSelected;
     };
 }
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
     chatsList?: IChatListElement[];
+    selectedChatId?: string;
 }
 
 interface IState {
@@ -60,19 +63,28 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.setChatsList(list);
     }
 
+    selectChat = (chat: IChatListElement) => {
+        this.props.actions.setSelected(chat.id);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 
-        const {chatsList, currentUser} = this.props;
+        const {chatsList, currentUser, selectedChatId} = this.props;
         const {loading} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
                 <Header logout={this.logout} />
                 <div className={styles.content}>
-                    <ChatsList chatsList={chatsList} loadChatsList={this.loadChatsList} />
+                    <ChatsList
+                        chatsList={chatsList}
+                        loadChatsList={this.loadChatsList}
+                        selectChat={this.selectChat}
+                        selectedChatId={selectedChatId}
+                    />
                     <Chat />
                 </div>
             </LoaderWrapper>
@@ -83,6 +95,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 const mapStateToProps = (state: IAppState) => ({
     currentUser: state.auth.currentUser,
     chatsList: state.chatsList.chatsList,
+    selectedChatId: state.chatsList.selectedId,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -93,12 +106,16 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
+                setSelected: typeof chatsListActions.setSelected,
+                removeSelected: typeof chatsListActions.removeSelected,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
                 setChatsList: chatsListActions.setChatsList,
                 removeChatsList: chatsListActions.removeChatsList,
+                setSelected: chatsListActions.setSelected,
+                removeSelected: chatsListActions.removeSelected,
             }, dispatch),
 });
 

@@ -1,7 +1,7 @@
 import React from "react";
-import styles from "./Form.module.sass";
+import styles from "./FormWrapper.module.sass";
 
-class Form extends React.Component {
+class FormWrapper extends React.Component {
     render() {
         return (
             <div className={styles.form}>
@@ -11,4 +11,4 @@ class Form extends React.Component {
     }
 }
 
-export default Form;
+export default FormWrapper;

@@ -2,7 +2,7 @@ import {AuthActions} from "./actions";
 import {REMOVE_CURRENT_USER, SET_CURRENT_USER} from "./actionTypes";
 
 export interface ICurrentUser {
-
+    id: string;
 }
 
 export interface IAuthState {

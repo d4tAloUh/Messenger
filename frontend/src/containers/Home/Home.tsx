@@ -1,15 +1,19 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 
-class Home extends React.Component {
+class Home extends React.Component<RouteComponentProps> {
+    logout = () => {
+        this.props.history.push("/auth");
+    }
+
     render() {
         return (
             <div>
                 Home
-                <Link to="/auth">TO AUTH</Link>
+                <button onClick={this.logout}>Logout</button>
             </div>
         );
     }
 }
 
-export default Home;
+export default withRouter(Home);

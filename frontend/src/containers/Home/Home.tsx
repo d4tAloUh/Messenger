@@ -8,6 +8,9 @@ import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import authService from "../../api/auth/authService";
 import Header from "../../components/Header/Header";
+import ChatsList from "../../components/ChatsList/ChatsList";
+import styles from "./Home.module.sass";
+import Chat from "../../components/Chat/Chat";
 
 interface IPropsFromDispatch {
     actions: {
@@ -53,15 +56,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
 
         const {loadingUser} = this.state;
-        const {currentUser} = this.props;
 
         return (
             <LoaderWrapper loading={loadingUser}>
                 <Header logout={this.logout} />
-                Home
-                <br />
-                I am {currentUser?.fullName} ({currentUser?.username})
-                <br />
+                <div className={styles.content}>
+                    <ChatsList />
+                    <Chat />
+                </div>
             </LoaderWrapper>
         );
     }

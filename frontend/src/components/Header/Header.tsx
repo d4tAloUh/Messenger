@@ -11,7 +11,7 @@ class Header extends React.Component<IOwnProps> {
 
         return (
             <div className={styles.header}>
-                <h1>Header</h1>
+                <h1>Messenger</h1>
                 <div className={styles.links}>
                     <span className={styles.link} onClick={logout}>Logout</span>
                 </div>

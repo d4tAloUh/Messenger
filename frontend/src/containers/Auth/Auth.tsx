@@ -1,7 +1,7 @@
 import React from "react";
 import {Redirect, Route, RouteComponentProps, Switch, withRouter} from "react-router-dom";
 import authService from "../../api/auth/authService";
-import "./Auth.sass";
+import styles from "./Auth.module.sass";
 import LoginForm from "../../components/LoginForm/LoginForm";
 import RegistrationForm from "../../components/RegistrationForm/LoginForm";
 
@@ -18,8 +18,8 @@ class Auth extends React.Component<RouteComponentProps> {
         }
 
         return (
-            <div className="wrapper">
-                <div className="auth-form">
+            <div className={styles.wrapper}>
+                <div className={styles.authForm}>
                     <Switch>
                         <Route exact path="/auth/login" render={() => <LoginForm login={this.login} />} />
                         <Route exact path="/auth/register" render={() => <RegistrationForm />} />

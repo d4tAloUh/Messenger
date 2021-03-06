@@ -7,6 +7,7 @@ import {connect} from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import authService from "../../api/auth/authService";
+import Header from "../../components/Header/Header";
 
 interface IPropsFromDispatch {
     actions: {
@@ -56,11 +57,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
         return (
             <LoaderWrapper loading={loadingUser}>
+                <Header logout={this.logout} />
                 Home
                 <br />
                 I am {currentUser?.fullName} ({currentUser?.username})
                 <br />
-                <button onClick={this.logout}>Logout</button>
             </LoaderWrapper>
         );
     }

@@ -3,6 +3,7 @@ import styles from "./Chat.module.sass";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import classnames from "classnames";
+import ChatHeader from "../ChatHeader/ChatHeader";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
@@ -39,17 +40,14 @@ class Chat extends React.Component<IOwnProps> {
 
         return (
             <div className={styles.wrapper}>
-                <LoaderWrapper loading={!chatInfo}>
-                    <div>{chatInfo?.details?.title}</div>
-                    <br/>
-                    <LoaderWrapper loading={!chatInfo?.messages}>
-                        <div className={styles.messagesWrapper}>
-                            {chatInfo?.messages?.map(message => (
-                                <div>{message.text}</div>
-                            ))}
-                        </div>
-                    </LoaderWrapper>
-                </LoaderWrapper>
+                 <ChatHeader chatDetails={chatInfo?.details}/>
+                 <LoaderWrapper loading={!chatInfo?.messages}>
+                    <div className={styles.messagesWrapper}>
+                        {chatInfo?.messages?.map(message => (
+                            <div>{message.text}</div>
+                        ))}
+                    </div>
+                 </LoaderWrapper>
             </div>
         );
     }

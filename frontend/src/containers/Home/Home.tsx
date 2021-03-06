@@ -11,43 +11,53 @@ import Header from "../../components/Header/Header";
 import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
+import {chatsListActions} from "../../reducers/chatsList/actions";
+import {IChatListElement} from "../../api/chat/chatModels";
+import chatService from "../../api/chat/chatService";
 
 interface IPropsFromDispatch {
     actions: {
         removeCurrentUser: typeof authActions.removeCurrentUser;
         setCurrentUser: typeof authActions.setCurrentUser;
+        setChatsList: typeof chatsListActions.setChatsList;
+        removeChatsList: typeof chatsListActions.removeChatsList;
     };
 }
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
+    chatsList?: IChatListElement[];
 }
 
 interface IState {
-    loadingUser: boolean;
+    loading: boolean;
 }
 
-class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState> {
+class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
 
     state = {
-        loadingUser: false,
+        loading: false,
     } as IState;
 
     async componentDidMount() {
         if (authService.isLoggedIn()) {
-            this.setState({loadingUser: true});
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
-            this.setState({loadingUser: false});
         }
     }
 
     logout = async () => {
-        this.setState({loadingUser: true});
+        this.setState({loading: true});
         await authService.logout();
         this.props.actions.removeCurrentUser();
-        this.setState({loadingUser: false});
+        this.setState({loading: false});
         this.props.history.push("/auth");
+    }
+
+    loadChatsList = async () => {
+        this.props.actions.removeChatsList();
+        const list = await chatService.getChatsList();
+        this.props.actions.setChatsList(list);
     }
 
     render() {
@@ -55,13 +65,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return <Redirect to="/auth" />;
         }
 
-        const {loadingUser} = this.state;
+        const {chatsList, currentUser} = this.props;
+        const {loading} = this.state;
 
         return (
-            <LoaderWrapper loading={loadingUser}>
+            <LoaderWrapper loading={!currentUser || loading}>
                 <Header logout={this.logout} />
                 <div className={styles.content}>
-                    <ChatsList />
+                    <ChatsList chatsList={chatsList} loadChatsList={this.loadChatsList} />
                     <Chat />
                 </div>
             </LoaderWrapper>
@@ -71,6 +82,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
 const mapStateToProps = (state: IAppState) => ({
     currentUser: state.auth.currentUser,
+    chatsList: state.chatsList.chatsList,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -79,10 +91,14 @@ const mapDispatchToProps = (dispatch: any) => ({
             {
                 removeCurrentUser: typeof authActions.removeCurrentUser,
                 setCurrentUser: typeof authActions.setCurrentUser,
+                setChatsList: typeof chatsListActions.setChatsList,
+                removeChatsList: typeof chatsListActions.removeChatsList,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
+                setChatsList: chatsListActions.setChatsList,
+                removeChatsList: chatsListActions.removeChatsList,
             }, dispatch),
 });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import "./Button.sass";
+import styles from "./Button.module.sass";
 
 interface IOwnProps {
     text: string;
@@ -17,7 +17,7 @@ class Button extends React.Component<IOwnProps> {
         return (
             <button
                 type={submit ? "submit" : "button"}
-                className={classnames(disabled && "disabled")}
+                className={classnames(styles.button, disabled && styles.disabled)}
                 onClick={disabled || loading ? undefined : onClick}
             >
                 {loading ? "..." : text}

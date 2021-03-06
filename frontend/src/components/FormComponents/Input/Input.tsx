@@ -1,5 +1,5 @@
 import React from "react";
-import "./Input.sass";
+import styles from "./Input.module.sass";
 
 interface IOwnProps {
     value: string;
@@ -15,8 +15,9 @@ class Input extends React.Component<IOwnProps> {
 
         return (
             <>
-                {label && <div className="label">{label}</div>}
+                {label && <div className={styles.label}>{label}</div>}
                 <input
+                    className={styles.label}
                     value={value}
                     onChange={e => onChange(e.target.value)}
                     type={type || "text"}

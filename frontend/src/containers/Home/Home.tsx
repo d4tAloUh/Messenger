@@ -12,7 +12,7 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatListElement} from "../../api/chat/chatModels";
+import {IChatDetails, IChatListElement} from "../../api/chat/chatModels";
 import chatService from "../../api/chat/chatService";
 
 interface IPropsFromDispatch {
@@ -23,6 +23,7 @@ interface IPropsFromDispatch {
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
         removeSelected: typeof chatsListActions.removeSelected;
+        appendDetailsCached: typeof chatsListActions.appendDetailsCached;
     };
 }
 
@@ -30,6 +31,7 @@ interface IPropsFromState {
     currentUser?: ICurrentUser;
     chatsList?: IChatListElement[];
     selectedChatId?: string;
+    chatDetailsCached: IChatDetails[];
 }
 
 interface IState {
@@ -67,12 +69,17 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.setSelected(chat.id);
     }
 
+    loadChatDetails = async (id: string) => {
+        const details = await chatService.getChatDetailsById(id);
+        this.props.actions.appendDetailsCached(details);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 
-        const {chatsList, currentUser, selectedChatId} = this.props;
+        const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
         const {loading} = this.state;
 
         return (
@@ -85,7 +92,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         selectChat={this.selectChat}
                         selectedChatId={selectedChatId}
                     />
-                    <Chat />
+                    <Chat
+                        chatsDetailsCached={chatDetailsCached}
+                        loadChatDetails={this.loadChatDetails}
+                        selectedChatId={selectedChatId}
+                    />
                 </div>
             </LoaderWrapper>
         );
@@ -96,6 +107,7 @@ const mapStateToProps = (state: IAppState) => ({
     currentUser: state.auth.currentUser,
     chatsList: state.chatsList.chatsList,
     selectedChatId: state.chatsList.selectedId,
+    chatDetailsCached: state.chatsList.chatsDetailsCached,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -108,6 +120,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
                 removeSelected: typeof chatsListActions.removeSelected,
+                appendDetailsCached: typeof chatsListActions.appendDetailsCached,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -116,6 +129,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,
+                appendDetailsCached: chatsListActions.appendDetailsCached,
             }, dispatch),
 });
 

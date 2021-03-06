@@ -1,5 +1,5 @@
 import faker from "faker";
-import {IChatListElement} from "./chatModels";
+import {IChatDetails, IChatListElement} from "./chatModels";
 
 const chatService = {
 
@@ -12,6 +12,16 @@ const chatService = {
                 isGroup: faker.random.boolean(),
                 title: faker.lorem.sentence(5),
             }));
+    },
+
+    getChatDetailsById: async (id: string): Promise<IChatDetails> => {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return {
+            id,
+            isGroup: faker.random.boolean(),
+            title: faker.lorem.sentence(5),
+            info: faker.lorem.paragraph(5),
+        };
     },
 
 };

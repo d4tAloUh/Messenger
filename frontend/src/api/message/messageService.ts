@@ -12,7 +12,7 @@ const messageService = {
                 senderId: faker.random.boolean() ? "id" : faker.random.uuid(),
                 senderName: `${faker.name.firstName()} ${faker.name.lastName()}`,
                 datetime: faker.date.past(1).toDateString(),
-                text: faker.lorem.paragraph(5),
+                text: faker.lorem.paragraph(2),
             }));
     },
 

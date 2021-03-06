@@ -105,6 +105,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         loadChatDetails={this.loadChatDetails}
                         loadChatMessages={this.loadChatMessages}
                         selectedChatId={selectedChatId}
+                        currentUser={currentUser}
                     />
                 </div>
             </LoaderWrapper>

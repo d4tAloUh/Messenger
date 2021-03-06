@@ -4,12 +4,14 @@ import {IChatCache} from "../../reducers/chatsList/reducer";
 import classnames from "classnames";
 import ChatHeader from "../ChatHeader/ChatHeader";
 import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
+import {ICurrentUser} from "../../api/auth/authModels";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
     loadChatDetails: (id: string) => Promise<void>;
     loadChatMessages: (id: string) => Promise<void>;
     selectedChatId?: string;
+    currentUser?: ICurrentUser;
 }
 
 class Chat extends React.Component<IOwnProps> {
@@ -27,7 +29,7 @@ class Chat extends React.Component<IOwnProps> {
     }
 
     render() {
-        const {chatsDetailsCached, selectedChatId} = this.props;
+        const {chatsDetailsCached, selectedChatId, currentUser} = this.props;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
         if (!selectedChatId) {
@@ -41,7 +43,10 @@ class Chat extends React.Component<IOwnProps> {
         return (
             <div className={styles.wrapper}>
                  <ChatHeader chatDetails={chatInfo?.details}/>
-                 <MessagesListWrapper messages={chatInfo?.messages} />
+                 <MessagesListWrapper
+                     messages={chatInfo?.messages}
+                     currentUser={currentUser}
+                 />
             </div>
         );
     }

@@ -14,7 +14,7 @@ export interface IAppAction<T extends string, P> extends Action<T> {
 
 const rootReducers = combineReducers({
     toastr,
-    authReducer,
+    auth: authReducer,
 });
 
 export default rootReducers;

@@ -2,8 +2,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {store} from "../../store";
 import ReduxToastr from "react-redux-toastr";
-import {Router} from 'react-router-dom';
-import {history} from '../../helpers/history.helper';
+import {BrowserRouter} from 'react-router-dom';
 import Routing from "../Routing/Routing";
 
 class App extends React.Component {
@@ -19,9 +18,9 @@ class App extends React.Component {
                     transitionOut="fadeOut"
                     closeOnToastrClick
                 />
-                <Router history={history}>
+                <BrowserRouter>
                     <Routing />
-                </Router>
+                </BrowserRouter>
             </Provider>
         );
     }

@@ -1,5 +1,5 @@
 import {AuthActions} from "./actions";
-import {SET_CURRENT_USER} from "./actionTypes";
+import {REMOVE_CURRENT_USER, SET_CURRENT_USER} from "./actionTypes";
 
 export interface ICurrentUser {
 
@@ -15,6 +15,11 @@ export const authReducer = (state: IAuthState = {}, action: AuthActions): IAuthS
             return {
                 ...state,
                 currentUser: action.payload,
+            };
+        case REMOVE_CURRENT_USER:
+            return {
+                ...state,
+                currentUser: undefined,
             };
         default:
             return state;

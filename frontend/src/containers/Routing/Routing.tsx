@@ -1,51 +1,20 @@
 import React from 'react';
-import {connect} from "react-redux";
-import {IAppState} from "../../reducers";
-import {bindActionCreators} from 'redux';
-import {authActions} from "../../reducers/auth/actions";
-import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+import {Redirect, Route, RouteComponentProps, Switch} from 'react-router-dom';
+import Auth from "../Auth/Auth";
+import Home from "../Home/Home";
 
-interface IOwnProps {
-}
-
-interface ILectureDispatchProps {
-    actions: {
-        setCurrentUser: typeof authActions.setCurrentUser;
-    };
-}
-
-interface IState {
-}
-
-type AllProps = IOwnProps & ILectureDispatchProps;
-
-class Routing extends React.Component<AllProps, IState> {
-
+class Routing extends React.Component {
     render() {
-
         return (
-            <>
-                <LoaderWrapper loading={true}>
-                </LoaderWrapper>
-            </>
+            <Switch>
+                 <Route exact path="/auth" render={() => <Auth/>}/>
+                 <Route exact path="/home" render={() => <Home/>}/>
+                 <Route path="/">
+                     <Redirect to="/home" />
+                 </Route>
+            </Switch>
         );
     }
 }
 
-const mapState = (state: IAppState) => ({
-    auth: state.auth
-});
-
-const mapDispatch = (dispatch: any) => ({
-    actions:
-        bindActionCreators<any,
-            {
-                setCurrentUser: typeof authActions.setCurrentUser
-            }>(
-            {
-                setCurrentUser: authActions.setCurrentUser
-            }, dispatch
-        )
-});
-
-export default connect(mapState, mapDispatch)(Routing);
+export default Routing;

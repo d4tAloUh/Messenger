@@ -1,11 +1,11 @@
-import { createStore, compose } from 'redux';
+import { createStore } from 'redux';
 import rootReducer from './reducers/index';
 
-declare global {
-  interface Window { // eslint-disable-line
-    // eslint-disable-next-line no-undef
-    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-  }
-}
-
-export const store = createStore(rootReducer);
+/* eslint-disable no-underscore-dangle */
+export const store = createStore(
+    rootReducer,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
+/* eslint-enable */

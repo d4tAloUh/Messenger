@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./MessagesListWrapper.module.sass";
 import {IMessage} from "../../api/message/messageModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
+import MessageWrapper from "../MessageWrapper/MessageWrapper";
 
 interface IOwnProps {
     messages?: IMessage[];
@@ -14,7 +15,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
             <div className={styles.wrapper}>
                 <LoaderWrapper loading={!messages}>
                     {messages?.map(message => (
-                        <div>{message.text}</div>
+                       <MessageWrapper message={message} />
                     ))}
                 </LoaderWrapper>
             </div>

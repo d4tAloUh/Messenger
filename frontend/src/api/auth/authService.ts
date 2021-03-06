@@ -15,7 +15,7 @@ const authService = {
 
     me: async (): Promise<ICurrentUser> => {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return {id: "id"};
+        return {id: "id", username: "username", fullName: "Full Name"};
     },
 
     isLoggedIn: (): boolean => {

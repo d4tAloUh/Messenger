@@ -52,10 +52,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
 
         const {loadingUser} = this.state;
+        const {currentUser} = this.props;
 
         return (
             <LoaderWrapper loading={loadingUser}>
                 Home
+                <br />
+                I am {currentUser?.fullName} ({currentUser?.username})
+                <br />
                 <button onClick={this.logout}>Logout</button>
             </LoaderWrapper>
         );

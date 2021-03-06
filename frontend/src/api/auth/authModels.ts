@@ -10,4 +10,6 @@ export interface ILoginResponse {
 
 export interface ICurrentUser {
     id: string;
+    username: string;
+    fullName: string;
 }

@@ -15,6 +15,7 @@ import {chatsListActions} from "../../reducers/chatsList/actions";
 import {IChatListElement} from "../../api/chat/chatModels";
 import chatService from "../../api/chat/chatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
+import messageService from "../../api/message/messageService";
 
 interface IPropsFromDispatch {
     actions: {
@@ -25,6 +26,7 @@ interface IPropsFromDispatch {
         setSelected: typeof chatsListActions.setSelected;
         removeSelected: typeof chatsListActions.removeSelected;
         appendDetailsCached: typeof chatsListActions.appendDetailsCached;
+        setChatMessages: typeof chatsListActions.setChatMessages;
     };
 }
 
@@ -75,6 +77,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.appendDetailsCached(details);
     }
 
+    loadChatMessages = async (chatId: string) => {
+        const messages = await messageService.getMessagesByChatId(chatId);
+        this.props.actions.setChatMessages(chatId, messages);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -96,6 +103,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                     <Chat
                         chatsDetailsCached={chatDetailsCached}
                         loadChatDetails={this.loadChatDetails}
+                        loadChatMessages={this.loadChatMessages}
                         selectedChatId={selectedChatId}
                     />
                 </div>
@@ -122,6 +130,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setSelected: typeof chatsListActions.setSelected,
                 removeSelected: typeof chatsListActions.removeSelected,
                 appendDetailsCached: typeof chatsListActions.appendDetailsCached,
+                setChatMessages: typeof chatsListActions.setChatMessages,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -131,6 +140,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,
                 appendDetailsCached: chatsListActions.appendDetailsCached,
+                setChatMessages: chatsListActions.setChatMessages,
             }, dispatch),
 });
 

@@ -1,6 +1,12 @@
 import {ChatsListActions} from "./actions";
 import {IChatDetails, IChatListElement} from "../../api/chat/chatModels";
-import {APPEND_CHAT_DETAILS_CACHED, SET_CHAT_MESSAGES, SET_CHATS_LIST, SET_SELECTED} from "./actionTypes";
+import {
+    APPEND_CHAT_DETAILS_CACHED,
+    REMOVE_CHATS_LIST,
+    SET_CHAT_MESSAGES,
+    SET_CHATS_LIST,
+    SET_SELECTED
+} from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
 
 export interface IChatCache {
@@ -27,6 +33,13 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: action.payload,
+            };
+        case REMOVE_CHATS_LIST:
+            return {
+                ...state,
+                chatsList: undefined,
+                selectedId: undefined,
+                chatsDetailsCached: [],
             };
         case SET_SELECTED:
             return {

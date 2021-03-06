@@ -17,7 +17,7 @@ class Input extends React.Component<IOwnProps> {
             <>
                 {label && <div className={styles.label}>{label}</div>}
                 <input
-                    className={styles.label}
+                    className={styles.input}
                     value={value}
                     onChange={e => onChange(e.target.value)}
                     type={type || "text"}

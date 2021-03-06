@@ -1,12 +1,18 @@
 import React from "react";
-import {RouteComponentProps, withRouter} from "react-router-dom";
+import {Redirect, RouteComponentProps, withRouter} from "react-router-dom";
+import tokenService from "../../services/tokenService";
 
 class Auth extends React.Component<RouteComponentProps> {
     login = () => {
+        tokenService.setTokens("aaa", "rrr");
         this.props.history.push("/home");
     }
 
     render() {
+        if (tokenService.isLoggedIn()) {
+            return <Redirect to="/home" />;
+        }
+
         return (
             <div>
                 Auth

@@ -4,9 +4,9 @@ import {bindActionCreators} from "redux";
 import {IAppState} from "../../reducers";
 import {authActions} from "../../reducers/auth/actions";
 import {connect} from "react-redux";
-import tokenService from "../../services/tokenService";
-import {ICurrentUser} from "../../reducers/auth/reducer";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+import {ICurrentUser} from "../../api/auth/authModels";
+import authService from "../../api/auth/authService";
 
 interface IPropsFromDispatch {
     actions: {
@@ -29,24 +29,25 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         loadingUser: false,
     } as IState;
 
-    logout = () => {
-        tokenService.removeTokens();
-        this.props.actions.removeCurrentUser();
-        this.props.history.push("/auth");
-    }
-
-    componentDidMount() {
-        if (tokenService.isLoggedIn()) {
+    async componentDidMount() {
+        if (authService.isLoggedIn()) {
             this.setState({loadingUser: true});
-            setTimeout(() => {
-                this.props.actions.setCurrentUser({id: "id"});
-                this.setState({loadingUser: false});
-            }, 1000);
+            const currentUser = await authService.me();
+            this.props.actions.setCurrentUser(currentUser);
+            this.setState({loadingUser: false});
         }
     }
 
+    logout = async () => {
+        this.setState({loadingUser: true});
+        await authService.logout();
+        this.props.actions.removeCurrentUser();
+        this.setState({loadingUser: false});
+        this.props.history.push("/auth");
+    }
+
     render() {
-        if (!tokenService.isLoggedIn()) {
+        if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 

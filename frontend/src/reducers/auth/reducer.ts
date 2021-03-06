@@ -1,9 +1,6 @@
 import {AuthActions} from "./actions";
 import {REMOVE_CURRENT_USER, SET_CURRENT_USER} from "./actionTypes";
-
-export interface ICurrentUser {
-    id: string;
-}
+import {ICurrentUser} from "../../api/auth/authModels";
 
 export interface IAuthState {
     currentUser?: ICurrentUser;

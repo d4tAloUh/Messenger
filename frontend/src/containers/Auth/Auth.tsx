@@ -1,23 +1,36 @@
 import React from "react";
 import {Redirect, RouteComponentProps, withRouter} from "react-router-dom";
-import tokenService from "../../services/tokenService";
+import authService from "../../api/auth/authService";
+import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+
+interface IState {
+    loading: boolean;
+}
 
 class Auth extends React.Component<RouteComponentProps> {
-    login = () => {
-        tokenService.setTokens("aaa", "rrr");
+    state = {
+        loading: false,
+    } as IState;
+
+    login = async () => {
+        this.setState({loading: true});
+        await authService.login({username: "user", password: "pass"});
+        this.setState({loading: false});
         this.props.history.push("/home");
     }
 
     render() {
-        if (tokenService.isLoggedIn()) {
+        if (authService.isLoggedIn()) {
             return <Redirect to="/home" />;
         }
 
+        const {loading} = this.state;
+
         return (
-            <div>
+            <LoaderWrapper loading={loading}>
                 Auth
                 <button onClick={this.login}>Login</button>
-            </div>
+            </LoaderWrapper>
         );
     }
 }

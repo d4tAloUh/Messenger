@@ -1,21 +1,14 @@
 import React from "react";
-import {Redirect, RouteComponentProps, withRouter} from "react-router-dom";
+import {Redirect, Route, RouteComponentProps, Switch, withRouter} from "react-router-dom";
 import authService from "../../api/auth/authService";
-import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
-
-interface IState {
-    loading: boolean;
-}
+import "./Auth.sass";
+import LoginForm from "../../components/LoginForm/LoginForm";
+import RegistrationForm from "../../components/RegistrationForm/LoginForm";
 
 class Auth extends React.Component<RouteComponentProps> {
-    state = {
-        loading: false,
-    } as IState;
 
     login = async () => {
-        this.setState({loading: true});
         await authService.login({username: "user", password: "pass"});
-        this.setState({loading: false});
         this.props.history.push("/home");
     }
 
@@ -24,13 +17,16 @@ class Auth extends React.Component<RouteComponentProps> {
             return <Redirect to="/home" />;
         }
 
-        const {loading} = this.state;
-
         return (
-            <LoaderWrapper loading={loading}>
-                Auth
-                <button onClick={this.login}>Login</button>
-            </LoaderWrapper>
+            <div className="wrapper">
+                <div className="auth-form">
+                    <Switch>
+                        <Route exact path="/auth/login" render={() => <LoginForm login={this.login} />} />
+                        <Route exact path="/auth/register" render={() => <RegistrationForm />} />
+                        <Route path="/auth" render={() => <Redirect to="/auth/login" />} />
+                    </Switch>
+                </div>
+            </div>
         );
     }
 }

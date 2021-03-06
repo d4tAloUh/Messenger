@@ -7,8 +7,8 @@ class Routing extends React.Component {
     render() {
         return (
             <Switch>
-                 <Route exact path="/auth" render={() => <Auth/>}/>
-                 <Route exact path="/home" render={() => <Home/>}/>
+                 <Route path="/auth" render={() => <Auth/>}/>
+                 <Route path="/home" render={() => <Home/>}/>
                  <Route path="/">
                      <Redirect to="/home" />
                  </Route>

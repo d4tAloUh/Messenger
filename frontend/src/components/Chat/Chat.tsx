@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./Chat.module.sass";
-import {IChatDetails} from "../../api/chat/chatModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
+import {IChatCache} from "../../reducers/chatsList/reducer";
 
 interface IOwnProps {
-    chatsDetailsCached: IChatDetails[];
+    chatsDetailsCached: IChatCache[];
     loadChatDetails: (id: string) => Promise<void>;
     selectedChatId?: string;
 }
@@ -16,7 +16,7 @@ class Chat extends React.Component<IOwnProps> {
         if (
             selectedChatId &&
             prevProps.selectedChatId !== selectedChatId &&
-            !chatsDetailsCached.find(c => c.id === selectedChatId)
+            !chatsDetailsCached.find(c => c.details.id === selectedChatId)
         ) {
             await this.props.loadChatDetails(selectedChatId);
         }
@@ -24,7 +24,7 @@ class Chat extends React.Component<IOwnProps> {
 
     render() {
         const {chatsDetailsCached, selectedChatId} = this.props;
-        const chatInfo = chatsDetailsCached.find(c => c.id === selectedChatId);
+        const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
         return (
             <div className={styles.wrapper}>
@@ -35,7 +35,7 @@ class Chat extends React.Component<IOwnProps> {
                         </LoaderWrapper>
                     )
                     : (
-                        "Messages"
+                        "Choose your chat"
                     )
                 }
             </div>

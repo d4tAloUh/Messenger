@@ -12,8 +12,9 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatDetails, IChatListElement} from "../../api/chat/chatModels";
+import {IChatListElement} from "../../api/chat/chatModels";
 import chatService from "../../api/chat/chatService";
+import {IChatCache} from "../../reducers/chatsList/reducer";
 
 interface IPropsFromDispatch {
     actions: {
@@ -31,7 +32,7 @@ interface IPropsFromState {
     currentUser?: ICurrentUser;
     chatsList?: IChatListElement[];
     selectedChatId?: string;
-    chatDetailsCached: IChatDetails[];
+    chatDetailsCached: IChatCache[];
 }
 
 interface IState {

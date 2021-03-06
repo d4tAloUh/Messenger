@@ -2,10 +2,15 @@ import {ChatsListActions} from "./actions";
 import {IChatDetails, IChatListElement} from "../../api/chat/chatModels";
 import {APPEND_CHAT_DETAILS_CACHED, SET_CHATS_LIST, SET_SELECTED} from "./actionTypes";
 
+export interface IChatCache {
+    details: IChatDetails;
+    messages?: any[];
+}
+
 export interface IChatsListState {
     chatsList?: IChatListElement[];
     selectedId?: string;
-    chatsDetailsCached: IChatDetails[];
+    chatsDetailsCached: IChatCache[];
 }
 
 const initialState: IChatsListState = {
@@ -30,7 +35,7 @@ export const authReducer = (
         case APPEND_CHAT_DETAILS_CACHED:
             return {
                 ...state,
-                chatsDetailsCached: [...state.chatsDetailsCached, action.payload],
+                chatsDetailsCached: [...state.chatsDetailsCached, {details: action.payload}],
             };
         default:
             return state;

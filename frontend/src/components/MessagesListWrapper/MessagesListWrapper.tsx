@@ -4,9 +4,10 @@ import {IMessage} from "../../api/message/messageModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import MessageWrapper from "../MessageWrapper/MessageWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
+import {IMessageWrapper} from "../../reducers/chatsList/reducer";
 
 interface IOwnProps {
-    messages?: IMessage[];
+    messages?: IMessageWrapper[];
     currentUser?: ICurrentUser;
 }
 

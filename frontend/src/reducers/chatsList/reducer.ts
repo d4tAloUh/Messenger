@@ -9,9 +9,19 @@ import {
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
 
+export interface IMessageLoading {
+    id: string;
+    text: string;
+}
+
+export interface IMessageWrapper {
+    info?: IMessage;
+    loading?: IMessageLoading;
+}
+
 export interface IChatCache {
     details: IChatDetails;
-    messages?: IMessage[];
+    messages?: IMessageWrapper[];
 }
 
 export interface IChatsListState {
@@ -56,7 +66,10 @@ export const authReducer = (
                 ...state,
                 chatsDetailsCached: state.chatsDetailsCached.map(
                     c => c.details.id === action.payload.chatId
-                        ? {...c, messages: action.payload.messages}
+                        ? {
+                            ...c,
+                            messages: action.payload.messages.map(m => ({info: m}))
+                        }
                         : c
                 ),
             };

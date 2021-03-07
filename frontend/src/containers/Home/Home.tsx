@@ -16,6 +16,7 @@ import {IChatListElement} from "../../api/chat/chatModels";
 import chatService from "../../api/chat/chatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
+import {v4 as uuid} from "uuid";
 
 interface IPropsFromDispatch {
     actions: {
@@ -27,6 +28,8 @@ interface IPropsFromDispatch {
         removeSelected: typeof chatsListActions.removeSelected;
         appendDetailsCached: typeof chatsListActions.appendDetailsCached;
         setChatMessages: typeof chatsListActions.setChatMessages;
+        appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
+        setMessageLoaded: typeof chatsListActions.setMessageLoaded;
     };
 }
 
@@ -83,7 +86,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     }
 
     sendMessage = async (text: string) => {
-        alert(text);
+        const {selectedChatId} = this.props;
+
+        if (selectedChatId) {
+            const id = uuid();
+            this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
+            const message = await messageService.sendMessage(selectedChatId, text);
+            this.props.actions.setMessageLoaded(selectedChatId, id, message);
+        }
     }
 
     render() {
@@ -137,6 +147,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeSelected: typeof chatsListActions.removeSelected,
                 appendDetailsCached: typeof chatsListActions.appendDetailsCached,
                 setChatMessages: typeof chatsListActions.setChatMessages,
+                appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
+                setMessageLoaded: typeof chatsListActions.setMessageLoaded,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -147,6 +159,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeSelected: chatsListActions.removeSelected,
                 appendDetailsCached: chatsListActions.appendDetailsCached,
                 setChatMessages: chatsListActions.setChatMessages,
+                appendLoadingMessage: chatsListActions.appendLoadingMessage,
+                setMessageLoaded: chatsListActions.setMessageLoaded,
             }, dispatch),
 });
 

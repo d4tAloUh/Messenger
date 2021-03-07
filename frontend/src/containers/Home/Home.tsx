@@ -11,43 +11,89 @@ import Header from "../../components/Header/Header";
 import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
+import {chatsListActions} from "../../reducers/chatsList/actions";
+import {IChatListElement} from "../../api/chat/chatModels";
+import chatService from "../../api/chat/chatService";
+import {IChatCache} from "../../reducers/chatsList/reducer";
+import messageService from "../../api/message/messageService";
+import {v4 as uuid} from "uuid";
 
 interface IPropsFromDispatch {
     actions: {
         removeCurrentUser: typeof authActions.removeCurrentUser;
         setCurrentUser: typeof authActions.setCurrentUser;
+        setChatsList: typeof chatsListActions.setChatsList;
+        removeChatsList: typeof chatsListActions.removeChatsList;
+        setSelected: typeof chatsListActions.setSelected;
+        removeSelected: typeof chatsListActions.removeSelected;
+        appendDetailsCached: typeof chatsListActions.appendDetailsCached;
+        setChatMessages: typeof chatsListActions.setChatMessages;
+        appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
+        setMessageLoaded: typeof chatsListActions.setMessageLoaded;
     };
 }
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
+    chatsList?: IChatListElement[];
+    selectedChatId?: string;
+    chatDetailsCached: IChatCache[];
 }
 
 interface IState {
-    loadingUser: boolean;
+    loading: boolean;
 }
 
-class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState> {
+class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
 
     state = {
-        loadingUser: false,
+        loading: false,
     } as IState;
 
     async componentDidMount() {
         if (authService.isLoggedIn()) {
-            this.setState({loadingUser: true});
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
-            this.setState({loadingUser: false});
         }
     }
 
     logout = async () => {
-        this.setState({loadingUser: true});
+        this.setState({loading: true});
         await authService.logout();
         this.props.actions.removeCurrentUser();
-        this.setState({loadingUser: false});
+        this.setState({loading: false});
         this.props.history.push("/auth");
+    }
+
+    loadChatsList = async () => {
+        this.props.actions.removeChatsList();
+        const list = await chatService.getChatsList();
+        this.props.actions.setChatsList(list);
+    }
+
+    selectChat = (chat: IChatListElement) => {
+        this.props.actions.setSelected(chat.id);
+    }
+
+    loadChatDetails = async (id: string) => {
+        const details = await chatService.getChatDetailsById(id);
+        this.props.actions.appendDetailsCached(details);
+    }
+
+    loadChatMessages = async (chatId: string) => {
+        const messages = await messageService.getMessagesByChatId(chatId);
+        this.props.actions.setChatMessages(chatId, messages);
+    }
+
+    sendMessage = async (text: string) => {
+        const {selectedChatId} = this.props;
+
+        if (selectedChatId) {
+            const id = uuid();
+            this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
+            const message = await messageService.sendMessage(selectedChatId, text);
+            this.props.actions.setMessageLoaded(selectedChatId, id, message);
+        }
     }
 
     render() {
@@ -55,14 +101,27 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return <Redirect to="/auth" />;
         }
 
-        const {loadingUser} = this.state;
+        const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
+        const {loading} = this.state;
 
         return (
-            <LoaderWrapper loading={loadingUser}>
+            <LoaderWrapper loading={!currentUser || loading}>
                 <Header logout={this.logout} />
                 <div className={styles.content}>
-                    <ChatsList />
-                    <Chat />
+                    <ChatsList
+                        chatsList={chatsList}
+                        loadChatsList={this.loadChatsList}
+                        selectChat={this.selectChat}
+                        selectedChatId={selectedChatId}
+                    />
+                    <Chat
+                        chatsDetailsCached={chatDetailsCached}
+                        loadChatDetails={this.loadChatDetails}
+                        loadChatMessages={this.loadChatMessages}
+                        selectedChatId={selectedChatId}
+                        currentUser={currentUser}
+                        sendMessage={this.sendMessage}
+                    />
                 </div>
             </LoaderWrapper>
         );
@@ -71,6 +130,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
 const mapStateToProps = (state: IAppState) => ({
     currentUser: state.auth.currentUser,
+    chatsList: state.chatsList.chatsList,
+    selectedChatId: state.chatsList.selectedId,
+    chatDetailsCached: state.chatsList.chatsDetailsCached,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -79,10 +141,26 @@ const mapDispatchToProps = (dispatch: any) => ({
             {
                 removeCurrentUser: typeof authActions.removeCurrentUser,
                 setCurrentUser: typeof authActions.setCurrentUser,
+                setChatsList: typeof chatsListActions.setChatsList,
+                removeChatsList: typeof chatsListActions.removeChatsList,
+                setSelected: typeof chatsListActions.setSelected,
+                removeSelected: typeof chatsListActions.removeSelected,
+                appendDetailsCached: typeof chatsListActions.appendDetailsCached,
+                setChatMessages: typeof chatsListActions.setChatMessages,
+                appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
+                setMessageLoaded: typeof chatsListActions.setMessageLoaded,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
+                setChatsList: chatsListActions.setChatsList,
+                removeChatsList: chatsListActions.removeChatsList,
+                setSelected: chatsListActions.setSelected,
+                removeSelected: chatsListActions.removeSelected,
+                appendDetailsCached: chatsListActions.appendDetailsCached,
+                setChatMessages: chatsListActions.setChatMessages,
+                appendLoadingMessage: chatsListActions.appendLoadingMessage,
+                setMessageLoaded: chatsListActions.setMessageLoaded,
             }, dispatch),
 });
 

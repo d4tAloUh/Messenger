@@ -1,12 +1,9 @@
 package messenger.backend.models;
 
 import lombok.*;
-import org.springframework.scheduling.support.SimpleTriggerContext;
+import messenger.backend.auth.access_levels.Role;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -19,9 +16,13 @@ import javax.persistence.Table;
 public class UserEntity {
 
     @Id
-    @Column(name = "login")
-    private String login;
+    @Column(name = "username", unique=true)
+    private String username;
 
     @Column(name = "password")
     private String password;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 }

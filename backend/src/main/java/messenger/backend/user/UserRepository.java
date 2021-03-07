@@ -16,12 +16,13 @@ public class UserRepository {
 
     @Transactional
     public void createUser(UserEntity userEntity) {
+        //todo throw exception when same login?
         entityManager.merge(userEntity);
     }
 
     @Transactional
-    public UserEntity getUserByLogin(String login) {
-        return entityManager.find(UserEntity.class, login);
+    public UserEntity getUserByUsername(String username) {
+        return entityManager.find(UserEntity.class, username);
     }
 
     @Transactional

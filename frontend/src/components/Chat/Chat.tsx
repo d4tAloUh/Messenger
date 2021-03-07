@@ -5,6 +5,7 @@ import classnames from "classnames";
 import ChatHeader from "../ChatHeader/ChatHeader";
 import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
+import ChatSender from "../ChatSender/ChatSender";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
@@ -12,6 +13,7 @@ interface IOwnProps {
     loadChatMessages: (id: string) => Promise<void>;
     selectedChatId?: string;
     currentUser?: ICurrentUser;
+    sendMessage: (text: string) => Promise<void>;
 }
 
 class Chat extends React.Component<IOwnProps> {
@@ -29,7 +31,7 @@ class Chat extends React.Component<IOwnProps> {
     }
 
     render() {
-        const {chatsDetailsCached, selectedChatId, currentUser} = this.props;
+        const {chatsDetailsCached, selectedChatId, currentUser, sendMessage} = this.props;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
         if (!selectedChatId) {
@@ -47,6 +49,7 @@ class Chat extends React.Component<IOwnProps> {
                      messages={chatInfo?.messages}
                      currentUser={currentUser}
                  />
+                 <ChatSender sendMessage={sendMessage} />
             </div>
         );
     }

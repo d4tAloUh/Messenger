@@ -82,6 +82,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.setChatMessages(chatId, messages);
     }
 
+    sendMessage = async (text: string) => {
+        alert(text);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -106,6 +110,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         loadChatMessages={this.loadChatMessages}
                         selectedChatId={selectedChatId}
                         currentUser={currentUser}
+                        sendMessage={this.sendMessage}
                     />
                 </div>
             </LoaderWrapper>

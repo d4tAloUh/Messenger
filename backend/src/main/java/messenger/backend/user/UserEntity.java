@@ -1,7 +1,8 @@
-package messenger.backend.models;
+package messenger.backend.user;
 
 import lombok.*;
 import messenger.backend.auth.access_levels.Role;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -16,8 +17,19 @@ import javax.persistence.*;
 public class UserEntity {
 
     @Id
-    @Column(name = "username", unique=true)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id")
+    private String id;
+
+    @Column(name = "username", unique = true)
     private String username;
+
+    @Column(name = "fullName")
+    private String fullName;
 
     @Column(name = "password")
     private String password;

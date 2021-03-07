@@ -1,7 +1,6 @@
-package messenger.backend.repositories;
+package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.models.UserEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,13 +15,15 @@ public class UserRepository {
 
     @Transactional
     public void createUser(UserEntity userEntity) {
-        //todo throw exception when same login?
+        //todo throw exception when same username?
         entityManager.merge(userEntity);
     }
 
     @Transactional
     public UserEntity getUserByUsername(String username) {
-        return entityManager.find(UserEntity.class, username);
+        return entityManager
+                .createQuery("SELECT u FROM UserEntity u WHERE username = :currentUsername", UserEntity.class)
+                .setParameter("currentUsername", username).getSingleResult();
     }
 
     @Transactional

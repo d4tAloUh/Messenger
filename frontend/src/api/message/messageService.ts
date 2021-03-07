@@ -4,7 +4,7 @@ import {IMessage} from "./messageModels";
 const messageService = {
 
     getMessagesByChatId: async (chatId: string): Promise<IMessage[]> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         return new Array(50)
             .fill(null)
             .map(_ => ({
@@ -17,7 +17,7 @@ const messageService = {
     },
 
     sendMessage: async (chatId: string, text: string): Promise<IMessage> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         return {
             id: faker.random.uuid(),
             senderId: "id",

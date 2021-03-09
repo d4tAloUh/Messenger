@@ -17,7 +17,7 @@ public class DbInitializer {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        userRepository.createUser(
+        userRepository.save(
                 UserEntity.builder()
                         .username("user")
                         .fullName("userFullName")

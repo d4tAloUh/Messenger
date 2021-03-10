@@ -1,12 +1,22 @@
 package messenger.backend.utils;
 
 
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value(staticConstructor = "of")
+@RequiredArgsConstructor
+@Getter
 public class Response<T> {
 
-    String error;
-    T data;
+    private final String error;
+    private final T data;
+
+    public static <T> Response<T> error(String errorMessage) {
+        return new Response<>(errorMessage, null);
+    }
+
+    public static <T> Response<T> data(T data) {
+        return new Response<>(null, data);
+    }
 
 }

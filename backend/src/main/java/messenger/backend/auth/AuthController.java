@@ -12,9 +12,7 @@ import messenger.backend.auth.refresh_token.RefreshTokenService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.utils.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,14 +30,16 @@ public class AuthController {
     private final RefreshTokenService    refreshTokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<Response<AuthResponseDto>> login(@RequestBody AuthRequestDto authRequestDto) {
         try {
             String username = authRequestDto.getUsername();
             String password = authRequestDto.getPassword();
-            return ResponseEntity.ok(authService.authenticate(username, password));
+            return ResponseEntity.ok(Response.data(authService.authenticate(username, password)));
 
-        } catch (AuthenticationException e) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Response.error(e.getMessage()));
         }
     }
 
@@ -49,27 +49,35 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UserResponseDto getMe(HttpServletRequest httpRequest) {
-        //todo exceptions when user not found, etc
-        String username = jwtTokenService.getUsername(httpRequest);
-        UserEntity userEntity = userRepository.getUserByUsername(username);
-        return UserResponseDto.from(userEntity);
+    public ResponseEntity<Response<UserResponseDto>> getMe(HttpServletRequest httpRequest) {
+        try {
+            //todo exceptions when user not found, etc
+            String username = jwtTokenService.getUsername(httpRequest);
+            UserEntity userEntity = userRepository.getUserByUsername(username);
+            return ResponseEntity.ok(Response.data(UserResponseDto.from(userEntity)));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Response.error(e.getMessage()));
+        }
+
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<Response<AuthResponseDto>> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
         try {
             AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto.getRefreshToken());
-            return ResponseEntity.ok(Response.of(null, authResponseDto));
+            return ResponseEntity.ok(Response.data(authResponseDto));
 
         } catch (Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(Response.of(e.getMessage(), null));
+                    .badRequest()
+                    .body(Response.error(e.getMessage()));
         }
     }
 
-    @GetMapping("/tokens")
+    @GetMapping("/tokens") // just for test todo delete this
     public List<RefreshTokenEntity> getTokens() {
         return refreshTokenRepository.findAll();
     }

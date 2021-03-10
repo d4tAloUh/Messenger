@@ -3,6 +3,7 @@ package messenger.backend.auth.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
+import messenger.backend.user.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,9 +35,12 @@ public class JwtTokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username, String role) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("role", role);
+    public String createToken(UserEntity userEntity) {
+        Claims claims = Jwts.claims();
+        claims.put("id", userEntity.getId());
+        claims.put("username", userEntity.getUsername());
+        claims.put("fullName", userEntity.getFullName());
+        claims.put("role", userEntity.getRole().name());
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
@@ -61,8 +65,16 @@ public class JwtTokenService {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
+    public String getUserId(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("id", String.class);
+    }
+
+    public String getUserId(HttpServletRequest request) {
+        return getUserId(resolveToken(request));
+    }
+
     public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username", String.class);
     }
 
     public String getUsername(HttpServletRequest request) {

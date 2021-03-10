@@ -2,6 +2,7 @@ package messenger.backend.auth;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
+import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshRequestDto;
 import messenger.backend.auth.dto.UserResponseDto;
 import messenger.backend.auth.jwt.JwtTokenService;
@@ -10,13 +11,14 @@ import messenger.backend.auth.refresh_token.RefreshTokenRepository;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
+import messenger.backend.utils.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,14 +45,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
-        //todo handle errors
-        try {
-            RefreshTokenEntity refreshTokenEntity =
-                    refreshTokenRepository.getTokenByUsername(jwtTokenService.getUsername(request));
-            refreshTokenRepository.deleteUserRefreshToken(refreshTokenEntity);
-        } catch (Exception e) {
-            //user already logout
-        }
+        refreshTokenService.deleteUserTokens(jwtTokenService.getUserId(request));
     }
 
     @GetMapping("/me")
@@ -62,13 +57,21 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
-        RefreshTokenEntity refreshToken = refreshTokenRepository.getTokenById(refreshRequestDto.getRefreshToken());
-        if(refreshTokenService.validateToken(refreshToken)) {
-            return new ResponseEntity<>("RefreshToken expired or invalid", HttpStatus.FORBIDDEN);
+    public ResponseEntity<Response<AuthResponseDto>> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
+        try {
+            AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto.getRefreshToken());
+            return ResponseEntity.ok(Response.of(null, authResponseDto));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(Response.of(e.getMessage(), null));
         }
-        UserEntity userEntity = refreshToken.getUserEntity();
-        return ResponseEntity.ok(authService.buildAuthResponse(userEntity));
+    }
+
+    @GetMapping("/tokens")
+    public List<RefreshTokenEntity> getTokens() {
+        return refreshTokenRepository.findAll();
     }
 
 }

@@ -7,8 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.User;
 
-@Service("userDetailsServiceImpl")
+@Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -18,7 +19,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.getUserByUsername(username);
         //todo exception if user not found
-        return new org.springframework.security.core.userdetails.
-                User(userEntity.getUsername(), userEntity.getPassword(), userEntity.getRole().getAuthorities());
+        return new User(userEntity.getUsername(), userEntity.getPassword(), userEntity.getRole().getAuthorities());
     }
 }

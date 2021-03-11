@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshRequestDto;
-import messenger.backend.user.dto.UserDto;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenEntity;
 import messenger.backend.auth.refresh_token.RefreshTokenRepository;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
-import messenger.backend.user.UserEntity;
-import messenger.backend.user.UserRepository;
+import messenger.backend.user.dto.UserDto;
 import messenger.backend.utils.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +55,6 @@ public class AuthController {
                     .badRequest()
                     .body(Response.error(e.getMessage()));
         }
-
     }
 
     @PostMapping("/refresh")

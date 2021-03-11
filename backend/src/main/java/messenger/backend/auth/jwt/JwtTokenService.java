@@ -2,9 +2,9 @@ package messenger.backend.auth.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import messenger.backend.user.dto.UserDto;
 import messenger.backend.auth.exceptions.JwtAuthException;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.dto.UserDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

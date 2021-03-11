@@ -1,7 +1,11 @@
 package messenger.backend.auth.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.jfr.ContentType;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
+import messenger.backend.utils.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,6 +24,7 @@ import java.io.IOException;
 public class JwtTokenFilter extends GenericFilterBean {
 
     private final JwtTokenService jwtTokenService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -34,8 +39,14 @@ public class JwtTokenFilter extends GenericFilterBean {
             }
         } catch (JwtAuthException e) {
             SecurityContextHolder.clearContext();
-            ((HttpServletResponse) servletResponse).sendError(e.getHttpStatus().value());
-            throw new JwtAuthException(e.getMessage());
+            //todo find better way to send error
+            HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+            httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            httpServletResponse.setContentType("application/json");
+            httpServletResponse
+                    .getOutputStream()
+                    .print(objectMapper.writeValueAsString(Response.error(e.getMessage())));
+            return;
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }

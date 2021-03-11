@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/auth/login").permitAll()
                 .antMatchers("/api/auth/refresh").permitAll()
-                .antMatchers("/api/auth/tokens").permitAll()//todo delete this
+                .antMatchers("/api/auth/tokens").permitAll()//just for test todo delete this
                 .anyRequest()
                 .authenticated()
                 .and()

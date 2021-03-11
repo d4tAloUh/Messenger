@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshRequestDto;
-import messenger.backend.auth.dto.UserResponseDto;
+import messenger.backend.user.dto.UserDto;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenEntity;
 import messenger.backend.auth.refresh_token.RefreshTokenRepository;
@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository         userRepository;
     private final JwtTokenService        jwtTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthService            authService;
@@ -49,12 +48,9 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Response<UserResponseDto>> getMe(HttpServletRequest httpRequest) {
+    public ResponseEntity<Response<UserDto>> getUserInfo(HttpServletRequest httpRequest) {
         try {
-            //todo exceptions when user not found, etc
-            String username = jwtTokenService.getUsername(httpRequest);
-            UserEntity userEntity = userRepository.getUserByUsername(username);
-            return ResponseEntity.ok(Response.data(UserResponseDto.from(userEntity)));
+            return ResponseEntity.ok(Response.data(jwtTokenService.getUserDto(httpRequest)));
 
         } catch (Exception e) {
             return ResponseEntity

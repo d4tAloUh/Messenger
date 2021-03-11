@@ -2,6 +2,7 @@ package messenger.backend.auth.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import messenger.backend.user.dto.UserDto;
 import messenger.backend.auth.exceptions.JwtAuthException;
 import messenger.backend.user.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,9 +61,22 @@ public class JwtTokenService {
         }
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) {//todo check comment method
         UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public UserDto getUserDto(String token) {
+         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+         return UserDto.builder()
+                 .id(claims.get("id", String.class))
+                 .username(claims.get("username", String.class))
+                 .fullName(claims.get("fullName", String.class))
+                 .build();
+    }
+
+    public UserDto getUserDto(HttpServletRequest request) {
+        return getUserDto(resolveToken(request));
     }
 
     public String getUserId(String token) {

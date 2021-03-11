@@ -44,7 +44,7 @@ public class AuthService {
     }
 
     public AuthResponseDto refreshToken(String refreshToken) {
-        UserEntity      userEntity  = refreshTokenService.getUserByToken(refreshToken);
+        UserEntity userEntity = refreshTokenService.getUserByToken(refreshToken);
         return buildAuthResponse(userEntity);
     }
 }

@@ -2,6 +2,7 @@ package messenger.backend.auth.refresh_token;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.dto.UserDto;
 import messenger.backend.utils.exceptions.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,21 +19,21 @@ public class RefreshTokenService {
     @Value("${refresh.validity}")
     private long validityInMilliseconds;
 
-    public String newToken(UserEntity userEntity) {
-        deleteUserTokens(userEntity.getId());
-        return createAndSaveToken(userEntity);
+    public String newToken(UserDto userDto) {
+        deleteUserTokens(userDto.getId());
+        return createAndSaveToken(userDto);
     }
 
-    public String createAndSaveToken(UserEntity userEntity) {
+    public String createAndSaveToken(UserDto userDto) {
         return refreshTokenRepository.saveAndFlush(
                 RefreshTokenEntity.builder()
                                     .createdAt(new Date().getTime())
-                                    .userEntity(userEntity)
+                                    .userEntity(UserEntity.builder().id(userDto.getId()).build())
                                     .build())
                 .getId();
     }
 
-    public UserEntity getUserByToken(String token) {
+    public UserEntity getUserEntityByToken(String token) {
         return getTokenEntity(token).getUserEntity();
     }
 

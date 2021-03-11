@@ -6,6 +6,7 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
 import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.dto.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,22 +30,18 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password");
         }
         UserEntity userEntity = ((SecurityUser) authentication.getPrincipal()).getUserEntity();
-        return buildAuthResponse(userEntity);
+        return buildAuthResponse(UserDto.from(userEntity));
     }
 
-    public AuthResponseDto buildAuthResponse(UserEntity userEntity) {
-        String accessToken = jwtTokenService.createToken(userEntity);
-        String refreshToken = refreshTokenService.newToken(userEntity);
+    public AuthResponseDto buildAuthResponse(UserDto userDto) {
+        String accessToken = jwtTokenService.createToken(userDto);
+        String refreshToken = refreshTokenService.newToken(userDto);
 
-        AuthResponseDto responseDto = new AuthResponseDto();
-        responseDto.setAccessToken(accessToken);
-        responseDto.setRefreshToken(refreshToken);
-
-        return responseDto;
+        return AuthResponseDto.of(accessToken, refreshToken);
     }
 
     public AuthResponseDto refreshToken(String refreshToken) {
-        UserEntity userEntity = refreshTokenService.getUserByToken(refreshToken);
-        return buildAuthResponse(userEntity);
+        UserEntity userEntity = refreshTokenService.getUserEntityByToken(refreshToken);
+        return buildAuthResponse(UserDto.from(userEntity));
     }
 }

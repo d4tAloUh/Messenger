@@ -1,9 +1,10 @@
 package messenger.backend.auth.dto;
 
 import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value(staticConstructor = "of")
 public class AuthResponseDto {
-    private String accessToken;
-    private String refreshToken;
+    String accessToken;
+    String refreshToken;
 }

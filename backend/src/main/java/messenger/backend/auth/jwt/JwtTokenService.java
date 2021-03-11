@@ -36,12 +36,12 @@ public class JwtTokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(UserEntity userEntity) {
+    public String createToken(UserDto userDto) {
         Claims claims = Jwts.claims();
-        claims.put("id", userEntity.getId());
-        claims.put("username", userEntity.getUsername());
-        claims.put("fullName", userEntity.getFullName());
-        claims.put("role", userEntity.getRole().name());
+        claims.put("id", userDto.getId());
+        claims.put("username", userDto.getUsername());
+        claims.put("fullName", userDto.getFullName());
+
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
@@ -61,7 +61,7 @@ public class JwtTokenService {
         }
     }
 
-    public Authentication getAuthentication(String token) {//todo check comment method
+    public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }

@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshRequestDto;
-import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenEntity;
 import messenger.backend.auth.refresh_token.RefreshTokenRepository;
-import messenger.backend.auth.refresh_token.RefreshTokenService;
 import messenger.backend.user.dto.UserDto;
 import messenger.backend.utils.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +24,7 @@ public class AuthController {
     private final AuthService            authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Response<AuthResponseDto>> login(@RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<Response<AuthResponseDto>> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
             return ResponseEntity.ok(Response.success(authService.authenticate(authRequestDto)));
     }
 
@@ -40,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Response<AuthResponseDto>> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
+    public ResponseEntity<Response<AuthResponseDto>> refresh(@Valid  @RequestBody RefreshRequestDto refreshRequestDto) {
             AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto);
             return ResponseEntity.ok(Response.success(authResponseDto));
     }

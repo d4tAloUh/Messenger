@@ -20,6 +20,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<Void>> handleWebException (Exception e) {
+        e.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Response.error("Internal server error"));

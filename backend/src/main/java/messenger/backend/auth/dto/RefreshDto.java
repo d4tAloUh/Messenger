@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class RefreshRequestDto {
+public class RefreshDto {
     @NotEmpty
     private String refreshToken;
 }

@@ -19,12 +19,7 @@ public class RefreshTokenService {
     @Value("${refresh.validity}")
     private long validityInMilliseconds;
 
-    public String newToken(UserDto userDto) {
-        deleteUserTokens(userDto.getId());
-        return createAndSaveToken(userDto);
-    }
-
-    public String createAndSaveToken(UserDto userDto) {
+    public String createToken(UserDto userDto) {
         return refreshTokenRepository.saveAndFlush(
                 RefreshTokenEntity.builder()
                                     .createdAt(new Date().getTime())
@@ -57,6 +52,10 @@ public class RefreshTokenService {
 
     public boolean validateToken(RefreshTokenEntity refreshTokenEntity) {
         return refreshTokenEntity.getCreatedAt() + validityInMilliseconds > new Date().getTime();
+    }
+
+    public void deleteToken(String token) {
+        refreshTokenRepository.deleteById(token);
     }
 
     public void deleteUserTokens(String userId) {

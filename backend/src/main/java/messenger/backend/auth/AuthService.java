@@ -3,7 +3,7 @@ package messenger.backend.auth;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
-import messenger.backend.auth.dto.RefreshRequestDto;
+import messenger.backend.auth.dto.RefreshDto;
 import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenService        jwtTokenService;
-    private final RefreshTokenService    refreshTokenService;
+    private final JwtTokenService       jwtTokenService;
+    private final RefreshTokenService   refreshTokenService;
 
 
     public AuthResponseDto authenticate(AuthRequestDto authRequestDto) {
@@ -42,25 +42,25 @@ public class AuthService {
 
     public AuthResponseDto buildAuthResponse(UserDto userDto) {
         String accessToken = jwtTokenService.createToken(userDto);
-        String refreshToken = refreshTokenService.newToken(userDto);
-
+        String refreshToken = refreshTokenService.createToken(userDto);
         return AuthResponseDto.of(accessToken, refreshToken);
     }
 
-    public AuthResponseDto refreshToken(String refreshToken) {
-        UserEntity userEntity = refreshTokenService.getUserEntityByToken(refreshToken);
+    public AuthResponseDto refreshToken(RefreshDto refreshDto) {
+        UserEntity userEntity = refreshTokenService.getUserEntityByToken(refreshDto.getRefreshToken());
+        refreshTokenService.deleteToken(refreshDto.getRefreshToken());
         return buildAuthResponse(UserDto.from(userEntity));
     }
 
-    public AuthResponseDto refreshToken(RefreshRequestDto refreshRequestDto) {
-        return refreshToken(refreshRequestDto.getRefreshToken());
-    }
-
-    public void logout(HttpServletRequest httpRequest) {
-        refreshTokenService.deleteUserTokens(jwtTokenService.getUserId(httpRequest));
+    public void logout(RefreshDto refreshDto) {
+        refreshTokenService.deleteToken(refreshDto.getRefreshToken());
     }
 
     public UserDto getUserInfo(HttpServletRequest httpRequest) {
         return jwtTokenService.getUserDto(httpRequest);
+    }
+
+    public void logoutAll(HttpServletRequest httpRequest) {
+        refreshTokenService.deleteUserTokens(jwtTokenService.getUserId(httpRequest));
     }
 }

@@ -3,8 +3,8 @@ package messenger.backend.auth.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
+import messenger.backend.user.dto.UserDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,9 +34,12 @@ public class JwtTokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username, String role) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("role", role);
+    public String createToken(UserDto userDto) {
+        Claims claims = Jwts.claims();
+        claims.put("id", userDto.getId());
+        claims.put("username", userDto.getUsername());
+        claims.put("fullName", userDto.getFullName());
+
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
@@ -52,7 +55,7 @@ public class JwtTokenService {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthException("JWT token is expired or invalid", HttpStatus.UNAUTHORIZED);
+            throw new JwtAuthException("JWT token is expired or invalid");
         }
     }
 
@@ -61,8 +64,29 @@ public class JwtTokenService {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
+    public UserDto getUserDto(String token) {
+         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+         return UserDto.builder()
+                 .id(claims.get("id", String.class))
+                 .username(claims.get("username", String.class))
+                 .fullName(claims.get("fullName", String.class))
+                 .build();
+    }
+
+    public UserDto getUserDto(HttpServletRequest request) {
+        return getUserDto(resolveToken(request));
+    }
+
+    public String getUserId(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("id", String.class);
+    }
+
+    public String getUserId(HttpServletRequest request) {
+        return getUserId(resolveToken(request));
+    }
+
     public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username", String.class);
     }
 
     public String getUsername(HttpServletRequest request) {

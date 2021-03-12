@@ -1,33 +1,14 @@
 package messenger.backend.user;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-import java.util.List;
+import java.util.Optional;
+
 
 @Repository
-@RequiredArgsConstructor
-public class UserRepository {
+public interface UserRepository extends JpaRepository<UserEntity, String> {
 
-    private final EntityManager entityManager;
+    Optional<UserEntity> getUserByUsername(String username);
 
-    @Transactional
-    public void createUser(UserEntity userEntity) {
-        //todo throw exception when same username?
-        entityManager.merge(userEntity);
-    }
-
-    @Transactional
-    public UserEntity getUserByUsername(String username) {
-        return entityManager
-                .createQuery("SELECT u FROM UserEntity u WHERE username = :currentUsername", UserEntity.class)
-                .setParameter("currentUsername", username).getSingleResult();
-    }
-
-    @Transactional
-    public List<UserEntity> getAllUsers() {
-        return entityManager.createQuery("FROM UserEntity", UserEntity.class).getResultList();
-    }
 }

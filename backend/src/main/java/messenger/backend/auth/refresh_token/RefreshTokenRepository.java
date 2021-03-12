@@ -1,38 +1,24 @@
 package messenger.backend.auth.refresh_token;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.util.Optional;
+
 
 @Repository
-@RequiredArgsConstructor
-public class RefreshTokenRepository {
-
-    private final EntityManager entityManager;
+public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, String> {
 
     @Transactional
-    public RefreshTokenEntity createToken(RefreshTokenEntity refreshTokenEntity) {
-        return entityManager.merge(refreshTokenEntity);
-    }
+    void deleteAllByUserEntityId(String userId);
 
-    @Transactional
-    public void deleteUserRefreshToken(RefreshTokenEntity tokenEntity) {
-        entityManager.remove(tokenEntity);
-    }
+    @Modifying
+    @Query("DELETE FROM RefreshTokenEntity WHERE id = :tokenId")
+    void deleteById(@Param("tokenId") String tokenId);
 
-    @Transactional
-    public RefreshTokenEntity getTokenById(String id) {
-        return entityManager.find(RefreshTokenEntity.class, id);
-    }
-
-    @Transactional
-    public RefreshTokenEntity getTokenByUsername(String username) {
-        return entityManager.createQuery(
-                "SELECT r FROM RefreshTokenEntity as r INNER JOIN r.userEntity as u " +
-                        "WHERE u.username = :currentUsername", RefreshTokenEntity.class)
-                .setParameter("currentUsername", username)
-                .getSingleResult();
-    }
+    Optional<RefreshTokenEntity> findTokenById(String id);
 }

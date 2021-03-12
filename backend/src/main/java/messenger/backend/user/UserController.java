@@ -1,7 +1,6 @@
 package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +14,9 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    @GetMapping("/user/all")
+    @GetMapping("/user/all") //just for test //todo delete this
     public List<UserEntity> getAllUsers() {
-        return userRepository.getAllUsers();
+        return userRepository.findAll();
     }
 
 }

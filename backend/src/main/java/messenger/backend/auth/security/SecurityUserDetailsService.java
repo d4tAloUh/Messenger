@@ -3,22 +3,24 @@ package messenger.backend.auth.security;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service("userDetailsServiceImpl")
+import java.util.Optional;
+
+@Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class SecurityUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.getUserByUsername(username);
-        //todo exception if user not found
-        return new User(userEntity.getUsername(), userEntity.getPassword(), userEntity.getRole().getAuthorities());
+        Optional<UserEntity> userEntityOptional = userRepository.getUserByUsername(username);
+        return new SecurityUser(
+                userEntityOptional
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username")));
     }
 }

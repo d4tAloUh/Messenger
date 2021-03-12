@@ -5,19 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 import messenger.backend.user.UserEntity;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
-public class UserDto {
-    public static UserDto from(UserEntity userEntity) {
-        return UserDto.builder()
+public class CurrentUserInfoDto {
+    public static CurrentUserInfoDto from(UserEntity userEntity) {
+        return CurrentUserInfoDto.builder()
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
                 .fullName(userEntity.getUsername())
                 .build();
     }
 
-    private String id;
+    private UUID id;
     private String username;
     private String fullName;
 }

@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @GetMapping("/user/all") //just for test //todo delete this
+    @GetMapping("/all") //todo delete this
     public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
 }

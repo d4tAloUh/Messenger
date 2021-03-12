@@ -24,8 +24,8 @@ public class AuthController {
     private final AuthService            authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Response<AuthResponseDto>> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
-            return ResponseEntity.ok(Response.success(authService.authenticate(authRequestDto)));
+    public Response<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
+            return Response.success(authService.authenticate(authRequestDto));
     }
 
     @PostMapping("/logout")
@@ -34,14 +34,14 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Response<UserDto>> getUserInfo(HttpServletRequest httpRequest) {
-            return ResponseEntity.ok(Response.success(authService.getUserInfo(httpRequest)));
+    public Response<UserDto> getUserInfo(HttpServletRequest httpRequest) {
+            return Response.success(authService.getUserInfo(httpRequest));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Response<AuthResponseDto>> refresh(@Valid  @RequestBody RefreshRequestDto refreshRequestDto) {
+    public Response<AuthResponseDto> refresh(@Valid  @RequestBody RefreshRequestDto refreshRequestDto) {
             AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto);
-            return ResponseEntity.ok(Response.success(authResponseDto));
+            return Response.success(authResponseDto);
     }
 
     @GetMapping("/tokens") // just for test todo delete this

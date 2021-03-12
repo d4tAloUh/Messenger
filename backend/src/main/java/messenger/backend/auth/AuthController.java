@@ -21,10 +21,8 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final JwtTokenService        jwtTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthService            authService;
-    private final RefreshTokenService    refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<Response<AuthResponseDto>> login(@RequestBody AuthRequestDto authRequestDto) {
@@ -33,17 +31,17 @@ public class AuthController {
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
-        refreshTokenService.deleteUserTokens(jwtTokenService.getUserId(request));
+        authService.logout(request);
     }
 
     @GetMapping("/me")
     public ResponseEntity<Response<UserDto>> getUserInfo(HttpServletRequest httpRequest) {
-            return ResponseEntity.ok(Response.success(jwtTokenService.getUserDto(httpRequest)));
+            return ResponseEntity.ok(Response.success(authService.getUserInfo(httpRequest)));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<Response<AuthResponseDto>> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
-            AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto.getRefreshToken());
+            AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto);
             return ResponseEntity.ok(Response.success(authResponseDto));
     }
 

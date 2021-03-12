@@ -3,6 +3,7 @@ package messenger.backend.auth;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
+import messenger.backend.auth.dto.RefreshRequestDto;
 import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +50,17 @@ public class AuthService {
     public AuthResponseDto refreshToken(String refreshToken) {
         UserEntity userEntity = refreshTokenService.getUserEntityByToken(refreshToken);
         return buildAuthResponse(UserDto.from(userEntity));
+    }
+
+    public AuthResponseDto refreshToken(RefreshRequestDto refreshRequestDto) {
+        return refreshToken(refreshRequestDto.getRefreshToken());
+    }
+
+    public void logout(HttpServletRequest httpRequest) {
+        refreshTokenService.deleteUserTokens(jwtTokenService.getUserId(httpRequest));
+    }
+
+    public UserDto getUserInfo(HttpServletRequest httpRequest) {
+        return jwtTokenService.getUserDto(httpRequest);
     }
 }

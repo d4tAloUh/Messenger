@@ -18,7 +18,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> userEntityOptional = userRepository.getUserByUsername(username);
+        Optional<UserEntity> userEntityOptional = userRepository.getByUsername(username);
         return new SecurityUser(
                 userEntityOptional
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username")));

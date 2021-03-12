@@ -3,11 +3,15 @@ package messenger.backend.refreshToken;
 import lombok.*;
 import messenger.backend.user.UserEntity;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "refreshToken")
 @Builder
 @AllArgsConstructor
@@ -33,7 +37,8 @@ public class RefreshTokenEntity {
     private UUID id;
 
     @Column(name = "createdAt")
-    private Long createdAt;
+    @CreatedDate
+    private Date createdAt;
 
     @OneToOne
     @JoinColumn(name = "userId")

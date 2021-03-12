@@ -16,7 +16,7 @@ public class Response<T> {
     }
 
     public static <T> Response<T> success(T data) {
-        return new Response<>("Success", data);
+        return new Response<>(null, data);
     }
 
     public static <T> Response<T> of(String message, T data) {

@@ -65,7 +65,10 @@ public class AuthService {
                 .findById(refreshToken)
                 .filter(this::validateRefreshToken)
                 .orElseThrow(RefreshTokenInvalidException::new);
+
         var userEntity = refreshTokenEntity.getUserEntity();
+        refreshTokenRepository.delete(refreshTokenEntity);
+
         return buildAuthResponse(userEntity);
     }
 
@@ -88,6 +91,6 @@ public class AuthService {
     }
 
     public boolean validateRefreshToken(RefreshTokenEntity refreshTokenEntity) {
-        return refreshTokenEntity.getCreatedAt() + refreshTokenValidityInMilliseconds > new Date().getTime();
+        return refreshTokenEntity.getCreatedAt().getTime() + refreshTokenValidityInMilliseconds > new Date().getTime();
     }
 }

@@ -38,6 +38,7 @@ public class JwtTokenService {
     public String createToken(UserEntity userEntity) {
         Claims claims = Jwts.claims();
         claims.put("id", userEntity.getId());
+        claims.put("username", userEntity.getUsername());
 
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);

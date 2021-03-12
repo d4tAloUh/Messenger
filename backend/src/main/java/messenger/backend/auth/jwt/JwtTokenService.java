@@ -3,7 +3,7 @@ package messenger.backend.auth.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
-import messenger.backend.user.dto.UserDto;
+import messenger.backend.user.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +35,9 @@ public class JwtTokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(UserDto userDto) {
+    public String createToken(UserEntity userEntity) {
         Claims claims = Jwts.claims();
-        claims.put("id", userDto.getId());
-        claims.put("username", userDto.getUsername());
-        claims.put("fullName", userDto.getFullName());
+        claims.put("id", userEntity.getId());
 
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
@@ -55,7 +54,7 @@ public class JwtTokenService {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthException("JWT token is expired or invalid");
+            throw new JwtAuthException();
         }
     }
 
@@ -64,24 +63,25 @@ public class JwtTokenService {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public UserDto getUserDto(String token) {
-         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-         return UserDto.builder()
-                 .id(claims.get("id", String.class))
-                 .username(claims.get("username", String.class))
-                 .fullName(claims.get("fullName", String.class))
-                 .build();
+    public JwtPayload getJwtPayload(HttpServletRequest request) {
+        String token = resolveToken(request);
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return JwtPayload.builder()
+                .id(UUID.fromString(claims.get("id", String.class)))
+                .build();
     }
 
-    public UserDto getUserDto(HttpServletRequest request) {
-        return getUserDto(resolveToken(request));
+    public UUID getUserId(String token) {
+        return UUID.fromString(
+                Jwts.parser()
+                        .setSigningKey(secretKey)
+                        .parseClaimsJws(token)
+                        .getBody()
+                        .get("id", String.class)
+        );
     }
 
-    public String getUserId(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("id", String.class);
-    }
-
-    public String getUserId(HttpServletRequest request) {
+    public UUID getUserId(HttpServletRequest request) {
         return getUserId(resolveToken(request));
     }
 

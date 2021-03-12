@@ -3,10 +3,10 @@ package messenger.backend.auth;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
-import messenger.backend.auth.dto.RefreshDto;
+import messenger.backend.auth.dto.RefreshTokenDto;
 import messenger.backend.refreshToken.RefreshTokenEntity;
 import messenger.backend.refreshToken.RefreshTokenRepository;
-import messenger.backend.user.dto.UserDto;
+import messenger.backend.user.dto.CurrentUserInfoDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,22 +24,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public Response<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
-            return Response.success(authService.authenticate(authRequestDto));
+            return Response.success(authService.login(authRequestDto));
     }
 
     @PostMapping("/logout")
-    public void logout(@Valid @RequestBody RefreshDto refreshDto) {
-        authService.logout(refreshDto);
+    public void logout(@Valid @RequestBody RefreshTokenDto refreshTokenDto) {
+        authService.logout(refreshTokenDto);
     }
 
     @GetMapping("/me")
-    public Response<UserDto> getUserInfo(HttpServletRequest httpRequest) {
-            return Response.success(authService.getUserInfo(httpRequest));
+    public Response<CurrentUserInfoDto> getUserInfo(HttpServletRequest httpRequest) {
+            return Response.success(authService.getCurrentUserInfo(httpRequest));
     }
 
     @PostMapping("/refresh")
-    public Response<AuthResponseDto> refresh(@Valid @RequestBody RefreshDto refreshDto) {
-            return Response.success(authService.refreshToken(refreshDto));
+    public Response<AuthResponseDto> refresh(@Valid @RequestBody RefreshTokenDto refreshTokenDto) {
+            return Response.success(authService.refreshToken(refreshTokenDto));
     }
 
     @GetMapping("/tokens") // just for test todo delete this

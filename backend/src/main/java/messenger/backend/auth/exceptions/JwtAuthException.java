@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 
 public class JwtAuthException extends WebException {
 
-    public JwtAuthException(String message) {
-        super(message, HttpStatus.UNAUTHORIZED);
+    public JwtAuthException() {
+        super("JWT token is expired or invalid", HttpStatus.UNAUTHORIZED);
     }
 
 }

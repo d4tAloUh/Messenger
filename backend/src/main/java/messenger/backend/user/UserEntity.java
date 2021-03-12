@@ -5,6 +5,7 @@ import messenger.backend.auth.access_levels.Role;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -23,7 +24,7 @@ public class UserEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "id")
-    private String id;
+    private UUID id;
 
     @Column(name = "username", unique = true)
     private String username;

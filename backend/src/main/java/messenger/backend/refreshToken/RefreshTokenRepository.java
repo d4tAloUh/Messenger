@@ -7,18 +7,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.util.UUID;
 
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, String> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, UUID> {
 
     @Transactional
-    void deleteAllByUserEntityId(String userId);
+    void deleteAllByUserEntityId(UUID userId);
 
     @Modifying
     @Query("DELETE FROM RefreshTokenEntity WHERE id = :tokenId")
-    void deleteById(@Param("tokenId") String tokenId);
-
-    Optional<RefreshTokenEntity> findTokenById(String id);
+    void deleteById(@Param("tokenId") UUID tokenId);
 }

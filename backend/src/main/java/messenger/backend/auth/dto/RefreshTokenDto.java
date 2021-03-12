@@ -3,9 +3,10 @@ package messenger.backend.auth.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.UUID;
 
 @Data
-public class RefreshDto {
+public class RefreshTokenDto {
     @NotEmpty
-    private String refreshToken;
+    private UUID refreshToken;
 }

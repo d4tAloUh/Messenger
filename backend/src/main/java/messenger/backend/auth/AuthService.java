@@ -6,21 +6,16 @@ import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshTokenDto;
 import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.jwt.JwtTokenService;
-import messenger.backend.refreshToken.RefreshTokenEntity;
-import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.auth.security.SecurityUser;
-import messenger.backend.refreshToken.exceptions.RefreshTokenInvalidException;
+import messenger.backend.refreshToken.RefreshTokenService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.dto.CurrentUserInfoDto;
 import messenger.backend.user.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 import static messenger.backend.auth.jwt.JwtTokenService.getCurrentUserId;
 
@@ -31,10 +26,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-
-    @Value("${refresh.validity}")
-    private long refreshTokenValidityInMilliseconds;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponseDto login(AuthRequestDto authRequestDto) {
         try {
@@ -51,8 +43,7 @@ public class AuthService {
     }
 
     private AuthResponseDto buildAuthResponse(UserEntity userEntity) {
-        var refreshTokenEntity = RefreshTokenEntity.fromUserEntity(userEntity);
-        refreshTokenRepository.save(refreshTokenEntity);
+        var refreshTokenEntity = refreshTokenService.createByUserEntity(userEntity);
 
         var refreshToken = refreshTokenEntity.getId();
         var accessToken = jwtTokenService.createToken(userEntity);
@@ -62,20 +53,17 @@ public class AuthService {
 
     public AuthResponseDto refreshToken(RefreshTokenDto refreshTokenDto) {
         var refreshToken = refreshTokenDto.getRefreshToken();
-        var refreshTokenEntity = refreshTokenRepository
-                .findById(refreshToken)
-                .filter(this::validateRefreshToken)
-                .orElseThrow(RefreshTokenInvalidException::new);
+        var refreshTokenEntity = refreshTokenService.getById(refreshToken);
 
         var userEntity = refreshTokenEntity.getUserEntity();
-        refreshTokenRepository.delete(refreshTokenEntity);
+        refreshTokenService.deleteById(refreshTokenEntity.getId());
 
         return buildAuthResponse(userEntity);
     }
 
     public void logout(RefreshTokenDto refreshTokenDto) {
         var refreshToken = refreshTokenDto.getRefreshToken();
-        refreshTokenRepository.deleteById(refreshToken);
+        refreshTokenService.deleteById(refreshToken);
     }
 
     public CurrentUserInfoDto getCurrentUserInfo() {
@@ -87,10 +75,6 @@ public class AuthService {
 
     public void logoutAll() {
         var userId = getCurrentUserId();
-        refreshTokenRepository.deleteAllByUserEntityId(userId);
-    }
-
-    public boolean validateRefreshToken(RefreshTokenEntity refreshTokenEntity) {
-        return refreshTokenEntity.getCreatedAt().getTime() + refreshTokenValidityInMilliseconds > new Date().getTime();
+        refreshTokenService.deleteAllByUserEntityId(userId);
     }
 }

@@ -1,4 +1,4 @@
-package messenger.backend.auth.refresh_token;
+package messenger.backend.refreshToken;
 
 import lombok.*;
 import messenger.backend.user.UserEntity;

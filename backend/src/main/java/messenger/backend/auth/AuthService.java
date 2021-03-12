@@ -6,7 +6,7 @@ import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshDto;
 import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.jwt.JwtTokenService;
-import messenger.backend.auth.refresh_token.RefreshTokenService;
+import messenger.backend.refreshToken.RefreshTokenService;
 import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.dto.UserDto;

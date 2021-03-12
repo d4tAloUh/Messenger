@@ -1,4 +1,4 @@
-package messenger.backend.auth.refresh_token;
+package messenger.backend.refreshToken;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

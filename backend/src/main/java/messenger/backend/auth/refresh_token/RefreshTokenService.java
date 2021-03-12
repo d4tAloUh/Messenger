@@ -60,7 +60,6 @@ public class RefreshTokenService {
     }
 
     public void deleteUserTokens(String userId) {
-        //todo delete in one query
-        refreshTokenRepository.deleteAll(refreshTokenRepository.findByUserId(userId));
+        refreshTokenRepository.deleteAllByUserEntityId(userId);
     }
 }

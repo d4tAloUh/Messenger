@@ -1,8 +1,11 @@
 package messenger.backend.utils.exceptions;
 
-import lombok.Value;
+import org.springframework.http.HttpStatus;
 
-@Value
-public class ValidationException extends RuntimeException {
-    String message;
+public class ValidationException extends WebException {
+
+    public ValidationException(String message) {
+        super(message, HttpStatus.BAD_REQUEST);
+    }
+
 }

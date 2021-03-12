@@ -1,6 +1,5 @@
 package messenger.backend.auth.dto;
 
-import lombok.Data;
 import lombok.Value;
 
 @Value(staticConstructor = "of")

@@ -1,7 +1,6 @@
 package messenger.backend.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.jfr.ContentType;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
 import messenger.backend.utils.Response;

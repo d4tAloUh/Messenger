@@ -28,16 +28,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Response<AuthResponseDto>> login(@RequestBody AuthRequestDto authRequestDto) {
-        try {
-            String username = authRequestDto.getUsername();
-            String password = authRequestDto.getPassword();
-            return ResponseEntity.ok(Response.data(authService.authenticate(username, password)));
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(Response.error(e.getMessage()));
-        }
+            return ResponseEntity.ok(Response.success(authService.authenticate(authRequestDto)));
     }
 
     @PostMapping("/logout")
@@ -47,27 +38,13 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<Response<UserDto>> getUserInfo(HttpServletRequest httpRequest) {
-        try {
-            return ResponseEntity.ok(Response.data(jwtTokenService.getUserDto(httpRequest)));
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(Response.error(e.getMessage()));
-        }
+            return ResponseEntity.ok(Response.success(jwtTokenService.getUserDto(httpRequest)));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<Response<AuthResponseDto>> refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
-        try {
             AuthResponseDto authResponseDto = authService.refreshToken(refreshRequestDto.getRefreshToken());
-            return ResponseEntity.ok(Response.data(authResponseDto));
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(Response.error(e.getMessage()));
-        }
+            return ResponseEntity.ok(Response.success(authResponseDto));
     }
 
     @GetMapping("/tokens") // just for test todo delete this

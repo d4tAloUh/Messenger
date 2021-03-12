@@ -1,22 +1,13 @@
 package messenger.backend.auth.exceptions;
 
-import lombok.Getter;
+import messenger.backend.utils.exceptions.WebException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
 
 
-@Getter
-public class JwtAuthException extends AuthenticationException {
+public class JwtAuthException extends WebException {
 
-    private HttpStatus httpStatus;
-
-    public JwtAuthException(String explanation) {
-        super(explanation);
-    }
-
-    public JwtAuthException(String explanation, HttpStatus httpStatus) {
-        super(explanation);
-        this.httpStatus = httpStatus;
+    public JwtAuthException(String message) {
+        super(message, HttpStatus.UNAUTHORIZED);
     }
 
 }

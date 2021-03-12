@@ -1,7 +1,9 @@
 package messenger.backend.auth;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
+import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.refresh_token.RefreshTokenService;
 import messenger.backend.auth.security.SecurityUser;
@@ -22,12 +24,14 @@ public class AuthService {
     private final RefreshTokenService    refreshTokenService;
 
 
-    public AuthResponseDto authenticate(String username, String password) {
+    public AuthResponseDto authenticate(AuthRequestDto authRequestDto) {
+        String username = authRequestDto.getUsername();
+        String password = authRequestDto.getPassword();
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new InvalidUsernameOrPasswordException();
         }
         UserEntity userEntity = ((SecurityUser) authentication.getPrincipal()).getUserEntity();
         return buildAuthResponse(UserDto.from(userEntity));

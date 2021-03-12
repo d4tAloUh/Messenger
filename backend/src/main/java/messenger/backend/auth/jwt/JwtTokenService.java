@@ -3,10 +3,8 @@ package messenger.backend.auth.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
-import messenger.backend.user.UserEntity;
 import messenger.backend.user.dto.UserDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,7 +55,7 @@ public class JwtTokenService {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthException("JWT token is expired or invalid", HttpStatus.UNAUTHORIZED);
+            throw new JwtAuthException("JWT token is expired or invalid");
         }
     }
 

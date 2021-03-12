@@ -10,7 +10,6 @@ import messenger.backend.user.dto.CurrentUserInfoDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -33,8 +32,8 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public Response<CurrentUserInfoDto> getUserInfo(HttpServletRequest httpRequest) {
-            return Response.success(authService.getCurrentUserInfo(httpRequest));
+    public Response<CurrentUserInfoDto> getUserInfo() {
+            return Response.success(authService.getCurrentUserInfo());
     }
 
     @PostMapping("/refresh")
@@ -48,8 +47,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout/all") // just for test (or no) todo delete this?
-    public void logoutFromAllDevices(HttpServletRequest httpRequest) {
-        authService.logoutAll(httpRequest);
+    public void logoutFromAllDevices() {
+        authService.logoutAll();
     }
 
 }

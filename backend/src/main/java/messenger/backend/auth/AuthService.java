@@ -20,8 +20,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+
+import static messenger.backend.auth.jwt.JwtTokenService.getCurrentUserId;
 
 @Service
 @RequiredArgsConstructor
@@ -77,16 +78,15 @@ public class AuthService {
         refreshTokenRepository.deleteById(refreshToken);
     }
 
-    public CurrentUserInfoDto getCurrentUserInfo(HttpServletRequest httpRequest) {
-        var jwtPayload = jwtTokenService.getJwtPayload(httpRequest);
+    public CurrentUserInfoDto getCurrentUserInfo() {
         var userEntity = userRepository
-                .findById(jwtPayload.getId())
+                .findById(getCurrentUserId())
                 .orElseThrow(UserNotFoundException::new);
         return CurrentUserInfoDto.from(userEntity);
     }
 
-    public void logoutAll(HttpServletRequest httpRequest) {
-        var userId = jwtTokenService.getUserId(httpRequest);
+    public void logoutAll() {
+        var userId = getCurrentUserId();
         refreshTokenRepository.deleteAllByUserEntityId(userId);
     }
 

@@ -3,10 +3,12 @@ package messenger.backend.auth.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
+import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -64,34 +66,18 @@ public class JwtTokenService {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public JwtPayload getJwtPayload(HttpServletRequest request) {
-        String token = resolveToken(request);
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        return JwtPayload.builder()
-                .id(UUID.fromString(claims.get("id", String.class)))
-                .build();
+    private static UserEntity getContextUser() {
+        var securityUser =
+                (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return securityUser.getUserEntity();
     }
 
-    public UUID getUserId(String token) {
-        return UUID.fromString(
-                Jwts.parser()
-                        .setSigningKey(secretKey)
-                        .parseClaimsJws(token)
-                        .getBody()
-                        .get("id", String.class)
-        );
-    }
-
-    public UUID getUserId(HttpServletRequest request) {
-        return getUserId(resolveToken(request));
+    public static UUID getCurrentUserId() {
+        return getContextUser().getId();
     }
 
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username", String.class);
-    }
-
-    public String getUsername(HttpServletRequest request) {
-        return getUsername(resolveToken(request));
     }
 
     public String resolveToken(HttpServletRequest request) {

@@ -8,6 +8,10 @@ const authService = {
         tokenService.setTokens("a", "r");
     },
 
+    register: async (loginDto: ILoginRequest): Promise<void> => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+    },
+
     logout: async (): Promise<void> => {
         await new Promise(resolve => setTimeout(resolve, 500));
         tokenService.removeTokens();

@@ -1,15 +1,15 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import FormWrapper from "../FormComponents/FormWrapper/FormWrapper";
+import {ILoginRequest} from "../../api/auth/authModels";
+import * as Yup from "yup";
+import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import Button from "../FormComponents/Button/Button";
-import {ILoginRequest} from "../../api/auth/authModels";
-import {Form, Formik} from "formik";
-import styles from "./LoginForm.module.sass";
-import * as Yup from 'yup';
+import styles from "../LoginForm/LoginForm.module.sass";
 
 interface IOwnProps {
-    login: (request: ILoginRequest) => Promise<void>;
+    register: (request: ILoginRequest) => Promise<void>;
 }
 
 interface IState {
@@ -28,27 +28,27 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class LoginForm extends React.Component<IOwnProps, IState> {
+class RegistrationForm extends React.Component<IOwnProps, IState> {
+
     state = {
         loading: false,
     } as IState;
 
-    handleLogin = async (values: any) => {
-        const {login} = this.props;
+    handleRegistration = async (values: any) => {
+        const {register} = this.props;
         const {username, password} = values;
         this.setState({loading: true});
-        await login({username, password});
+        await register({username, password});
         this.setState({loading: false});
     };
 
     render() {
         const {loading} = this.state;
-
         return (
             <div>
                 <Formik
-                    onSubmit={this.handleLogin}
-                    initialValues={{username: '', password: ''}}
+                    onSubmit={this.handleRegistration}
+                    initialValues={{username: '', password: '', confirmedPassword:''}}
                     validationSchema={validationSchema}
                     render={({
                                  errors,
@@ -80,8 +80,18 @@ class LoginForm extends React.Component<IOwnProps, IState> {
                                         error={errors.password}
                                         touched={touched.password}
                                     />
+                                    <Input
+                                        label="Confirm password"
+                                        value={values.confirmedPassword}
+                                        name="confirmedPassword"
+                                        type="password"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={errors.password}
+                                        touched={touched.password}
+                                    />
                                     <Button
-                                        text="Log in"
+                                        text="Sign up"
                                         loading={loading}
                                         disabled={!valid}
                                         submit
@@ -92,13 +102,13 @@ class LoginForm extends React.Component<IOwnProps, IState> {
                     }}
                 />
                 <div className="center">
-                    Not registered yet?
+                    Already registered?
                     <br/>
-                    <Link className={styles.link} to="/auth/register">Sign up</Link>
+                    <Link className={styles.link} to="/auth/login">Log in</Link>
                 </div>
             </div>
         );
     }
 }
 
-export default LoginForm;
+export default RegistrationForm;

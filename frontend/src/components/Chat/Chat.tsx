@@ -45,7 +45,7 @@ class Chat extends React.Component<IOwnProps> {
         return (
             <div className={styles.wrapper}>
                  <ChatHeader chatDetails={chatInfo?.details}/>
-                 <MessagesListWrapper
+                 <MessagesListWrapper 
                      messages={chatInfo?.messages}
                      currentUser={currentUser}
                  />

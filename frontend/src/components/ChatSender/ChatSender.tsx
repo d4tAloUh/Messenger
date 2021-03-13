@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./ChatSender.module.sass";
-import Button from "../FormComponents/Button/Button";
 import Textarea from "../FormComponents/Texarea/Textarea";
+import Icon from "../Icon/Icon";
 
 interface IOwnProps {
     sendMessage: (text: string) => Promise<void>;
@@ -25,6 +25,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
         const {text} = this.state;
         this.props.sendMessage(text).then();
         this.setState({text: ''});
+
     }
 
     render() {
@@ -41,11 +42,10 @@ class ChatSender extends React.Component<IOwnProps, IState> {
                     />
                 </div>
                 <div className={styles.buttonsWrapper}>
-                    <Button
-                        text="Send"
-                        onClick={this.handleSend}
-                        disabled={!this.isValid()}
-                    />
+
+                    <Icon iconName={"fas fa-paper-plane fa-2x"}
+                          className={this.isValid() ? styles.sendIcon : styles.disabledSend}
+                          onClick={this.isValid() ? this.handleSend : undefined} />
                 </div>
             </div>
         );

@@ -24,6 +24,7 @@ class Auth extends React.Component<RouteComponentProps> {
 
         return (
             <div className={styles.wrapper}>
+                <h1 className={styles.header}>Welcome to Ch@t</h1>
                 <div className={styles.authForm}>
                     <Switch>
                         <Route exact path="/auth/login" render={() => <LoginForm login={this.login} />} />

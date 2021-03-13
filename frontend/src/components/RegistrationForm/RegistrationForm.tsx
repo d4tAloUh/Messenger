@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import Button from "../FormComponents/Button/Button";
+import styles from "../LoginForm/LoginForm.module.sass";
 
 interface IOwnProps {
     register: (request: ILoginRequest) => Promise<void>;
@@ -17,13 +18,13 @@ interface IState {
 
 const validationSchema = Yup.object().shape({
     username: Yup.string()
-        .min(4, 'Too Short!')
-        .max(16, 'Too Long!')
-        .required('Required'),
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
     password: Yup.string()
-        .min(4, 'Too Short!')
-        .max(16, 'Too Long!')
-        .required('Required'),
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
 
 });
 
@@ -47,7 +48,7 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
             <div>
                 <Formik
                     onSubmit={this.handleRegistration}
-                    initialValues={{username: '', password: ''}}
+                    initialValues={{username: '', password: '', confirmedPassword:''}}
                     validationSchema={validationSchema}
                     render={({
                                  errors,
@@ -79,6 +80,16 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                                         error={errors.password}
                                         touched={touched.password}
                                     />
+                                    <Input
+                                        label="Confirm password"
+                                        value={values.confirmedPassword}
+                                        name="confirmedPassword"
+                                        type="password"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={errors.password}
+                                        touched={touched.password}
+                                    />
                                     <Button
                                         text="Sign up"
                                         loading={loading}
@@ -93,7 +104,7 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                 <div className="center">
                     Already registered?
                     <br/>
-                    <Link to="/auth/login">Login</Link>
+                    <Link className={styles.link} to="/auth/login">Log in</Link>
                 </div>
             </div>
         );

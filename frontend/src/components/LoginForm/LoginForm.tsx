@@ -5,6 +5,7 @@ import Input from "../FormComponents/Input/Input";
 import Button from "../FormComponents/Button/Button";
 import {ILoginRequest} from "../../api/auth/authModels";
 import {Form, Formik} from "formik";
+import styles from "./LoginForm.module.sass";
 import * as Yup from 'yup';
 
 interface IOwnProps {
@@ -17,13 +18,13 @@ interface IState {
 
 const validationSchema = Yup.object().shape({
     username: Yup.string()
-        .min(4, 'Too Short!')
-        .max(16, 'Too Long!')
-        .required('Required'),
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
     password: Yup.string()
-        .min(4, 'Too Short!')
-        .max(16, 'Too Long!')
-        .required('Required'),
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
 
 });
 
@@ -93,7 +94,7 @@ class LoginForm extends React.Component<IOwnProps, IState> {
                 <div className="center">
                     Not registered yet?
                     <br/>
-                    <Link to="/auth/register">Sign up</Link>
+                    <Link className={styles.link} to="/auth/register">Sign up</Link>
                 </div>
             </div>
         );

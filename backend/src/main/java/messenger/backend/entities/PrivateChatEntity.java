@@ -17,5 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "PrivateChat")
 public class PrivateChatEntity extends ChatSuperclass {
-
+    @Lob
+    @Column(name = "chatPicture")
+    private Byte[] chatPicture;
 }

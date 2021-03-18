@@ -1,21 +1,28 @@
 package messenger.backend.user;
 
 import lombok.*;
+
 import messenger.backend.auth.access_levels.Role;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.UUID;
 
-@Entity
-@Table(name = "users")
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
+
+@Entity
+@Table(name = "User")
 public class UserEntity {
+    public enum UserStatus {
+        ONLINE,
+        OFFLINE,
+    }
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -23,19 +30,32 @@ public class UserEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "id")
+    @Column(name = "UserId")
     private UUID id;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "Username", unique = true, length = 64)
     private String username;
 
-    @Column(name = "fullName")
+    @Column(name = "Password")
+    private String password;
+
+    @Column(name = "FullName", length = 128)
     private String fullName;
 
-    @Column(name = "password")
-    private String password;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "Status")
+    private UserStatus status;
+
+    @Column(name = "Bio", length = 512)
+    private String bio;
+
+    @Lob
+    @Column(name = "ProfilePicture")
+    private Byte[] profilePicture;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role")
     private Role role;
+
+
 }

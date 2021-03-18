@@ -1,11 +1,14 @@
-package messenger.backend.entities;
+package messenger.backend.message;
 
 
 import lombok.*;
-import org.apache.catalina.User;
+import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -16,6 +19,7 @@ import java.util.UUID;
 @Setter
 @ToString
 
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "Message")
 public class MessageEntity {
@@ -33,13 +37,9 @@ public class MessageEntity {
     @Column(name = "MessageId")
     private UUID messageId;
 
-    @OneToOne
-    @Column(name = "Author")
-    private UserEntity userEntity;
-
-    @Basic
+    @CreatedDate
     @Column(name = "SentTime")
-    private java.sql.Time sentTime;
+    private Date createdAt;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "MessageType")
@@ -53,10 +53,6 @@ public class MessageEntity {
     private String messageBody;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="UserId")
-    protected UserEntity userIdFK;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="ChatId")
-    protected UserEntity chatIdFK;
+    @JoinColumn(name="UserChat")
+    private UserChat userChat;
 }

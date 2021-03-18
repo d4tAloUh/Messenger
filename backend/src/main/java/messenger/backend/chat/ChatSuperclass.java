@@ -1,6 +1,7 @@
-package messenger.backend.entities;
+package messenger.backend.chat;
 
 
+import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -21,9 +22,7 @@ public class ChatSuperclass {
     @Column(name = "ChatId")
     private UUID chadId;
 
-    @OneToMany(mappedBy = "chatIdFK")
-    private List<MemberOfChat> memberOfChats = new ArrayList<>();
+    @OneToMany(mappedBy = "chat")
+    private List<UserChat> userChats = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatIdFK")
-    private List<MessageEntity> messageEntities = new ArrayList<>();
 }

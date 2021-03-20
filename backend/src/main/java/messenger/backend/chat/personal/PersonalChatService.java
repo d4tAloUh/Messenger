@@ -5,13 +5,18 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
+import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
+import messenger.backend.chat.personal.exceptions.ChatNotFoundException;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
+import messenger.backend.chat.personal.exceptions.UserNotMemberOfChatException;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 
 @RequiredArgsConstructor
@@ -59,4 +64,17 @@ public class PersonalChatService {
                .ifPresent(chat -> {throw new PersonalChatAlreadyExistsException();});
     }
 
+    public void deletePersonalChat(DeletePersonalChatRequestDto requestDto) {
+
+        PrivateChatEntity privateChatEntity = personalChatRepository
+                .findByIdWithFetch(UUID.fromString(requestDto.getChatId()))
+                .orElseThrow(ChatNotFoundException::new);
+
+        UserEntity contextUser = JwtTokenService.getContextUser();
+        boolean isUserMemberOfChat = privateChatEntity.getUserChats().stream()
+                .anyMatch(chat -> chat.getUser().getId().equals(contextUser.getId()));
+        if(!isUserMemberOfChat) throw new UserNotMemberOfChatException();
+
+        personalChatRepository.delete(privateChatEntity);
+    }
 }

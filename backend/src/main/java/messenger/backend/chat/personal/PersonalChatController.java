@@ -3,6 +3,7 @@ package messenger.backend.chat.personal;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
+import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,11 @@ public class PersonalChatController {
     @PostMapping("/create")
     public Response<CreatePersonalChatResponseDto> createPersonalChat(@Valid @RequestBody CreatePersonalChatRequestDto requestDto) {
         return Response.success(personalChatService.createPrivateChat(requestDto));
+    }
+
+    @PostMapping("/delete")
+    public void deletePersonalChat(@Valid @RequestBody DeletePersonalChatRequestDto requestDto) {
+        personalChatService.deletePersonalChat(requestDto);
     }
 
 }

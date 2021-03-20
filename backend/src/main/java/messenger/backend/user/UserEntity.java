@@ -1,7 +1,6 @@
 package messenger.backend.user;
 
 import lombok.*;
-
 import messenger.backend.auth.access_levels.Role;
 import org.hibernate.annotations.GenericGenerator;
 

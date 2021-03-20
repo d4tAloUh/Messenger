@@ -22,4 +22,6 @@ public interface PersonalChatRepository extends JpaRepository<PrivateChatEntity,
             "WHERE uc2.user=:user2 AND uc1.chat=uc2.chat)")
     Optional<PrivateChatEntity> findByMembers(@Param("user1") UserEntity user1, @Param("user2") UserEntity user2);
 
+    @Query("SELECT pce FROM PrivateChatEntity as pce INNER JOIN FETCH pce.userChats WHERE pce.chatId=:id")
+    Optional<PrivateChatEntity> findByIdWithFetch(@Param("id") UUID id);
 }

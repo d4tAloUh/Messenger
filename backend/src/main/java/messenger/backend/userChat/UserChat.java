@@ -22,6 +22,13 @@ import java.util.UUID;
 
 @Entity
 public class UserChat {
+    public static UserChat generateUserChat(PermissionLevel permLvl, ChatSuperclass chat, UserEntity user) {
+
+        return UserChat.builder()
+                .permissionLevel(PermissionLevel.MEMBER)
+                .build();
+    }
+
     public enum PermissionLevel {
         OWNER,
         ADMIN,
@@ -51,5 +58,7 @@ public class UserChat {
 
     @OneToMany(mappedBy = "userChat")
     private List<MessageEntity> messageEntities = new ArrayList<>();
+
+
 
 }

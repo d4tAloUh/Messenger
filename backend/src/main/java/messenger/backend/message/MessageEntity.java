@@ -2,6 +2,7 @@ package messenger.backend.message;
 
 
 import lombok.*;
+import messenger.backend.seeds.FakerService;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,6 +24,15 @@ import java.util.UUID;
 @Entity
 @Table(name = "Message")
 public class MessageEntity {
+    public static MessageEntity generateMessage() {
+
+        return MessageEntity.builder()
+                .messageType(MessageType.TEXT)
+                .createdAt(FakerService.faker.date().between(new Date(2020,4,1),new Date(2021,3,21)))
+                .messageBody(FakerService.faker.elderScrolls().quote())
+                .build();
+    }
+
     public enum MessageType {
         TEXT,
         IMAGE,

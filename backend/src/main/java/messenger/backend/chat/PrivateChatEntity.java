@@ -15,6 +15,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PrivateChat")
 public class PrivateChatEntity extends ChatSuperclass {
+
+    public static PrivateChatEntity generateGroupChat() {
+
+        return PrivateChatEntity.builder()
+                .build();
+    }
+
     @Lob
     @Column(name = "chatPicture")
     private Byte[] chatPicture;

@@ -1,6 +1,7 @@
 package messenger.backend.chat;
 
 import lombok.*;
+import messenger.backend.seeds.FakerService;
 
 import javax.persistence.*;
 
@@ -17,6 +18,13 @@ import javax.persistence.*;
 @Table(name = "GroupChat")
 
 public class GroupChatEntity extends ChatSuperclass {
+
+    public static GroupChatEntity generateGroupChat() {
+
+        return GroupChatEntity.builder()
+                .groupName(FakerService.faker.funnyName().name())
+                .build();
+    }
 
     @Column(name = "GroupName", length = 64)
     private String groupName;

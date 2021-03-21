@@ -31,7 +31,7 @@ public class ChatSuperclass {
     @Column(name = "ChatId")
     private UUID chatId;
 
-    @OneToMany(mappedBy = "chat")
+    @OneToMany(mappedBy = "chat", cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     private List<UserChat> userChats = new ArrayList<>();
 
 }

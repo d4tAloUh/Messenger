@@ -40,8 +40,8 @@ public class UserChat {
     @JoinColumn(name="UserId")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="ChatId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ChatId", nullable = false)
     private ChatSuperclass chat;
 
     @Enumerated

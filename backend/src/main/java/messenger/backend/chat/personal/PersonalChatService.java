@@ -66,7 +66,7 @@ public class PersonalChatService {
     public void deletePersonalChat(DeletePersonalChatRequestDto requestDto) {
 
         PrivateChatEntity privateChatEntity = personalChatRepository
-                .findByIdWithFetch(UUID.fromString(requestDto.getChatId()))
+                .findByIdWithFetch(requestDto.getChatId())
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity contextUser = JwtTokenService.getContextUser();

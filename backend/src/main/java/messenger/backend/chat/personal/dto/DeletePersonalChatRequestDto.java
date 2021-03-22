@@ -2,8 +2,9 @@ package messenger.backend.chat.personal.dto;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class DeletePersonalChatRequestDto {
-    //todo bad request with UUID type
-    private String chatId;
+    private UUID chatId;
 }

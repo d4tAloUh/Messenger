@@ -3,12 +3,12 @@ package messenger.backend.chat.personal;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
+import messenger.backend.chat.exceptions.ChatNotFoundException;
+import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
-import messenger.backend.chat.personal.exceptions.ChatNotFoundException;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
-import messenger.backend.chat.personal.exceptions.UserNotMemberOfChatException;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -37,7 +37,6 @@ public class PersonalChatService {
         checkIfPersonalChatExists(contextUser, targetUser);
 
         PrivateChatEntity personalChat = new PrivateChatEntity();
-        personalChat.setChatPicture(new Byte[]{1,2,3});
 
         personalChat = personalChatRepository.saveAndFlush(personalChat);
 

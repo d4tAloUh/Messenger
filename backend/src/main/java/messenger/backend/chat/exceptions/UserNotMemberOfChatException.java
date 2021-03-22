@@ -1,4 +1,4 @@
-package messenger.backend.chat.personal.exceptions;
+package messenger.backend.chat.exceptions;
 
 import messenger.backend.utils.exceptions.WebException;
 import org.springframework.http.HttpStatus;

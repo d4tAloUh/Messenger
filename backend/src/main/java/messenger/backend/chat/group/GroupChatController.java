@@ -3,7 +3,6 @@ package messenger.backend.chat.group;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.group.dto.*;
-import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,21 +28,31 @@ public class GroupChatController {
         groupChatService.deleteGroupChat(requestDto);
     }
 
-    @PostMapping("/add-member")
+    @PostMapping("/users/add")
     public void addMemberToChat(@Valid @RequestBody AddMemberToGroupChatRequestDto requestDto) {
         groupChatService.addMemberToChat(requestDto);
     }
 
-    @PostMapping("/remove-member")
+    @PostMapping("/users/remove")
     public void removeMemberFromChat(@Valid @RequestBody RemoveMemberFromGroupChatRequestDto requestDto) {
         groupChatService.removeMemberFromChat(requestDto);
     }
 
 
     //just for test todo delete this (or no)
-    @GetMapping("/users-list")
-    public Response<List<UserSearchInfoDto>> getChatUsersList(@RequestParam(name = "chatId") UUID chatId) {
+    @GetMapping("/users/list")
+    public Response<List<GroupChatUserInfoDto>> getChatUsersList(@RequestParam(name = "chatId") UUID chatId) {
         return Response.success(groupChatService.getChatUsersList(chatId));
+    }
+
+    @PostMapping("/users/upgrade-to-admin")
+    public void upgradeToAdmin(@Valid @RequestBody UpgradeToAdminRequestDto requestDto) {
+        groupChatService.upgradeToAdmin(requestDto);
+    }
+
+    @PostMapping("/users/downgrade-to-member")
+    public void downgradeToMember(@Valid @RequestBody DowngradeToMemberRequestDto requestDto) {
+        groupChatService.downgradeToMember(requestDto);
     }
 
 }

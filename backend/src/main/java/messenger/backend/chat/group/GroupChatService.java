@@ -3,16 +3,12 @@ package messenger.backend.chat.group;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
-import messenger.backend.chat.exceptions.ChatNotFoundException;
-import messenger.backend.chat.exceptions.UserAlreadyMemberOfChatException;
-import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
+import messenger.backend.chat.exceptions.*;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
-import messenger.backend.chat.group.exceptions.UserNotInChatException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
-import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
@@ -66,19 +62,18 @@ public class GroupChatService {
     }
 
     public void addMemberToChat(AddMemberToGroupChatRequestDto requestDto) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(requestDto.getChatId())
-                .orElseThrow(ChatNotFoundException::new);
+        GroupChatAndUsersDto chatAndUsersDto = resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId());
+        GroupChatEntity groupChatEntity = chatAndUsersDto.getGroupChatEntity();
+        UserEntity contextUser = chatAndUsersDto.getContextUserEntity();
+        UserEntity targetUser = chatAndUsersDto.getTargetUserEntity();
 
-        UserEntity targetUser = userRepository.findById(requestDto.getTargetUserId())
-                .orElseThrow(UserNotFoundException::new);
+        UserChat contextUserChat = groupChatEntity.getUserChats().stream()
+                .filter(userChat -> userChat.getUser().getId().equals(contextUser.getId()))
+                .findAny()
+                .orElseThrow(ContextUserNotMemberOfChatException::new);
 
-        UserEntity contextUser = JwtTokenService.getContextUser();
-
-        boolean isContextUserAdminOrOwner = groupChatEntity.getUserChats().stream()
-                .anyMatch(userChat -> userChat.getUser().getId().equals(contextUser.getId())
-                        && (userChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)
-                        || userChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER)));
-        if(!isContextUserAdminOrOwner) throw new NotEnoughPermissionLevelException();
+        if (contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
+            throw new NotEnoughPermissionLevelException();
 
         boolean isTargetUserAlreadyAdded = groupChatEntity.getUserChats().stream()
                 .anyMatch(userChat -> userChat.getUser().getId().equals(targetUser.getId()));
@@ -93,52 +88,114 @@ public class GroupChatService {
     }
 
     public void removeMemberFromChat(RemoveMemberFromGroupChatRequestDto requestDto) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(requestDto.getChatId())
-                .orElseThrow(ChatNotFoundException::new);
-
-        UserEntity targetUser = userRepository.findById(requestDto.getTargetUserId())
-                .orElseThrow(UserNotFoundException::new);
-
-        UserEntity contextUser = JwtTokenService.getContextUser();
-
-        UserChat targetUserChat = groupChatEntity.getUserChats().stream()
-                .filter(groupChat -> groupChat.getUser().getId().equals(targetUser.getId()))
-                .findAny()
-                .orElseThrow(UserNotInChatException::new);
+        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
+        UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
         //todo rewrite with permissions
-        //check if user have enough PermissionLevel
-        boolean isContextUserHavePermission = groupChatEntity.getUserChats().stream()
-                .anyMatch(contextUserChat ->
-                        contextUserChat.getUser().getId().equals(contextUser.getId()) &&
-                                (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER)
-                                        && (contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)
-                                        || contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
-                                ||
-                                (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)
-                                        && contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
-                                )
-                );
-        if(!isContextUserHavePermission) throw new NotEnoughPermissionLevelException();
+        if (contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
+            throw new NotEnoughPermissionLevelException();
 
         userChatRepository.delete(targetUserChat);
     }
 
     //just for test todo delete this (or no)
-    public List<UserSearchInfoDto> getChatUsersList(UUID chatId) {
+    public List<GroupChatUserInfoDto> getChatUsersList(UUID chatId) {
         GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(chatId)
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity contextUser = JwtTokenService.getContextUser();
 
         boolean isContextUserInChat = groupChatEntity.getUserChats().stream()
-                .anyMatch(userChat -> {
-                    return userChat.getUser().getId().equals(contextUser.getId());
-                });
+                .anyMatch(userChat -> userChat.getUser().getId().equals(contextUser.getId()));
         if(!isContextUserInChat) throw new UserNotMemberOfChatException();
 
         return groupChatEntity.getUserChats().stream()
-                .map(userChat -> UserSearchInfoDto.from(userChat.getUser()))
+                .map(userChat -> {
+                    GroupChatUserInfoDto infoDto = new GroupChatUserInfoDto();
+                    infoDto.setId(userChat.getUser().getId());
+                    infoDto.setUsername(userChat.getUser().getUsername());
+                    infoDto.setFullName(userChat.getUser().getFullName());
+                    infoDto.setPermissionLevel(userChat.getPermissionLevel());
+                    infoDto.setProfilePicture(userChat.getUser().getProfilePicture());
+                    return infoDto;
+                })
                 .collect(Collectors.toList());
     }
+
+    public void upgradeToAdmin(UpgradeToAdminRequestDto requestDto) {
+        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
+        UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
+
+        if(!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
+            throw new NotEnoughPermissionLevelException();
+
+        if (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER)) {
+            targetUserChat.setPermissionLevel(UserChat.PermissionLevel.ADMIN);
+        } else {
+            throw new InvalidChatOperationException();
+        }
+
+        userChatRepository.saveAndFlush(targetUserChat);
+    }
+
+    public void downgradeToMember(DowngradeToMemberRequestDto requestDto) {
+        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
+        UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
+
+        if(!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
+            throw new NotEnoughPermissionLevelException();
+
+        if (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)) {
+            targetUserChat.setPermissionLevel(UserChat.PermissionLevel.MEMBER);
+        } else {
+            throw new InvalidChatOperationException();
+        }
+
+        userChatRepository.saveAndFlush(targetUserChat);
+    }
+
+    private GroupChatAndUsersDto resolveEntities(UUID chatId, UUID targetUserId) {
+        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(chatId)
+                .orElseThrow(ChatNotFoundException::new);
+
+        UserEntity targetUserEntity = userRepository.findById(targetUserId)
+                .orElseThrow(UserNotFoundException::new);
+
+        UserEntity contextUserEntity = JwtTokenService.getContextUser();
+
+        return GroupChatAndUsersDto.builder()
+                .groupChatEntity(groupChatEntity)
+                .contextUserEntity(contextUserEntity)
+                .targetUserEntity(targetUserEntity)
+                .build();
+    }
+
+    private UserChatsDto resolveEntities(GroupChatEntity groupChatEntity, UUID contextUserId, UUID targetUserId) {
+        UserChat contextUserChatEntity = groupChatEntity.getUserChats().stream()
+                .filter(userChat -> userChat.getUser().getId().equals(contextUserId))
+                .findAny()
+                .orElseThrow(ContextUserNotMemberOfChatException::new);
+
+        UserChat targetUserChatEntity = groupChatEntity.getUserChats().stream()
+                .filter(groupChat -> groupChat.getUser().getId().equals(targetUserId))
+                .findAny()
+                .orElseThrow(TargetUserNotMemeberOfChatException::new);
+
+        return UserChatsDto.builder()
+                .contextUserChatEntity(contextUserChatEntity)
+                .targetUserChatEntity(targetUserChatEntity)
+                .build();
+    }
+
+    private UserChatsDto resolveEntities(GroupChatAndUsersDto chatAndUsersDto) {
+        return resolveEntities(
+                chatAndUsersDto.getGroupChatEntity(),
+                chatAndUsersDto.getContextUserEntity().getId(),
+                chatAndUsersDto.getTargetUserEntity().getId()
+        );
+    }
+
 }

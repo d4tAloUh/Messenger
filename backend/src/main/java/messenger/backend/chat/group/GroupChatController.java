@@ -2,16 +2,14 @@ package messenger.backend.chat.group;
 
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.chat.group.dto.CreateGroupChatRequestDto;
-import messenger.backend.chat.group.dto.CreateGroupChatResponseDto;
-import messenger.backend.chat.group.dto.DeleteGroupChatRequestDto;
+import messenger.backend.chat.group.dto.*;
+import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.utils.Response;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 
@@ -29,6 +27,23 @@ public class GroupChatController {
     @PostMapping("/delete")
     public void deleteGroupChat(@Valid @RequestBody DeleteGroupChatRequestDto requestDto) {
         groupChatService.deleteGroupChat(requestDto);
+    }
+
+    @PostMapping("/add-member")
+    public void addMemberToChat(@Valid @RequestBody AddMemberToGroupChatRequestDto requestDto) {
+        groupChatService.addMemberToChat(requestDto);
+    }
+
+    @PostMapping("/remove-member")
+    public void removeMemberFromChat(@Valid @RequestBody RemoveMemberFromGroupChatRequestDto requestDto) {
+        groupChatService.removeMemberFromChat(requestDto);
+    }
+
+
+    //just for test todo delete this (or no)
+    @GetMapping("/users-list")
+    public Response<List<UserSearchInfoDto>> getChatUsersList(@RequestParam(name = "chatId") UUID chatId) {
+        return Response.success(groupChatService.getChatUsersList(chatId));
     }
 
 }

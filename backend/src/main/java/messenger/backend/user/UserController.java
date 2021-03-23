@@ -1,13 +1,12 @@
 package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.utils.Response;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,6 +25,11 @@ public class UserController {
     @GetMapping("/all") //todo delete this
     public List<UserEntity> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @PostMapping("/update-profile")
+    public void updateProfile(@Valid @RequestBody UpdateProfileRequestDto requestDto) {
+        userService.updateProfile(requestDto);
     }
 
 }

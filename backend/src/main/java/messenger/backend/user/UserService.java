@@ -1,6 +1,8 @@
 package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.auth.jwt.JwtTokenService;
+import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,5 +25,12 @@ public class UserService {
     // TODO delete
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public void updateProfile(UpdateProfileRequestDto requestDto) {
+        UserEntity userEntity = JwtTokenService.getContextUser();
+        userEntity.setFullName(requestDto.getFullName());
+        userEntity.setBio(requestDto.getBio());
+        userRepository.saveAndFlush(userEntity);
     }
 }

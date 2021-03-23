@@ -14,7 +14,9 @@ import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -62,13 +64,12 @@ public class GroupChatService {
     }
 
     public void addMemberToChat(AddMemberToGroupChatRequestDto requestDto) {
-        GroupChatAndUsersDto chatAndUsersDto = resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId());
+        GroupChatAndUserDto chatAndUsersDto = resolveChatAndUserEntities(requestDto.getChatId(), requestDto.getTargetUserId());
         GroupChatEntity groupChatEntity = chatAndUsersDto.getGroupChatEntity();
-        UserEntity contextUser = chatAndUsersDto.getContextUserEntity();
         UserEntity targetUser = chatAndUsersDto.getTargetUserEntity();
 
         UserChat contextUserChat = groupChatEntity.getUserChats().stream()
-                .filter(userChat -> userChat.getUser().getId().equals(contextUser.getId()))
+                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
@@ -88,7 +89,7 @@ public class GroupChatService {
     }
 
     public void removeMemberFromChat(RemoveMemberFromGroupChatRequestDto requestDto) {
-        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChatsDto userChatsDto = resolveUserChatEntities(resolveChatAndUserEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
         UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
@@ -124,7 +125,7 @@ public class GroupChatService {
     }
 
     public void upgradeToAdmin(UpgradeToAdminRequestDto requestDto) {
-        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChatsDto userChatsDto = resolveUserChatEntities(resolveChatAndUserEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
         UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
@@ -141,7 +142,7 @@ public class GroupChatService {
     }
 
     public void downgradeToMember(DowngradeToMemberRequestDto requestDto) {
-        UserChatsDto userChatsDto = resolveEntities(resolveEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
+        UserChatsDto userChatsDto = resolveUserChatEntities(resolveChatAndUserEntities(requestDto.getChatId(), requestDto.getTargetUserId()));
         UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
@@ -157,25 +158,22 @@ public class GroupChatService {
         userChatRepository.saveAndFlush(targetUserChat);
     }
 
-    private GroupChatAndUsersDto resolveEntities(UUID chatId, UUID targetUserId) {
+    private GroupChatAndUserDto resolveChatAndUserEntities(UUID chatId, UUID targetUserId) {
         GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(chatId)
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity targetUserEntity = userRepository.findById(targetUserId)
                 .orElseThrow(UserNotFoundException::new);
 
-        UserEntity contextUserEntity = JwtTokenService.getContextUser();
-
-        return GroupChatAndUsersDto.builder()
+        return GroupChatAndUserDto.builder()
                 .groupChatEntity(groupChatEntity)
-                .contextUserEntity(contextUserEntity)
                 .targetUserEntity(targetUserEntity)
                 .build();
     }
 
-    private UserChatsDto resolveEntities(GroupChatEntity groupChatEntity, UUID contextUserId, UUID targetUserId) {
+    private UserChatsDto resolveUserChatEntities(GroupChatEntity groupChatEntity, UUID targetUserId) {
         UserChat contextUserChatEntity = groupChatEntity.getUserChats().stream()
-                .filter(userChat -> userChat.getUser().getId().equals(contextUserId))
+                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
@@ -190,12 +188,39 @@ public class GroupChatService {
                 .build();
     }
 
-    private UserChatsDto resolveEntities(GroupChatAndUsersDto chatAndUsersDto) {
-        return resolveEntities(
+    private UserChatsDto resolveUserChatEntities(GroupChatAndUserDto chatAndUsersDto) {
+        return resolveUserChatEntities(
                 chatAndUsersDto.getGroupChatEntity(),
-                chatAndUsersDto.getContextUserEntity().getId(),
                 chatAndUsersDto.getTargetUserEntity().getId()
         );
     }
 
+    public void changeChatInfo(ChangeGroupChatNameRequestDto requestDto) {
+        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(requestDto.getChatId())
+                .orElseThrow(ChatNotFoundException::new);
+
+        UserChat contextUserChat = groupChatEntity.getUserChats().stream()
+                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
+                .findAny()
+                .orElseThrow(ContextUserNotMemberOfChatException::new);
+
+        if(contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
+            throw new NotEnoughPermissionLevelException();
+
+        groupChatEntity.setGroupName(requestDto.getNewChatName());
+
+        groupChatRepository.saveAndFlush(groupChatEntity);
+    }
+
+    //just for test todo delete this
+    public List<Map<String, String>> getAllChats() {
+        return groupChatRepository.findAll().stream()
+                .map(groupChat -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("id", groupChat.getChatId().toString());
+                    map.put("groupName", groupChat.getGroupName());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 }

@@ -2,12 +2,14 @@ package messenger.backend.chat.group;
 
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -53,6 +55,16 @@ public class GroupChatController {
     @PostMapping("/users/downgrade-to-member")
     public void downgradeToMember(@Valid @RequestBody DowngradeToMemberRequestDto requestDto) {
         groupChatService.downgradeToMember(requestDto);
+    }
+
+    @PostMapping("/change-info")
+    public void changeChatInfo(@Valid @RequestBody ChangeGroupChatNameRequestDto requestDto) {
+        groupChatService.changeChatInfo(requestDto);
+    }
+
+    @GetMapping("/all") //just for test todo delete this
+    public Response<List<Map<String, String>>> getAllChats() {
+        return Response.success(groupChatService.getAllChats());
     }
 
 }

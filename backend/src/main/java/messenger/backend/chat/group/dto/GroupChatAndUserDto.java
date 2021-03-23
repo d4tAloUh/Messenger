@@ -7,8 +7,7 @@ import messenger.backend.user.UserEntity;
 
 @Data
 @Builder
-public class GroupChatAndUsersDto {
+public class GroupChatAndUserDto {
     private GroupChatEntity groupChatEntity;
-    private UserEntity contextUserEntity;
     private UserEntity targetUserEntity;
 }

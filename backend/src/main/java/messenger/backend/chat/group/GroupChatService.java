@@ -163,10 +163,7 @@ public class GroupChatService {
         UserEntity targetUserEntity = userRepository.findById(targetUserId)
                 .orElseThrow(UserNotFoundException::new);
 
-        return GroupChatAndUserDto.builder()
-                .groupChatEntity(groupChatEntity)
-                .targetUserEntity(targetUserEntity)
-                .build();
+        return new GroupChatAndUserDto(groupChatEntity, targetUserEntity);
     }
 
     private UserChatsDto resolveUserChatEntities(GroupChatEntity groupChatEntity, UUID targetUserId) {

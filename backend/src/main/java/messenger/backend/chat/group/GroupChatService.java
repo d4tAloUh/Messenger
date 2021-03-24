@@ -45,9 +45,7 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        CreateGroupChatResponseDto responseDto = new CreateGroupChatResponseDto();
-        responseDto.setChatId(groupChat.getChatId());
-        return responseDto;
+        return CreateGroupChatResponseDto.of(groupChat.getChatId());
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {

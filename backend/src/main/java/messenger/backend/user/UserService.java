@@ -17,9 +17,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserSearchInfoDto getUserSearchInfo(String username) {
-        UserEntity userEntity = userRepository.getByUsername(username)
+        return userRepository.getByUsername(username)
+                .map(UserSearchInfoDto::from)
                 .orElseThrow(UserNotFoundException::new);
-        return UserSearchInfoDto.from(userEntity);
     }
 
     // TODO delete

@@ -1,14 +1,13 @@
 package messenger.backend.userChat;
 
 
-import javax.persistence.*;
-
 import lombok.*;
 import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.message.MessageEntity;
 import messenger.backend.user.UserEntity;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +40,8 @@ public class UserChat {
     @JoinColumn(name="UserId")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="ChatId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ChatId", nullable = false)
     private ChatSuperclass chat;
 
     @Enumerated

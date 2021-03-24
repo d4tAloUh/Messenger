@@ -1,4 +1,5 @@
-package messenger.backend.auth.dto;
+package messenger.backend.chat.group.dto;
+
 
 import lombok.Data;
 
@@ -6,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
-public class RefreshTokenDto {
+public class DeleteGroupChatRequestDto {
     @NotNull
-    private UUID refreshToken;
+    private UUID chatId;
 }

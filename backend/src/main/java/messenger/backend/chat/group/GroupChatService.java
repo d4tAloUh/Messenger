@@ -110,15 +110,7 @@ public class GroupChatService {
         if(!isContextUserInChat) throw new UserNotMemberOfChatException();
 
         return groupChatEntity.getUserChats().stream()
-                .map(userChat -> {
-                    GroupChatUserInfoDto infoDto = new GroupChatUserInfoDto();
-                    infoDto.setId(userChat.getUser().getId());
-                    infoDto.setUsername(userChat.getUser().getUsername());
-                    infoDto.setFullName(userChat.getUser().getFullName());
-                    infoDto.setPermissionLevel(userChat.getPermissionLevel());
-                    infoDto.setProfilePicture(userChat.getUser().getProfilePicture());
-                    return infoDto;
-                })
+                .map(GroupChatUserInfoDto::from)
                 .collect(Collectors.toList());
     }
 

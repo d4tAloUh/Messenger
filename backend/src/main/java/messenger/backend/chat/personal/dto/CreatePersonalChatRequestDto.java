@@ -3,10 +3,10 @@ package messenger.backend.chat.personal.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class CreatePersonalChatRequestDto {
-    @NotEmpty
+    @NotBlank
     private String targetUsername;
 }

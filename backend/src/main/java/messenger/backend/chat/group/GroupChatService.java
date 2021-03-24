@@ -49,7 +49,7 @@ public class GroupChatService {
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(requestDto.getChatId())
+        GroupChatEntity groupChatEntity = groupChatRepository.findById(requestDto.getChatId())
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity contextUser = JwtTokenService.getContextUser();
@@ -100,7 +100,7 @@ public class GroupChatService {
 
     //just for test todo delete this (or no)
     public List<GroupChatUserInfoDto> getChatUsersList(UUID chatId) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(chatId)
+        GroupChatEntity groupChatEntity = groupChatRepository.findById(chatId)
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity contextUser = JwtTokenService.getContextUser();
@@ -149,7 +149,7 @@ public class GroupChatService {
     }
 
     private GroupChatAndUserDto resolveChatAndUserEntities(UUID chatId, UUID targetUserId) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(chatId)
+        GroupChatEntity groupChatEntity = groupChatRepository.findById(chatId)
                 .orElseThrow(ChatNotFoundException::new);
 
         UserEntity targetUserEntity = userRepository.findById(targetUserId)
@@ -183,7 +183,7 @@ public class GroupChatService {
     }
 
     public void changeChatInfo(ChangeGroupChatNameRequestDto requestDto) {
-        GroupChatEntity groupChatEntity = groupChatRepository.findByIdWithFetch(requestDto.getChatId())
+        GroupChatEntity groupChatEntity = groupChatRepository.findById(requestDto.getChatId())
                 .orElseThrow(ChatNotFoundException::new);
 
         UserChat contextUserChat = groupChatEntity.getUserChats().stream()

@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public interface GroupChatRepository extends JpaRepository<GroupChatEntity, UUID> {
 
-    @Query("SELECT gce FROM GroupChatEntity as gce INNER JOIN FETCH gce.userChats WHERE gce.chatId=:id")
-    Optional<GroupChatEntity> findByIdWithFetch(@Param("id") UUID id);
+
 
 }

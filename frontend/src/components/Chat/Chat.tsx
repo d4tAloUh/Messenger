@@ -6,6 +6,7 @@ import ChatHeader from "../ChatHeader/ChatHeader";
 import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../ChatSender/ChatSender";
+import Modal from "../Modal/Modal";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
@@ -16,7 +17,15 @@ interface IOwnProps {
     sendMessage: (text: string) => Promise<void>;
 }
 
-class Chat extends React.Component<IOwnProps> {
+interface IState {
+    modalShown: boolean;
+}
+
+class Chat extends React.Component<IOwnProps, IState> {
+
+    state = {
+        modalShown: false,
+    } as IState;
 
     async componentDidUpdate(prevProps: Readonly<IOwnProps>, prevState: Readonly<{}>, snapshot?: any) {
         const {selectedChatId, chatsDetailsCached} = this.props;
@@ -32,6 +41,7 @@ class Chat extends React.Component<IOwnProps> {
 
     render() {
         const {chatsDetailsCached, selectedChatId, currentUser, sendMessage} = this.props;
+        const {modalShown} = this.state;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
         if (!selectedChatId) {
@@ -44,12 +54,18 @@ class Chat extends React.Component<IOwnProps> {
 
         return (
             <div className={styles.wrapper}>
-                 <ChatHeader chatDetails={chatInfo?.details}/>
-                 <MessagesListWrapper 
-                     messages={chatInfo?.messages}
-                     currentUser={currentUser}
-                 />
-                 <ChatSender sendMessage={sendMessage} />
+                {modalShown && (
+                    <Modal close={() => this.setState({modalShown: false})}/>
+                )}
+                <ChatHeader
+                    chatDetails={chatInfo?.details}
+                    openModal={() => this.setState({modalShown: true})}
+                />
+                <MessagesListWrapper
+                    messages={chatInfo?.messages}
+                    currentUser={currentUser}
+                />
+                <ChatSender sendMessage={sendMessage}/>
             </div>
         );
     }

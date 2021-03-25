@@ -5,13 +5,14 @@ import {IChatListElement} from "../../api/chat/chatModels";
 
 interface IOwnProps {
     chatDetails?: IChatListElement;
+    openModal: () => void;
 }
 
 class ChatHeader extends React.Component<IOwnProps> {
     render() {
-        const {chatDetails} = this.props;
+        const {chatDetails, openModal} = this.props;
         return (
-            <div className={styles.wrapper}>
+            <div className={styles.wrapper} onClick={openModal}>
                 <LoaderWrapper loading={!chatDetails}>
                     {chatDetails?.title || "-"}
                 </LoaderWrapper>

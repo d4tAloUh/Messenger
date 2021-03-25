@@ -31,11 +31,12 @@ public class UserEntity {
 
         return UserEntity.builder()
                 .username(FakerService.faker.name().username().replace(".",""))
-                .password(FakerService.faker.internet().password(3,6))
+                .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") // encrypted "user"
                 .fullName(FakerService.faker.name().fullName())
                 .bio(FakerService.faker.backToTheFuture().quote())
                 .status(UserStatus.OFFLINE)
                 .profilePicture(ArrayUtils.toObject(FakerService.faker.internet().avatar().getBytes(StandardCharsets.UTF_8)))
+                .role(Role.USER)
                 .build();
     }
 

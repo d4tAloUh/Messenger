@@ -39,6 +39,10 @@ apiClient.interceptors.request.use(request => {
     return request;
 });
 
+apiClient.interceptors.response.use(response => {
+    return response.data.data;
+});
+
 apiClient.interceptors.response.use(undefined, responseErrorHandler);
 
 export default apiClient;

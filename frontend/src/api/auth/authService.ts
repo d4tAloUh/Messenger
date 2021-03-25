@@ -14,13 +14,13 @@ const authService = {
     },
 
     logout: async (): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const refreshToken = tokenService.getRefreshToken();
+        await apiClient.post('/api/auth/logout', {refreshToken});
         tokenService.removeTokens();
     },
 
     me: async (): Promise<ICurrentUser> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {id: "id", username: "username", fullName: "Full Name"};
+        return await apiClient.get('/api/auth/me');
     },
 
     isLoggedIn: (): boolean => {

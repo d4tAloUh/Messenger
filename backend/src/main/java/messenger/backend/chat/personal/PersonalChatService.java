@@ -16,7 +16,11 @@ import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -54,7 +58,7 @@ public class PersonalChatService {
         userChatRepository.saveAndFlush(targetUserChat);
 
         CreatePersonalChatResponseDto response = new CreatePersonalChatResponseDto();
-        response.setChatId(personalChat.getChatId());
+        response.setChatId(personalChat.getId());
         return response;
     }
 
@@ -75,5 +79,16 @@ public class PersonalChatService {
         if(!isUserMemberOfChat) throw new UserNotMemberOfChatException();
 
         personalChatRepository.delete(privateChatEntity);
+    }
+
+    public List<Map<String, String>> getAllChats() {
+        return personalChatRepository.findAll().stream()
+                .map(personalChat -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("id", personalChat.getId().toString());
+
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

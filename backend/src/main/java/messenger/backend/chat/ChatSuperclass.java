@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
-
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

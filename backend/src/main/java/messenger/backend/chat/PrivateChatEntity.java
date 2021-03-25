@@ -28,7 +28,6 @@ public class PrivateChatEntity extends ChatSuperclass {
 
     public static PrivateChatEntity generatePrivateChat() {
         return PrivateChatEntity.builder()
-                .id(UUID.randomUUID())
                 .build();
     }
 

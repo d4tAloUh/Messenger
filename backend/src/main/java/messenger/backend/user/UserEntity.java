@@ -30,7 +30,6 @@ public class UserEntity {
     public static UserEntity generateUser() {
 
         return UserEntity.builder()
-                .id(UUID.randomUUID())
                 .username(FakerService.faker.name().username().replace(".",""))
                 .password(FakerService.faker.internet().password(3,6))
                 .fullName(FakerService.faker.name().fullName())

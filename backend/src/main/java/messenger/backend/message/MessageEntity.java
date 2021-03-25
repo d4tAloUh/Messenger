@@ -28,7 +28,6 @@ public class MessageEntity {
 
         return MessageEntity.builder()
                 .userChat(userChat)
-                .id(UUID.randomUUID())
                 .messageType(MessageType.TEXT)
                 .createdAt(FakerService.faker.date().between(new Date(2020,4,1),new Date(2021,3,21)))
                 .messageBody(FakerService.faker.elderScrolls().quote())

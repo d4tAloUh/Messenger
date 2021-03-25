@@ -26,7 +26,6 @@ public class UserChat {
     public static UserChat generateUserChat(PermissionLevel permLvl, ChatSuperclass chat, UserEntity user) {
 
         return UserChat.builder()
-                .id(UUID.randomUUID())
                 .permissionLevel(PermissionLevel.MEMBER)
                 .user(user)
                 .chat(chat)

@@ -3,7 +3,6 @@ package messenger.backend;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 
-import static messenger.backend.seeds.FakerService.generateRandomData;
 
 public class JavaFakerTests {
 
@@ -16,7 +15,7 @@ public class JavaFakerTests {
 //            System.out.println(faker.internet().password(2,5));
 //        }
 
-        generateRandomData();
+//        generateRandomData();
 
     }
 }

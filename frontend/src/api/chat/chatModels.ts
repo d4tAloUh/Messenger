@@ -8,10 +8,3 @@ export interface IChatListElement {
     type: ChatTypeEnum;
     title: string;
 }
-
-export interface IChatDetails {
-    id: string;
-    isGroup: boolean;
-    title: string;
-    info: string;
-}

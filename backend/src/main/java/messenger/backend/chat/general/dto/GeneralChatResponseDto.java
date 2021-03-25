@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
+import messenger.backend.chat.general.type.ChatType;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
@@ -31,7 +32,7 @@ public class GeneralChatResponseDto {
     public static GeneralChatResponseDto fromGroupEntity(GroupChatEntity chat) {
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
-                .type("GROUP")
+                .type(ChatType.GROUP.getType())
                 .title(chat.getGroupName())
                 .build();
     }
@@ -46,7 +47,7 @@ public class GeneralChatResponseDto {
                 .orElseThrow(RuntimeException::new);
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
-                .type("PERSONAL")
+                .type(ChatType.PERSONAL.getType())
                 .title(companionName)
                 .build();
     }

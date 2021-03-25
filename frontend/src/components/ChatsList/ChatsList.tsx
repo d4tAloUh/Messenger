@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./ChatsList.module.sass";
 import ChatListElement from "../ChatListElement/ChatListElement";
-import {IChatListElement} from "../../api/chat/chatModels";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 
 interface IOwnProps {
     loadChatsList: () => Promise<void>;
-    chatsList?: IChatListElement[];
-    selectChat: (el: IChatListElement) => void;
+    chatsList?: IChatDetails[];
+    selectChat: (el: IChatDetails) => void;
     selectedChatId?: string;
 }
 

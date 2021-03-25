@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
+import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 @RequiredArgsConstructor
@@ -19,6 +21,11 @@ import java.util.Map;
 public class PersonalChatController {
 
     private final PersonalChatService personalChatService;
+
+    @GetMapping("/{chatId}")
+    public Response<PersonalChatResponseDto> createPersonalChat(@PathVariable UUID chatId) {
+        return Response.success(personalChatService.getById(chatId));
+    }
 
     @PostMapping("/create")
     public Response<CreatePersonalChatResponseDto> createPersonalChat(@Valid @RequestBody CreatePersonalChatRequestDto requestDto) {

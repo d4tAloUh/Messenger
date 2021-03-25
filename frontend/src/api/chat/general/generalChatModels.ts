@@ -3,7 +3,7 @@ export enum ChatTypeEnum {
     GROUP = "GROUP",
 }
 
-export interface IChatListElement {
+export interface IChatDetails {
     id: string;
     type: ChatTypeEnum;
     title: string;

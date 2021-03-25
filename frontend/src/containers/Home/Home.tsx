@@ -12,8 +12,8 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatListElement} from "../../api/chat/chatModels";
-import chatService from "../../api/chat/chatService";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
+import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
 import {v4 as uuid} from "uuid";
@@ -35,7 +35,7 @@ interface IPropsFromDispatch {
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
-    chatsList?: IChatListElement[];
+    chatsList?: IChatDetails[];
     selectedChatId?: string;
     chatDetailsCached: IChatCache[];
 }
@@ -67,11 +67,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     loadChatsList = async () => {
         this.props.actions.removeChatsList();
-        const list = await chatService.getChatsList();
+        const list = await generalChatService.getChatsList();
         this.props.actions.setChatsList(list);
     }
 
-    selectChat = (chat: IChatListElement) => {
+    selectChat = (chat: IChatDetails) => {
         this.props.actions.setSelected(chat.id);
     }
 

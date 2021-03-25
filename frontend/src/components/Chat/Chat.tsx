@@ -7,6 +7,8 @@ import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../ChatSender/ChatSender";
 import Modal from "../Modal/Modal";
+import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
+import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
@@ -55,7 +57,11 @@ class Chat extends React.Component<IOwnProps, IState> {
         return (
             <div className={styles.wrapper}>
                 {modalShown && (
-                    <Modal close={() => this.setState({modalShown: false})}/>
+                    <Modal close={() => this.setState({modalShown: false})}>
+                        {chatInfo?.details?.type === ChatTypeEnum.PERSONAL && (
+                            <PersonalChatDetails chatDetails={chatInfo.details} />
+                        )}
+                    </Modal>
                 )}
                 <ChatHeader
                     chatDetails={chatInfo?.details}

@@ -1,5 +1,5 @@
 import {ChatsListActions} from "./actions";
-import {IChatListElement} from "../../api/chat/chatModels";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
@@ -21,12 +21,12 @@ export interface IMessageWrapper {
 }
 
 export interface IChatCache {
-    details: IChatListElement;
+    details: IChatDetails;
     messages?: IMessageWrapper[];
 }
 
 export interface IChatsListState {
-    chatsList?: IChatListElement[];
+    chatsList?: IChatDetails[];
     selectedId?: string;
     chatsDetailsCached: IChatCache[];
 }

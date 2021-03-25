@@ -8,6 +8,7 @@ import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
+import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
@@ -31,6 +32,14 @@ public class PersonalChatService {
     private final UserRepository userRepository;
     private final PersonalChatRepository personalChatRepository;
     private final UserChatRepository userChatRepository;
+
+    public PersonalChatResponseDto getById(UUID chatId) {
+        var currentUserId = JwtTokenService.getCurrentUserId();
+        return personalChatRepository
+                .findByIdAndUserId(chatId, currentUserId)
+                .map(uc -> PersonalChatResponseDto.fromEntity(uc, currentUserId))
+                .orElseThrow(ChatNotFoundException::new);
+    }
 
     //todo decide what to do when you create a chat with yourself
     public CreatePersonalChatResponseDto createPrivateChat(CreatePersonalChatRequestDto requestDto) {

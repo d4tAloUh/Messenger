@@ -8,7 +8,7 @@ interface IOwnProps {
 
 class Modal extends React.Component<IOwnProps> {
     render() {
-        const {close} = this.props;
+        const {close, children} = this.props;
 
         return (
             <div className={styles.background}>
@@ -20,7 +20,9 @@ class Modal extends React.Component<IOwnProps> {
                             onClick={close}
                         />
                     </div>
-                    Hello
+                    <div className={styles.content}>
+                        {children}
+                    </div>
                 </div>
             </div>
         );

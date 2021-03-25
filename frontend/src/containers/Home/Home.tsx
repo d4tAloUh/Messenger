@@ -17,12 +17,17 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
 import {v4 as uuid} from "uuid";
+import Icon from "../../components/Icon/Icon";
+import Modal from "../../components/Modal/Modal";
+import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
+import personalChatService from "../../api/chat/personal/personalChatService";
 
 interface IPropsFromDispatch {
     actions: {
         removeCurrentUser: typeof authActions.removeCurrentUser;
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
+        addChatToList: typeof chatsListActions.addChatToList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
@@ -43,12 +48,14 @@ interface IPropsFromState {
 
 interface IState {
     loading: boolean;
+    creating: boolean;
 }
 
 class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
 
     state = {
         loading: false,
+        creating: false,
     } as IState;
 
     async componentDidMount() {
@@ -104,16 +111,29 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.removeChatFromList(chatId);
     }
 
+    createPersonalChat = async (targetId: string) => {
+        const chat = await personalChatService.create(targetId);
+        this.setState({creating: false});
+        this.props.actions.addChatToList(chat);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 
         const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
-        const {loading} = this.state;
+        const {loading, creating} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
+                {creating && (
+                    <Modal close={() => this.setState({creating: false})}>
+                        <CreatePersonalChat
+                            createPersonalChat={this.createPersonalChat}
+                        />
+                    </Modal>
+                )}
                 <Header logout={this.logout} />
                 <div className={styles.content}>
                     <ChatsList
@@ -130,6 +150,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         currentUser={currentUser}
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
+                    />
+                </div>
+                <div className={styles.addWrapper}>
+                    <Icon
+                        iconName="fas fa-plus"
+                        onClick={() => this.setState({creating: true})}
                     />
                 </div>
             </LoaderWrapper>
@@ -151,6 +177,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: typeof authActions.removeCurrentUser,
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
+                addChatToList: typeof chatsListActions.addChatToList,
                 removeChatFromList: typeof chatsListActions.removeChatFromList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
@@ -164,6 +191,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
                 setChatsList: chatsListActions.setChatsList,
+                addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,

@@ -1,6 +1,7 @@
 package messenger.backend.chat.personal;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
@@ -28,7 +29,7 @@ public class PersonalChatController {
     }
 
     @PostMapping("/create")
-    public Response<CreatePersonalChatResponseDto> createPersonalChat(@Valid @RequestBody CreatePersonalChatRequestDto requestDto) {
+    public Response<GeneralChatResponseDto> createPersonalChat(@Valid @RequestBody CreatePersonalChatRequestDto requestDto) {
         return Response.success(personalChatService.createPrivateChat(requestDto));
     }
 

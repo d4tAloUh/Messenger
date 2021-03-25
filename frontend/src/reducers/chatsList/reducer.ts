@@ -1,6 +1,7 @@
 import {ChatsListActions} from "./actions";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
+    ADD_CHAT_TO_LIST,
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
     REMOVE_CHAT_FROM_LIST,
@@ -46,6 +47,11 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: action.payload,
+            };
+        case ADD_CHAT_TO_LIST:
+            return {
+                ...state,
+                chatsList: [action.payload, ...(state.chatsList || [])],
             };
         case REMOVE_CHAT_FROM_LIST:
             return {

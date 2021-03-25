@@ -4,3 +4,9 @@ export interface IUserShortDto {
     fullName: string;
     bio: string;
 }
+
+export interface IUserSearchDto {
+    id: string;
+    username: string;
+    fullName: string;
+}

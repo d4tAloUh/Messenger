@@ -66,7 +66,7 @@ public class JwtTokenService {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private static UserEntity getContextUser() {
+    public static UserEntity getContextUser() {
         var securityUser =
                 (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return securityUser.getUserEntity();

@@ -27,5 +27,12 @@ public class DbInitializer {
                         .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
                         .role(Role.USER)
                         .build());
+        userRepository.saveAndFlush(
+                UserEntity.builder()
+                        .username("user2")
+                        .fullName("user2FullName")
+                        .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
+                        .role(Role.USER)
+                        .build());
     }
 }

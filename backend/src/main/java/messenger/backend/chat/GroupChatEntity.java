@@ -4,7 +4,10 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import messenger.backend.seeds.FakerService;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.Table;
 
 
 @SuperBuilder

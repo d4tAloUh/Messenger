@@ -24,9 +24,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "Message")
 public class MessageEntity {
-    public static MessageEntity generateMessage() {
+    public static MessageEntity generateMessage(UserChat userChat) {
 
         return MessageEntity.builder()
+                .userChat(userChat)
+                .id(UUID.randomUUID())
                 .messageType(MessageType.TEXT)
                 .createdAt(FakerService.faker.date().between(new Date(2020,4,1),new Date(2021,3,21)))
                 .messageBody(FakerService.faker.elderScrolls().quote())
@@ -45,7 +47,7 @@ public class MessageEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "MessageId")
-    private UUID messageId;
+    private UUID id;
 
     @CreatedDate
     @Column(name = "SentTime")

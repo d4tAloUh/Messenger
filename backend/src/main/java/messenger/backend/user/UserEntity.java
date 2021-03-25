@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 
 @Builder
 @AllArgsConstructor
@@ -37,6 +39,13 @@ public class UserEntity {
                 .status(UserStatus.OFFLINE)
                 .profilePicture(ArrayUtils.toObject(FakerService.faker.internet().avatar().getBytes(StandardCharsets.UTF_8)))
                 .build();
+    }
+
+    public void appendUserChat(UserChat userChat){
+        if(isNull(userChats))
+            userChats = new ArrayList<>();
+        this.userChats.add(userChat);
+
     }
 
     public enum UserStatus {
@@ -80,6 +89,7 @@ public class UserEntity {
     @Column(name = "role")
     private Role role;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<UserChat> userChats = new ArrayList<>();
 

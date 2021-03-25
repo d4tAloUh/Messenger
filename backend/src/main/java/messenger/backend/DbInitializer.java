@@ -8,6 +8,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import static messenger.backend.seeds.FakerService.generateRandomData;
+
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +19,7 @@ public class DbInitializer {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
+//        generateRandomData();
         userRepository.saveAndFlush(
                 UserEntity.builder()
                         .username("user")

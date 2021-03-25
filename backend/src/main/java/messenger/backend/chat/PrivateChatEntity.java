@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import messenger.backend.user.UserEntity;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -26,7 +27,9 @@ public class PrivateChatEntity extends ChatSuperclass {
                 .build();
     }
 
+
     @Lob
+    @ToString.Exclude
     @Column(name = "chatPicture")
     private Byte[] chatPicture;
 }

@@ -1,6 +1,11 @@
+export enum ChatTypeEnum {
+    PERSONAL = "PERSONAL",
+    GROUP = "GROUP",
+}
+
 export interface IChatListElement {
     id: string;
-    isGroup: boolean;
+    type: ChatTypeEnum;
     title: string;
 }
 

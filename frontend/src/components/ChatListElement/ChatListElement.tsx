@@ -15,7 +15,7 @@ class ChatListElement extends React.Component<IOwnProps> {
         const classes = classNames(styles.wrapper, selected && styles.selected);
 
         return (
-            <div className={classes} onClick={onClick}>{elementData.title}</div>
+            <div className={classes} onClick={onClick}>{elementData.title} ({elementData.type})</div>
         );
     }
 }

@@ -25,7 +25,10 @@ public class UserChat {
     public static UserChat generateUserChat(PermissionLevel permLvl, ChatSuperclass chat, UserEntity user) {
 
         return UserChat.builder()
+                .id(UUID.randomUUID())
                 .permissionLevel(PermissionLevel.MEMBER)
+                .user(user)
+                .chat(chat)
                 .build();
     }
 
@@ -36,13 +39,9 @@ public class UserChat {
     }
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+
     @Column(name = "UserChatId")
-    private UUID userChatId;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name="UserId")

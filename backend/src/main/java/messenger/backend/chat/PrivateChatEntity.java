@@ -1,10 +1,14 @@
 package messenger.backend.chat;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import messenger.backend.user.UserEntity;
 
 import javax.persistence.*;
+import java.util.UUID;
 
-@Builder
+
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,9 +20,9 @@ import javax.persistence.*;
 @Table(name = "PrivateChat")
 public class PrivateChatEntity extends ChatSuperclass {
 
-    public static PrivateChatEntity generateGroupChat() {
-
+    public static PrivateChatEntity generatePrivateChat() {
         return PrivateChatEntity.builder()
+                .id(UUID.randomUUID())
                 .build();
     }
 

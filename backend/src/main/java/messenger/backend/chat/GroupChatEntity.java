@@ -1,12 +1,13 @@
 package messenger.backend.chat;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import messenger.backend.seeds.FakerService;
 
 import javax.persistence.*;
 
 
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

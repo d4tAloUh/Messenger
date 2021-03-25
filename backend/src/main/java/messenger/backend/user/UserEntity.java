@@ -29,7 +29,8 @@ public class UserEntity {
     public static UserEntity generateUser() {
 
         return UserEntity.builder()
-                .username(FakerService.faker.name().username())
+                .id(UUID.randomUUID())
+                .username(FakerService.faker.name().username().replace(".",""))
                 .password(FakerService.faker.internet().password(3,6))
                 .fullName(FakerService.faker.name().fullName())
                 .bio(FakerService.faker.backToTheFuture().quote())
@@ -58,6 +59,7 @@ public class UserEntity {
     @Column(name = "Password")
     private String password;
 
+    @ToString.Exclude
     @Column(name = "FullName", length = 128)
     private String fullName;
 
@@ -65,9 +67,11 @@ public class UserEntity {
     @Column(name = "Status")
     private UserStatus status;
 
+    @ToString.Exclude
     @Column(name = "Bio", length = 512)
     private String bio;
 
+    @ToString.Exclude
     @Lob
     @Column(name = "ProfilePicture")
     private Byte[] profilePicture;

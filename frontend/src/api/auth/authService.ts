@@ -1,25 +1,26 @@
-import {ICurrentUser, ILoginRequest} from "./authModels";
+import {ICurrentUser, ILoginRequest, ILoginResponse, IRegisterRequest} from "./authModels";
 import tokenService from "../token/tokenService";
+import apiClient from "../apiClient";
 
 const authService = {
 
     login: async (loginDto: ILoginRequest): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        tokenService.setTokens("a", "r");
+        const response: ILoginResponse = await apiClient.post('/api/auth/login', loginDto);
+        tokenService.setTokens(response.accessToken, response.refreshToken);
     },
 
-    register: async (loginDto: ILoginRequest): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+    register: async (registerDto: IRegisterRequest): Promise<void> => {
+        await apiClient.post('/api/auth/register', registerDto);
     },
 
     logout: async (): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const refreshToken = tokenService.getRefreshToken();
+        await apiClient.post('/api/auth/logout', {refreshToken});
         tokenService.removeTokens();
     },
 
     me: async (): Promise<ICurrentUser> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {id: "id", username: "username", fullName: "Full Name"};
+        return await apiClient.get('/api/auth/me');
     },
 
     isLoggedIn: (): boolean => {

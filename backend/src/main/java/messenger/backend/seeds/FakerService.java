@@ -2,6 +2,7 @@ package messenger.backend.seeds;
 
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
+import messenger.backend.auth.access_levels.Role;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.MessageEntity;
@@ -29,8 +30,8 @@ public class FakerService {
 
     public static Faker faker = new Faker();
 
-    public final int userCount = 10;
-    public final int privateChatCount = 20;
+    public final int userCount = 20;
+    public final int privateChatCount = 100;
     public final int msgsPerChat = 64;
 
     public void generateRandomData() {
@@ -38,9 +39,18 @@ public class FakerService {
         List<UserEntity> users =
                 Stream
                         .generate(() -> UserEntity.generateUser())
-                        .limit(userCount)
+                        .limit(userCount - 1)
                         .collect(Collectors.toList());
+        users.add(UserEntity.builder()
+                .username("user")
+                .fullName("userFullName")
+                .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
+                .role(Role.USER)
+                .build()
+        );
         userRepository.saveAll(users);
+
+        users.stream().map(UserEntity::getUsername).forEach(System.out::println);
 
         //creating private chats
         List<PrivateChatEntity> privateChats =

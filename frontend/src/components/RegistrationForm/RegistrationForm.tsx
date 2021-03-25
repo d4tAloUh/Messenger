@@ -1,23 +1,29 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import FormWrapper from "../FormComponents/FormWrapper/FormWrapper";
-import {ILoginRequest} from "../../api/auth/authModels";
+import {IRegisterRequest} from "../../api/auth/authModels";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import Button from "../FormComponents/Button/Button";
 import styles from "../LoginForm/LoginForm.module.sass";
+import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 
 interface IOwnProps {
-    register: (request: ILoginRequest) => Promise<void>;
+    register: (request: IRegisterRequest) => Promise<void>;
 }
 
 interface IState {
     loading: boolean;
+    error?: string;
 }
 
 const validationSchema = Yup.object().shape({
     username: Yup.string()
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
+    fullName: Yup.string()
         .min(4, 'Too Short! Need to be 4-16 digits.')
         .max(16, 'Too Long! Need to be 4-16 digits.')
         .required('This field is required'),
@@ -35,20 +41,27 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
     } as IState;
 
     handleRegistration = async (values: any) => {
+        this.setState({error: undefined});
         const {register} = this.props;
-        const {username, password} = values;
+        const {username, password, fullName} = values;
         this.setState({loading: true});
-        await register({username, password});
-        this.setState({loading: false});
+
+        try {
+            await register({username, password, fullName});
+        } catch (e) {
+            this.setState({error: e.message});
+        } finally {
+            this.setState({loading: false});
+        }
     };
 
     render() {
-        const {loading} = this.state;
+        const {loading, error} = this.state;
         return (
             <div>
                 <Formik
                     onSubmit={this.handleRegistration}
-                    initialValues={{username: '', password: '', confirmedPassword:''}}
+                    initialValues={{username: '', password: '', fullName: ''}}
                     validationSchema={validationSchema}
                     render={({
                                  errors,
@@ -61,6 +74,9 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                         return (
                             <Form>
                                 <FormWrapper>
+                                    {error && (
+                                        <ErrorMessage text={error} />
+                                    )}
                                     <Input
                                         label="Username"
                                         value={values.username}
@@ -71,19 +87,18 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                                         touched={touched.username}
                                     />
                                     <Input
+                                        label="Full Name"
+                                        value={values.fullName}
+                                        name="fullName"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={errors.fullName}
+                                        touched={touched.fullName}
+                                    />
+                                    <Input
                                         label="Password"
                                         value={values.password}
                                         name="password"
-                                        type="password"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        error={errors.password}
-                                        touched={touched.password}
-                                    />
-                                    <Input
-                                        label="Confirm password"
-                                        value={values.confirmedPassword}
-                                        name="confirmedPassword"
                                         type="password"
                                         onChange={handleChange}
                                         onBlur={handleBlur}

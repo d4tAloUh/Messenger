@@ -4,16 +4,17 @@ import authService from "../../api/auth/authService";
 import styles from "./Auth.module.sass";
 import LoginForm from "../../components/LoginForm/LoginForm";
 import RegistrationForm from "../../components/RegistrationForm/RegistrationForm";
+import {ILoginRequest, IRegisterRequest} from "../../api/auth/authModels";
 
 class Auth extends React.Component<RouteComponentProps> {
 
-    login = async () => {
-        await authService.login({username: "user", password: "pass"});
+    login = async (loginDto: ILoginRequest) => {
+        await authService.login(loginDto);
         this.props.history.push("/home");
     }
 
-    register = async () => {
-        await authService.register({username: "user", password: "pass"});
+    register = async (registerDto: IRegisterRequest) => {
+        await authService.register(registerDto);
         this.props.history.push("/auth/login");
     }
 

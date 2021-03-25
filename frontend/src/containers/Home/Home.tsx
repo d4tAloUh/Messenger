@@ -76,8 +76,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     }
 
     loadChatDetails = async (id: string) => {
-        const details = await chatService.getChatDetailsById(id);
-        this.props.actions.appendDetailsCached(details);
+        const chat = this.props.chatsList?.find(c => c.id === id);
+        if (chat) {
+            this.props.actions.appendDetailsCached(chat);
+        }
     }
 
     loadChatMessages = async (chatId: string) => {

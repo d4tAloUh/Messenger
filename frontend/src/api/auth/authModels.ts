@@ -3,6 +3,12 @@ export interface ILoginRequest {
     password: string;
 }
 
+export interface IRegisterRequest {
+    username: string;
+    fullName: string;
+    password: string;
+}
+
 export interface ILoginResponse {
     accessToken: string;
     refreshToken: string;

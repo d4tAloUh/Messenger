@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./ChatHeader.module.sass";
-import {IChatDetails} from "../../api/chat/chatModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
+import {IChatListElement} from "../../api/chat/chatModels";
 
 interface IOwnProps {
-    chatDetails?: IChatDetails;
+    chatDetails?: IChatListElement;
 }
 
 class ChatHeader extends React.Component<IOwnProps> {

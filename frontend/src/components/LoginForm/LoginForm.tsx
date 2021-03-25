@@ -7,6 +7,7 @@ import {ILoginRequest} from "../../api/auth/authModels";
 import {Form, Formik} from "formik";
 import styles from "./LoginForm.module.sass";
 import * as Yup from 'yup';
+import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 
 interface IOwnProps {
     login: (request: ILoginRequest) => Promise<void>;
@@ -14,6 +15,7 @@ interface IOwnProps {
 
 interface IState {
     loading: boolean;
+    error?: string;
 }
 
 const validationSchema = Yup.object().shape({
@@ -34,15 +36,22 @@ class LoginForm extends React.Component<IOwnProps, IState> {
     } as IState;
 
     handleLogin = async (values: any) => {
+        this.setState({error: undefined});
         const {login} = this.props;
         const {username, password} = values;
         this.setState({loading: true});
-        await login({username, password});
-        this.setState({loading: false});
+
+        try {
+            await login({username, password});
+        } catch (e) {
+            this.setState({error: e.message});
+        } finally {
+            this.setState({loading: false});
+        }
     };
 
     render() {
-        const {loading} = this.state;
+        const {loading, error} = this.state;
 
         return (
             <div>
@@ -61,6 +70,9 @@ class LoginForm extends React.Component<IOwnProps, IState> {
                         return (
                             <Form>
                                 <FormWrapper>
+                                    {error && (
+                                        <ErrorMessage text={error} />
+                                    )}
                                     <Input
                                         label="Username"
                                         value={values.username}

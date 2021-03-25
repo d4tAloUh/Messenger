@@ -1,4 +1,3 @@
-import faker from "faker";
 import {IMessage} from "./messageModels";
 import apiClient from "../apiClient";
 
@@ -9,14 +8,7 @@ const messageService = {
     },
 
     sendMessage: async (chatId: string, text: string): Promise<IMessage> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id: faker.random.uuid(),
-            senderId: "id",
-            senderName: `${faker.name.firstName()} ${faker.name.lastName()}`,
-            datetime: faker.date.past(1).toDateString(),
-            text
-        };
+        return apiClient.post(`/api/messages/chat`, {chatId, text});
     },
 
 };

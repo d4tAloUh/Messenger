@@ -2,14 +2,12 @@ package messenger.backend.message;
 
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
+import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.utils.Response;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,5 +21,10 @@ public class MessageController {
     @GetMapping("/chat/{chatId}")
     public Response<List<MessageResponseDto>> getAllByChat(@PathVariable UUID chatId) {
         return Response.success(messageService.getAllByChat(chatId));
+    }
+
+    @PostMapping("/chat")
+    public Response<MessageResponseDto> sendMessage(@Valid @RequestBody SendMessageRequestDto requestDto) {
+        return Response.success(messageService.sendMessage(requestDto));
     }
 }

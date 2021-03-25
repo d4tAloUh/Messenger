@@ -1,4 +1,3 @@
-import faker from "faker";
 import {IChatListElement} from "./chatModels";
 import apiClient from "../apiClient";
 

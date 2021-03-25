@@ -42,9 +42,9 @@ public class UserEntity {
     }
 
     public void appendUserChat(UserChat userChat){
-        if(isNull(userChats))
-            userChats = new ArrayList<>();
-        this.userChats.add(userChat);
+//        if(isNull(userChats))
+//            userChats = new ArrayList<>();
+        getUserChats().add(userChat);
 
     }
 

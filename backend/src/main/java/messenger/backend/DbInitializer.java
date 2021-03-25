@@ -19,7 +19,7 @@ public class DbInitializer {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-//        generateRandomData();
+        generateRandomData();
         userRepository.saveAndFlush(
                 UserEntity.builder()
                         .username("user")

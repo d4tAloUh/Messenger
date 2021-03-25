@@ -34,9 +34,9 @@ public class UserChat {
     }
 
     public void appendMessages(List<MessageEntity> messages){
-        if(isNull(messageEntities))
-            messageEntities = new ArrayList<>();
-        this.messageEntities.addAll(messages);
+//        if(isNull(messageEntities))
+//            messageEntities = new ArrayList<>();
+        getMessageEntities().addAll(messages);
 
     }
 
@@ -55,13 +55,13 @@ public class UserChat {
     @Column(name = "UserChatId")
     private UUID id;
 
-    //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+//    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "UserId")
     private UserEntity user;
 
-    //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+//    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "ChatId")
     private ChatSuperclass chat;
 

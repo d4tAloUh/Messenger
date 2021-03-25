@@ -7,6 +7,10 @@ const personalChatService = {
         const response = await apiClient.get(`/api/chat/personal/${chatId}`);
         return response.data.data;
     },
+
+    deleteById: async (chatId: string): Promise<void> => {
+        await apiClient.post(`/api/chat/personal/delete`, {chatId});
+    },
 };
 
 export default personalChatService;

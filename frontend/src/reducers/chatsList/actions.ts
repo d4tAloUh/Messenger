@@ -1,7 +1,7 @@
 import {ActionsUnion, createAction} from "../../helpers/action.helper";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
-    APPEND_CHAT_DETAILS_CACHED, APPEND_LOADING_MESSAGE,
+    APPEND_CHAT_DETAILS_CACHED, APPEND_LOADING_MESSAGE, REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
     SET_CHATS_LIST, SET_MESSAGE_LOADED,
@@ -12,6 +12,7 @@ import {IMessageLoading} from "./reducer";
 
 export const chatsListActions = {
     setChatsList: (list: IChatDetails[]) => createAction(SET_CHATS_LIST, list),
+    removeChatFromList: (chatId: string) => createAction(REMOVE_CHAT_FROM_LIST, chatId),
     removeChatsList: () => createAction(REMOVE_CHATS_LIST),
     setSelected: (id: string) => createAction(SET_SELECTED, id),
     removeSelected: () => createAction(SET_SELECTED, undefined),

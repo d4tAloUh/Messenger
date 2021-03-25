@@ -3,9 +3,11 @@ import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
+    REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST, SET_MESSAGE_LOADED,
+    SET_CHATS_LIST,
+    SET_MESSAGE_LOADED,
     SET_SELECTED
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
@@ -44,6 +46,11 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: action.payload,
+            };
+        case REMOVE_CHAT_FROM_LIST:
+            return {
+                ...state,
+                chatsList: state.chatsList?.filter(c => c.id !== action.payload),
             };
         case REMOVE_CHATS_LIST:
             return {

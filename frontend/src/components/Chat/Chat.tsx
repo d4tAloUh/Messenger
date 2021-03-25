@@ -17,6 +17,7 @@ interface IOwnProps {
     selectedChatId?: string;
     currentUser?: ICurrentUser;
     sendMessage: (text: string) => Promise<void>;
+    deleteChatFromList: (chatId: string) => void;
 }
 
 interface IState {
@@ -41,6 +42,11 @@ class Chat extends React.Component<IOwnProps, IState> {
         }
     }
 
+    deleteChatFromList = async (chatId: string) => {
+        this.setState({modalShown: false});
+        this.props.deleteChatFromList(chatId);
+    }
+
     render() {
         const {chatsDetailsCached, selectedChatId, currentUser, sendMessage} = this.props;
         const {modalShown} = this.state;
@@ -59,7 +65,10 @@ class Chat extends React.Component<IOwnProps, IState> {
                 {modalShown && (
                     <Modal close={() => this.setState({modalShown: false})}>
                         {chatInfo?.details?.type === ChatTypeEnum.PERSONAL && (
-                            <PersonalChatDetails chatDetails={chatInfo.details} />
+                            <PersonalChatDetails
+                                chatDetails={chatInfo.details}
+                                deleteChatFromList={this.deleteChatFromList}
+                            />
                         )}
                     </Modal>
                 )}

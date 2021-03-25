@@ -68,7 +68,7 @@ public class UserChat {
     @Column(name = "PermissionLevel")
     private PermissionLevel permissionLevel;
 
-    @OneToMany(mappedBy = "userChat")
+    @OneToMany(mappedBy = "userChat", cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     private List<MessageEntity> messageEntities = new ArrayList<>();
 
 

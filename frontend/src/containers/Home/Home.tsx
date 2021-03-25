@@ -23,6 +23,7 @@ interface IPropsFromDispatch {
         removeCurrentUser: typeof authActions.removeCurrentUser;
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
+        removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
         removeSelected: typeof chatsListActions.removeSelected;
@@ -98,6 +99,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
     }
 
+    deleteChatFromList = (chatId: string) => {
+        this.props.actions.removeSelected();
+        this.props.actions.removeChatFromList(chatId);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -123,6 +129,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         selectedChatId={selectedChatId}
                         currentUser={currentUser}
                         sendMessage={this.sendMessage}
+                        deleteChatFromList={this.deleteChatFromList}
                     />
                 </div>
             </LoaderWrapper>
@@ -144,6 +151,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: typeof authActions.removeCurrentUser,
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
+                removeChatFromList: typeof chatsListActions.removeChatFromList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
                 removeSelected: typeof chatsListActions.removeSelected,
@@ -156,6 +164,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
                 setChatsList: chatsListActions.setChatsList,
+                removeChatFromList: chatsListActions.removeChatFromList,
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,

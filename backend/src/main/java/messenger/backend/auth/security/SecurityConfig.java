@@ -24,11 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/login").permitAll()
+                .antMatchers("/api/auth/register").permitAll()
                 .antMatchers("/api/auth/refresh").permitAll()
                 .antMatchers("/api/auth/tokens").permitAll()//just for test todo delete this
                 .anyRequest()

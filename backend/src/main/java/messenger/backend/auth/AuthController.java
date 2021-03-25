@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshTokenDto;
+import messenger.backend.auth.dto.RegisterRequestDto;
 import messenger.backend.refreshToken.RefreshTokenEntity;
 import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.user.dto.CurrentUserInfoDto;
@@ -24,6 +25,11 @@ public class AuthController {
     @PostMapping("/login")
     public Response<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
             return Response.success(authService.login(authRequestDto));
+    }
+
+    @PostMapping("/register")
+    public void register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+         authService.register(registerRequestDto);
     }
 
     @PostMapping("/logout")

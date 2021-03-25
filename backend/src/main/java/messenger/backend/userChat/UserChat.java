@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +23,22 @@ import java.util.UUID;
 
 @Entity
 public class UserChat {
+    public static UserChat generateUserChat(PermissionLevel permLvl, ChatSuperclass chat, UserEntity user) {
+
+        return UserChat.builder()
+                .permissionLevel(PermissionLevel.MEMBER)
+                .user(user)
+                .chat(chat)
+                .build();
+    }
+
+    public void appendMessages(List<MessageEntity> messages){
+//        if(isNull(messageEntities))
+//            messageEntities = new ArrayList<>();
+        getMessageEntities().addAll(messages);
+
+    }
+
     public enum PermissionLevel {
         OWNER,
         ADMIN,
@@ -34,11 +52,13 @@ public class UserChat {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "UserChatId")
-    private UUID userChatId;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="UserId")
+//    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "UserId")
     private UserEntity user;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ChatId", nullable = false)
@@ -50,5 +70,6 @@ public class UserChat {
 
     @OneToMany(mappedBy = "userChat")
     private List<MessageEntity> messageEntities = new ArrayList<>();
+
 
 }

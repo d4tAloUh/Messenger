@@ -45,7 +45,7 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return CreateGroupChatResponseDto.of(groupChat.getChatId());
+        return CreateGroupChatResponseDto.of(groupChat.getId());
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {
@@ -204,7 +204,7 @@ public class GroupChatService {
         return groupChatRepository.findAll().stream()
                 .map(groupChat -> {
                     Map<String, String> map = new HashMap<>();
-                    map.put("id", groupChat.getChatId().toString());
+                    map.put("id", groupChat.getId().toString());
                     map.put("groupName", groupChat.getGroupName());
                     return map;
                 })

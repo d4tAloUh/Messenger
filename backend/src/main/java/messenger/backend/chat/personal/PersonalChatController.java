@@ -5,12 +5,11 @@ import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.utils.Response;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -29,6 +28,11 @@ public class PersonalChatController {
     @PostMapping("/delete")
     public void deletePersonalChat(@Valid @RequestBody DeletePersonalChatRequestDto requestDto) {
         personalChatService.deletePersonalChat(requestDto);
+    }
+
+    @GetMapping("/all") //just for test todo delete this
+    public Response<List<Map<String, String>>> getAllChats() {
+        return Response.success(personalChatService.getAllChats());
     }
 
 }

@@ -2,10 +2,18 @@ package messenger.backend.user;
 
 import lombok.*;
 import messenger.backend.auth.access_levels.Role;
+import messenger.backend.seeds.FakerService;
+import messenger.backend.userChat.UserChat;
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 
 @Builder
@@ -18,6 +26,26 @@ import java.util.UUID;
 @Entity
 @Table(name = "User")
 public class UserEntity {
+
+    public static UserEntity generateUser() {
+
+        return UserEntity.builder()
+                .username(FakerService.faker.name().username().replace(".",""))
+                .password(FakerService.faker.internet().password(3,6))
+                .fullName(FakerService.faker.name().fullName())
+                .bio(FakerService.faker.backToTheFuture().quote())
+                .status(UserStatus.OFFLINE)
+                .profilePicture(ArrayUtils.toObject(FakerService.faker.internet().avatar().getBytes(StandardCharsets.UTF_8)))
+                .build();
+    }
+
+    public void appendUserChat(UserChat userChat){
+//        if(isNull(userChats))
+//            userChats = new ArrayList<>();
+        getUserChats().add(userChat);
+
+    }
+
     public enum UserStatus {
         ONLINE,
         OFFLINE,
@@ -38,6 +66,7 @@ public class UserEntity {
     @Column(name = "Password")
     private String password;
 
+    @ToString.Exclude
     @Column(name = "FullName", length = 128)
     private String fullName;
 
@@ -45,9 +74,11 @@ public class UserEntity {
     @Column(name = "Status")
     private UserStatus status;
 
+    @ToString.Exclude
     @Column(name = "Bio", length = 512)
     private String bio;
 
+    @ToString.Exclude
     @Lob
     @Column(name = "ProfilePicture")
     private Byte[] profilePicture;
@@ -56,5 +87,8 @@ public class UserEntity {
     @Column(name = "role")
     private Role role;
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private List<UserChat> userChats = new ArrayList<>();
 
 }

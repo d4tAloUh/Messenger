@@ -8,6 +8,7 @@ import groupChatService from "../../api/chat/group/groupChatService";
 import UserManager from "../UserManager/UserManager";
 import UserFinder from "../UserFinder/UserFinder";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
+import {IUserShortDto} from "../../api/user/userModels";
 
 interface IOwnProps {
     chatDetails: IChatDetails;
@@ -81,6 +82,25 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         }
     }
 
+    handleToggleRole = async (user: IUserShortDto) => {
+        const {info} = this.state;
+        if(!info) {
+            return;
+        }
+
+        this.setState({error: undefined});
+        try {
+            if (user.permissionLevel === RoleEnum.ADMIN) {
+                await groupChatService.downgradeMember(info.id, user.id);
+            } else {
+                await groupChatService.upgradeMember(info.id, user.id);
+            }
+            await this.loadData();
+        } catch (e) {
+            this.setState({error: e.message});
+        }
+    }
+
     isAdminOrOwner = (permissionLevel: RoleEnum) => {
         return permissionLevel === RoleEnum.ADMIN || permissionLevel === RoleEnum.OWNER;
     }
@@ -115,8 +135,14 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                 {info?.members.map(user => (
                     <UserManager
                         user={user}
-                        deletable={this.isAdminOrOwner(info.permissionLevel)}
+                        deletable={
+                            (info?.permissionLevel !== RoleEnum.MEMBER && user.permissionLevel === RoleEnum.MEMBER) ||
+                            (info?.permissionLevel === RoleEnum.OWNER && user.permissionLevel === RoleEnum.ADMIN)
+                        }
                         onDelete={() => this.handleDeleteMember(user.id)}
+                        upgradable={info.permissionLevel === RoleEnum.OWNER}
+                        upgraded={user.permissionLevel === RoleEnum.ADMIN}
+                        onToggleUpgrade={() => this.handleToggleRole(user)}
                     />
                 ))}
                 {info?.permissionLevel === RoleEnum.OWNER && (

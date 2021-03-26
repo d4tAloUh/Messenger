@@ -18,6 +18,14 @@ const groupChatService = {
         await apiClient.post(`/api/chat/group/users/add`, {chatId, targetUserId});
     },
 
+    upgradeMember: async (chatId: string, targetUserId: string): Promise<void> => {
+        await apiClient.post(`/api/chat/group/users/upgrade-to-admin`, {chatId, targetUserId});
+    },
+
+    downgradeMember: async (chatId: string, targetUserId: string): Promise<void> => {
+        await apiClient.post(`/api/chat/group/users/downgrade-to-member`, {chatId, targetUserId});
+    },
+
     deleteMember: async (chatId: string, targetUserId: string): Promise<void> => {
         await apiClient.post(`/api/chat/group/users/remove`, {chatId, targetUserId});
     },

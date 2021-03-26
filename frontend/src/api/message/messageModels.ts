@@ -5,3 +5,8 @@ export interface IMessage {
     senderId: string;
     createdAt: number;
 }
+
+export interface ILastMessage {
+    text: string;
+    createdAt: number;
+}

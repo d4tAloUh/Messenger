@@ -11,7 +11,7 @@ interface IOwnProps {
 
 class ChatListElement extends React.Component<IOwnProps> {
 
-    lastMessageMapper = (lastMessage: string | null) => {
+    lastMessageMapper = (lastMessage?: string) => {
         if (!lastMessage) {
             return "-";
         }
@@ -32,7 +32,7 @@ class ChatListElement extends React.Component<IOwnProps> {
                     {elementData.title} ({elementData.type})
                 </div>
                 <div className={styles.message}>
-                    {this.lastMessageMapper(elementData.lastMessage)}
+                    {this.lastMessageMapper(elementData.lastMessage?.text)}
                 </div>
             </div>
         );

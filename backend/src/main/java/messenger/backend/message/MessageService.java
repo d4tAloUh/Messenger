@@ -5,6 +5,7 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.general.GeneralChatRepository;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.userChat.UserChat;
@@ -52,12 +53,12 @@ public class MessageService {
         return MessageResponseDto.fromEntity(message);
     }
 
-    public String getLastMessageByChatId(UUID chatId) {
+    public LastMessageResponseDto getLastMessageByChatId(UUID chatId) {
         return messageRepository
                 .findLastByChatId(chatId, PageRequest.of(0, 1))
                 .stream()
                 .findFirst()
-                .map(MessageEntity::getMessageBody)
+                .map(LastMessageResponseDto::fromEntity)
                 .orElse(null);
     }
 }

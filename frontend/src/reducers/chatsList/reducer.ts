@@ -7,7 +7,7 @@ import {
     REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST,
+    SET_CHATS_LIST, SET_FIRST_CHAT_IN_LIST,
     SET_MESSAGE_LOADED,
     SET_SELECTED,
     UPDATE_CHAT_IN_LIST
@@ -53,6 +53,14 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: [action.payload, ...(state.chatsList || [])],
+            };
+        case SET_FIRST_CHAT_IN_LIST:
+            return {
+                ...state,
+                chatsList: [
+                    ...([state.chatsList?.find(c => c.id === action.payload)] || []),
+                    ...(state.chatsList?.filter(c => c.id !== action.payload) || [])
+                ] as IChatDetails[],
             };
         case UPDATE_CHAT_IN_LIST:
             return {

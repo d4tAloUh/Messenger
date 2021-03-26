@@ -32,6 +32,7 @@ interface IPropsFromDispatch {
         setChatsList: typeof chatsListActions.setChatsList;
         addChatToList: typeof chatsListActions.addChatToList;
         updateChatInList: typeof chatsListActions.updateChatInList;
+        setFirstChatInList: typeof chatsListActions.setFirstChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
@@ -88,6 +89,15 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     loadChatsList = async () => {
         this.props.actions.removeChatsList();
         const list = await generalChatService.getChatsList();
+        list.sort((a, b) => {
+            if (!a.lastMessage) {
+                return -1;
+            }
+            if (!b.lastMessage) {
+                return 1;
+            }
+            return b.lastMessage.createdAt - a.lastMessage.createdAt;
+        });
         this.props.actions.setChatsList(list);
     }
 
@@ -117,7 +127,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             const message = await messageService.sendMessage(selectedChatId, text);
             this.props.actions.setMessageLoaded(selectedChatId, id, message);
             if (chat) {
-                this.props.actions.updateChatInList({...chat, lastMessage: text});
+                this.props.actions.setFirstChatInList(chat.id);
+                this.props.actions.updateChatInList({
+                    ...chat,
+                    lastMessage: {text, createdAt: message.createdAt},
+                });
             }
         }
     }
@@ -209,6 +223,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatsList: typeof chatsListActions.setChatsList,
                 addChatToList: typeof chatsListActions.addChatToList,
                 updateChatInList: typeof chatsListActions.updateChatInList,
+                setFirstChatInList: typeof chatsListActions.setFirstChatInList,
                 removeChatFromList: typeof chatsListActions.removeChatFromList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
@@ -224,6 +239,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatsList: chatsListActions.setChatsList,
                 addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
+                setFirstChatInList: chatsListActions.setFirstChatInList,
                 updateChatInList: chatsListActions.updateChatInList,
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,

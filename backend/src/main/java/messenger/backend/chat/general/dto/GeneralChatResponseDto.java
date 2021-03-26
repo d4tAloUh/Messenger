@@ -8,6 +8,7 @@ import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.general.type.ChatType;
+import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Builder
 public class GeneralChatResponseDto {
 
-    public static GeneralChatResponseDto fromEntity(ChatSuperclass chat, String lastMessage, UUID currentUserId) {
+    public static GeneralChatResponseDto fromEntity(ChatSuperclass chat, LastMessageResponseDto lastMessage, UUID currentUserId) {
         if (chat instanceof GroupChatEntity) {
             return fromGroupEntity((GroupChatEntity) chat, lastMessage);
         } else if (chat instanceof PrivateChatEntity) {
@@ -29,7 +30,7 @@ public class GeneralChatResponseDto {
         }
     }
 
-    public static GeneralChatResponseDto fromGroupEntity(GroupChatEntity chat, String lastMessage) {
+    public static GeneralChatResponseDto fromGroupEntity(GroupChatEntity chat, LastMessageResponseDto lastMessage) {
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
                 .type(ChatType.GROUP.getType())
@@ -38,7 +39,7 @@ public class GeneralChatResponseDto {
                 .build();
     }
 
-    public static GeneralChatResponseDto fromPrivateEntity(PrivateChatEntity chat, String lastMessage, UUID currentUserId) {
+    public static GeneralChatResponseDto fromPrivateEntity(PrivateChatEntity chat, LastMessageResponseDto lastMessage, UUID currentUserId) {
         var companionName = chat.getUserChats()
                 .stream()
                 .filter(uc -> !uc.getUser().getId().equals(currentUserId))
@@ -57,5 +58,5 @@ public class GeneralChatResponseDto {
     private UUID id;
     private String title;
     private String type;
-    private String lastMessage;
+    private LastMessageResponseDto lastMessage;
 }

@@ -5,7 +5,7 @@ import {
     APPEND_CHAT_DETAILS_CACHED, APPEND_LOADING_MESSAGE, REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST, SET_MESSAGE_LOADED,
+    SET_CHATS_LIST, SET_FIRST_CHAT_IN_LIST, SET_MESSAGE_LOADED,
     SET_SELECTED, UPDATE_CHAT_IN_LIST
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
@@ -15,6 +15,7 @@ export const chatsListActions = {
     setChatsList: (list: IChatDetails[]) => createAction(SET_CHATS_LIST, list),
     addChatToList: (chat: IChatDetails) => createAction(ADD_CHAT_TO_LIST, chat),
     updateChatInList: (chat: IChatDetails) => createAction(UPDATE_CHAT_IN_LIST, chat),
+    setFirstChatInList: (chatId: string) => createAction(SET_FIRST_CHAT_IN_LIST, chatId),
     removeChatFromList: (chatId: string) => createAction(REMOVE_CHAT_FROM_LIST, chatId),
     removeChatsList: () => createAction(REMOVE_CHATS_LIST),
     setSelected: (id: string) => createAction(SET_SELECTED, id),

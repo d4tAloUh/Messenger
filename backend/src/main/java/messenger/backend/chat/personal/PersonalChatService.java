@@ -10,6 +10,7 @@ import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
+import messenger.backend.message.MessageService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -32,6 +33,7 @@ public class PersonalChatService {
     private final UserRepository userRepository;
     private final PersonalChatRepository personalChatRepository;
     private final UserChatRepository userChatRepository;
+    private final MessageService messageService;
 
     public PersonalChatResponseDto getById(UUID chatId) {
         var currentUserId = JwtTokenService.getCurrentUserId();
@@ -67,7 +69,11 @@ public class PersonalChatService {
         userChatRepository.saveAndFlush(targetUserChat);
 
         personalChat.setUserChats(List.of(contextUserChat, targetUserChat));
-        return GeneralChatResponseDto.fromPrivateEntity(personalChat, contextUser.getId());
+        return GeneralChatResponseDto.fromPrivateEntity(
+                personalChat,
+                messageService.getLastMessageByChatId(personalChat.getId()),
+                contextUser.getId()
+        );
     }
 
     private void checkIfPersonalChatExists(UserEntity contextUser, UserEntity targetUser) {

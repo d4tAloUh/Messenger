@@ -1,4 +1,4 @@
-package messenger.backend.chat.general.dto;
+package messenger.backend.chat.group.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -109,12 +109,16 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     sendMessage = async (text: string) => {
         const {selectedChatId} = this.props;
+        const chat = this.props.chatsList?.find(c => c.id === selectedChatId);
 
         if (selectedChatId) {
             const id = uuid();
             this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
             const message = await messageService.sendMessage(selectedChatId, text);
             this.props.actions.setMessageLoaded(selectedChatId, id, message);
+            if (chat) {
+                this.props.actions.updateChatInList({...chat, lastMessage: text});
+            }
         }
     }
 

@@ -5,11 +5,11 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.general.dto.GroupChatResponseDto;
+import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
-import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
+import messenger.backend.message.MessageService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -31,6 +31,7 @@ public class GroupChatService {
     private final GroupChatRepository groupChatRepository;
     private final UserChatRepository userChatRepository;
     private final UserRepository userRepository;
+    private final MessageService messageService;
 
     public GroupChatResponseDto getById(UUID chatId) {
         var currentUserId = JwtTokenService.getCurrentUserId();
@@ -55,7 +56,10 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return GeneralChatResponseDto.fromGroupEntity(groupChat);
+        return GeneralChatResponseDto.fromGroupEntity(
+                groupChat,
+                messageService.getLastMessageByChatId(groupChat.getId())
+        );
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {

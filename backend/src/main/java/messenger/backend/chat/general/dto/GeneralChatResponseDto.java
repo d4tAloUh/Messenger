@@ -19,25 +19,26 @@ import java.util.UUID;
 @Builder
 public class GeneralChatResponseDto {
 
-    public static GeneralChatResponseDto fromEntity(ChatSuperclass chat, UUID currentUserId) {
+    public static GeneralChatResponseDto fromEntity(ChatSuperclass chat, String lastMessage, UUID currentUserId) {
         if (chat instanceof GroupChatEntity) {
-            return fromGroupEntity((GroupChatEntity) chat);
+            return fromGroupEntity((GroupChatEntity) chat, lastMessage);
         } else if (chat instanceof PrivateChatEntity) {
-            return fromPrivateEntity((PrivateChatEntity) chat, currentUserId);
+            return fromPrivateEntity((PrivateChatEntity) chat, lastMessage, currentUserId);
         } else {
             throw new RuntimeException();
         }
     }
 
-    public static GeneralChatResponseDto fromGroupEntity(GroupChatEntity chat) {
+    public static GeneralChatResponseDto fromGroupEntity(GroupChatEntity chat, String lastMessage) {
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
                 .type(ChatType.GROUP.getType())
                 .title(chat.getGroupName())
+                .lastMessage(lastMessage)
                 .build();
     }
 
-    public static GeneralChatResponseDto fromPrivateEntity(PrivateChatEntity chat, UUID currentUserId) {
+    public static GeneralChatResponseDto fromPrivateEntity(PrivateChatEntity chat, String lastMessage, UUID currentUserId) {
         var companionName = chat.getUserChats()
                 .stream()
                 .filter(uc -> !uc.getUser().getId().equals(currentUserId))
@@ -49,10 +50,12 @@ public class GeneralChatResponseDto {
                 .id(chat.getId())
                 .type(ChatType.PERSONAL.getType())
                 .title(companionName)
+                .lastMessage(lastMessage)
                 .build();
     }
 
     private UUID id;
     private String title;
     private String type;
+    private String lastMessage;
 }

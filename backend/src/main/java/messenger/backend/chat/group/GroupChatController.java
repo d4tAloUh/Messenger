@@ -2,11 +2,9 @@ package messenger.backend.chat.group;
 
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.general.dto.GroupChatResponseDto;
+import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
-import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 

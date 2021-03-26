@@ -3,5 +3,5 @@ export interface IMessage {
     text: string;
     senderName: string;
     senderId: string;
-    datetime: string;
+    createdAt: number;
 }

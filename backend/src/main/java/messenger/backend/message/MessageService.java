@@ -5,10 +5,12 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.general.GeneralChatRepository;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,9 +32,8 @@ public class MessageService {
                 .map(UserChat::getChat)
                 .orElseThrow(ChatNotFoundException::new);
 
-        return chat.getUserChats()
+        return messageRepository.findAllMessagesByUserChatChatIdOrderByCreatedAtAsc(chat.getId())
                 .stream()
-                .flatMap(c -> c.getMessageEntities().stream())
                 .map(MessageResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -50,5 +51,14 @@ public class MessageService {
         messageRepository.save(message);
 
         return MessageResponseDto.fromEntity(message);
+    }
+
+    public LastMessageResponseDto getLastMessageByChatId(UUID chatId) {
+        return messageRepository
+                .findLastByChatId(chatId, PageRequest.of(0, 1))
+                .stream()
+                .findFirst()
+                .map(LastMessageResponseDto::fromEntity)
+                .orElse(null);
     }
 }

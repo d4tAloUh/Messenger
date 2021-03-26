@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
+import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
+import messenger.backend.message.MessageService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -28,9 +31,17 @@ public class GroupChatService {
     private final GroupChatRepository groupChatRepository;
     private final UserChatRepository userChatRepository;
     private final UserRepository userRepository;
+    private final MessageService messageService;
 
+    public GroupChatResponseDto getById(UUID chatId) {
+        var currentUserId = JwtTokenService.getCurrentUserId();
+        return groupChatRepository
+                .findByIdAndUserId(chatId, currentUserId)
+                .map(uc -> GroupChatResponseDto.fromEntity(uc, currentUserId))
+                .orElseThrow(ChatNotFoundException::new);
+    }
 
-    public CreateGroupChatResponseDto createGroupChat(CreateGroupChatRequestDto requestDto) {
+    public GeneralChatResponseDto createGroupChat(CreateGroupChatRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
 
         GroupChatEntity groupChat = GroupChatEntity.builder().groupName(requestDto.getChatName()).build();
@@ -45,7 +56,10 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return CreateGroupChatResponseDto.of(groupChat.getId());
+        return GeneralChatResponseDto.fromGroupEntity(
+                groupChat,
+                messageService.getLastMessageByChatId(groupChat.getId())
+        );
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {
@@ -76,7 +90,7 @@ public class GroupChatService {
 
         boolean isTargetUserAlreadyAdded = groupChatEntity.getUserChats().stream()
                 .anyMatch(userChat -> userChat.getUser().getId().equals(targetUser.getId()));
-        if(isTargetUserAlreadyAdded) throw new UserAlreadyMemberOfChatException();
+        if (isTargetUserAlreadyAdded) throw new UserAlreadyMemberOfChatException();
 
         UserChat targetUserChat = UserChat.builder()
                 .user(targetUser)
@@ -92,10 +106,17 @@ public class GroupChatService {
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
         //todo rewrite with permissions
-        if (contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
+        boolean allowedMemberDeletion =
+                !contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER) &&
+                targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER);
+        boolean allowedAdminDeletion =
+                contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER) &&
+                targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN);
+        if (allowedMemberDeletion || allowedAdminDeletion) {
+            userChatRepository.delete(targetUserChat);
+        } else {
             throw new NotEnoughPermissionLevelException();
-
-        userChatRepository.delete(targetUserChat);
+        }
     }
 
     //just for test todo delete this (or no)
@@ -107,7 +128,7 @@ public class GroupChatService {
 
         boolean isContextUserInChat = groupChatEntity.getUserChats().stream()
                 .anyMatch(userChat -> userChat.getUser().getId().equals(contextUser.getId()));
-        if(!isContextUserInChat) throw new UserNotMemberOfChatException();
+        if (!isContextUserInChat) throw new UserNotMemberOfChatException();
 
         return groupChatEntity.getUserChats().stream()
                 .map(GroupChatUserInfoDto::from)
@@ -119,7 +140,7 @@ public class GroupChatService {
         UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
-        if(!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
+        if (!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
             throw new NotEnoughPermissionLevelException();
 
         if (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER)) {
@@ -136,7 +157,7 @@ public class GroupChatService {
         UserChat contextUserChat = userChatsDto.getContextUserChatEntity();
         UserChat targetUserChat = userChatsDto.getTargetUserChatEntity();
 
-        if(!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
+        if (!contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER))
             throw new NotEnoughPermissionLevelException();
 
         if (targetUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)) {
@@ -191,7 +212,7 @@ public class GroupChatService {
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
-        if(contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
+        if (contextUserChat.getPermissionLevel().equals(UserChat.PermissionLevel.MEMBER))
             throw new NotEnoughPermissionLevelException();
 
         groupChatEntity.setGroupName(requestDto.getNewChatName());

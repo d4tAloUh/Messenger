@@ -21,6 +21,9 @@ import Icon from "../../components/Icon/Icon";
 import Modal from "../../components/Modal/Modal";
 import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
 import personalChatService from "../../api/chat/personal/personalChatService";
+import groupChatService from "../../api/chat/group/groupChatService";
+import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
+import {toastr} from 'react-redux-toastr';
 
 interface IPropsFromDispatch {
     actions: {
@@ -28,6 +31,8 @@ interface IPropsFromDispatch {
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
         addChatToList: typeof chatsListActions.addChatToList;
+        updateChatInList: typeof chatsListActions.updateChatInList;
+        setFirstChatInList: typeof chatsListActions.setFirstChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
@@ -63,6 +68,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
         }
+        setTimeout(() => {
+            toastr.success('New message', 'You have received a new message');
+        }, 2000);
+        // init socket
+    }
+
+    componentWillUnmount() {
+        // remove socket
     }
 
     logout = async () => {
@@ -76,6 +89,15 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     loadChatsList = async () => {
         this.props.actions.removeChatsList();
         const list = await generalChatService.getChatsList();
+        list.sort((a, b) => {
+            if (!a.lastMessage) {
+                return -1;
+            }
+            if (!b.lastMessage) {
+                return 1;
+            }
+            return b.lastMessage.createdAt - a.lastMessage.createdAt;
+        });
         this.props.actions.setChatsList(list);
     }
 
@@ -97,12 +119,20 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     sendMessage = async (text: string) => {
         const {selectedChatId} = this.props;
+        const chat = this.props.chatsList?.find(c => c.id === selectedChatId);
 
         if (selectedChatId) {
             const id = uuid();
             this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
             const message = await messageService.sendMessage(selectedChatId, text);
             this.props.actions.setMessageLoaded(selectedChatId, id, message);
+            if (chat) {
+                this.props.actions.setFirstChatInList(chat.id);
+                this.props.actions.updateChatInList({
+                    ...chat,
+                    lastMessage: {text, createdAt: message.createdAt},
+                });
+            }
         }
     }
 
@@ -111,8 +141,18 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.removeChatFromList(chatId);
     }
 
+    updateChatInList = (chat: IChatDetails) => {
+        this.props.actions.updateChatInList(chat);
+    }
+
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
+        this.setState({creating: false});
+        this.props.actions.addChatToList(chat);
+    }
+
+    createGroupChat = async (title: string) => {
+        const chat = await groupChatService.create(title);
         this.setState({creating: false});
         this.props.actions.addChatToList(chat);
     }
@@ -132,6 +172,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         <CreatePersonalChat
                             createPersonalChat={this.createPersonalChat}
                         />
+                        <CreateGroupChat
+                            createGroupChat={this.createGroupChat}
+                        />
                     </Modal>
                 )}
                 <Header logout={this.logout} />
@@ -150,6 +193,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         currentUser={currentUser}
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
+                        updateChatInList={this.updateChatInList}
                     />
                 </div>
                 <div className={styles.addWrapper}>
@@ -178,6 +222,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
                 addChatToList: typeof chatsListActions.addChatToList,
+                updateChatInList: typeof chatsListActions.updateChatInList,
+                setFirstChatInList: typeof chatsListActions.setFirstChatInList,
                 removeChatFromList: typeof chatsListActions.removeChatFromList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
@@ -193,6 +239,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatsList: chatsListActions.setChatsList,
                 addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
+                setFirstChatInList: chatsListActions.setFirstChatInList,
+                updateChatInList: chatsListActions.updateChatInList,
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,

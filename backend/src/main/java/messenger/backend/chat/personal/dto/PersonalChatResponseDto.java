@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.user.dto.UserShortDto;
 import messenger.backend.user.exceptions.UserNotFoundException;
-import messenger.backend.userChat.UserChat;
 
 import java.util.UUID;
 
@@ -21,8 +20,7 @@ public class PersonalChatResponseDto {
         var companion = privateChatEntity
                 .getUserChats()
                 .stream()
-                .map(UserChat::getUser)
-                .filter(u -> !u.getId().equals(currentUserId))
+                .filter(u -> !u.getUser().getId().equals(currentUserId))
                 .findFirst()
                 .orElseThrow(UserNotFoundException::new);
 

@@ -4,6 +4,7 @@ import {store} from "../../store";
 import ReduxToastr from "react-redux-toastr";
 import {BrowserRouter} from 'react-router-dom';
 import Routing from "../Routing/Routing";
+import 'react-redux-toastr/lib/css/react-redux-toastr.min.css';
 
 class App extends React.Component {
     render() {
@@ -13,10 +14,10 @@ class App extends React.Component {
                     timeOut={4000}
                     newestOnTop={false}
                     preventDuplicates
-                    position="bottom-right"
+                    position="top-right"
                     transitionIn="fadeIn"
                     transitionOut="fadeOut"
-                    closeOnToastrClick
+                    closeOnToastrClick={true}
                 />
                 <BrowserRouter>
                     <Routing />

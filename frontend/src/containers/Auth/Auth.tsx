@@ -5,6 +5,7 @@ import styles from "./Auth.module.sass";
 import LoginForm from "../../components/LoginForm/LoginForm";
 import RegistrationForm from "../../components/RegistrationForm/RegistrationForm";
 import {ILoginRequest, IRegisterRequest} from "../../api/auth/authModels";
+import {toastr} from 'react-redux-toastr';
 
 class Auth extends React.Component<RouteComponentProps> {
 
@@ -16,6 +17,7 @@ class Auth extends React.Component<RouteComponentProps> {
     register = async (registerDto: IRegisterRequest) => {
         await authService.register(registerDto);
         this.props.history.push("/auth/login");
+        toastr.success('Success!', 'You have successfully registered');
     }
 
     render() {

@@ -3,5 +3,10 @@ export interface IMessage {
     text: string;
     senderName: string;
     senderId: string;
-    datetime: string;
+    createdAt: number;
+}
+
+export interface ILastMessage {
+    text: string;
+    createdAt: number;
 }

@@ -5,8 +5,8 @@ interface IOwnProps {
     value: string;
     label?: string;
     onChange: any;
-    onBlur: any;
-    name: string;
+    onBlur?: any;
+    name?: string;
     type?: "password" | "number";
     error?: string;
     touched?: boolean;

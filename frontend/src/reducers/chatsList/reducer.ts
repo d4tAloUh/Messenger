@@ -1,11 +1,14 @@
 import {ChatsListActions} from "./actions";
-import {IChatListElement} from "../../api/chat/chatModels";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
+    ADD_CHAT_TO_LIST,
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
+    REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST, SET_MESSAGE_LOADED,
+    SET_CHATS_LIST,
+    SET_MESSAGE_LOADED,
     SET_SELECTED
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
@@ -21,12 +24,12 @@ export interface IMessageWrapper {
 }
 
 export interface IChatCache {
-    details: IChatListElement;
+    details: IChatDetails;
     messages?: IMessageWrapper[];
 }
 
 export interface IChatsListState {
-    chatsList?: IChatListElement[];
+    chatsList?: IChatDetails[];
     selectedId?: string;
     chatsDetailsCached: IChatCache[];
 }
@@ -44,6 +47,16 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: action.payload,
+            };
+        case ADD_CHAT_TO_LIST:
+            return {
+                ...state,
+                chatsList: [action.payload, ...(state.chatsList || [])],
+            };
+        case REMOVE_CHAT_FROM_LIST:
+            return {
+                ...state,
+                chatsList: state.chatsList?.filter(c => c.id !== action.payload),
             };
         case REMOVE_CHATS_LIST:
             return {

@@ -5,9 +5,10 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
+import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
-import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
+import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
@@ -32,10 +33,18 @@ public class PersonalChatService {
     private final PersonalChatRepository personalChatRepository;
     private final UserChatRepository userChatRepository;
 
+    public PersonalChatResponseDto getById(UUID chatId) {
+        var currentUserId = JwtTokenService.getCurrentUserId();
+        return personalChatRepository
+                .findByIdAndUserId(chatId, currentUserId)
+                .map(uc -> PersonalChatResponseDto.fromEntity(uc, currentUserId))
+                .orElseThrow(ChatNotFoundException::new);
+    }
+
     //todo decide what to do when you create a chat with yourself
-    public CreatePersonalChatResponseDto createPrivateChat(CreatePersonalChatRequestDto requestDto) {
+    public GeneralChatResponseDto createPrivateChat(CreatePersonalChatRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
-        UserEntity targetUser = userRepository.getByUsername(requestDto.getTargetUsername())
+        UserEntity targetUser = userRepository.findById(requestDto.getTargetId())
                 .orElseThrow(UserNotFoundException::new);
 
         checkIfPersonalChatExists(contextUser, targetUser);
@@ -57,9 +66,8 @@ public class PersonalChatService {
         userChatRepository.saveAndFlush(contextUserChat);
         userChatRepository.saveAndFlush(targetUserChat);
 
-        CreatePersonalChatResponseDto response = new CreatePersonalChatResponseDto();
-        response.setChatId(personalChat.getId());
-        return response;
+        personalChat.setUserChats(List.of(contextUserChat, targetUserChat));
+        return GeneralChatResponseDto.fromPrivateEntity(personalChat, contextUser.getId());
     }
 
     private void checkIfPersonalChatExists(UserEntity contextUser, UserEntity targetUser) {

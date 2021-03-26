@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./ChatListElement.module.sass";
-import {IChatListElement} from "../../api/chat/chatModels";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import classNames from "classnames";
 
 interface IOwnProps {
-    elementData: IChatListElement;
+    elementData: IChatDetails;
     onClick: () => void;
     selected: boolean;
 }

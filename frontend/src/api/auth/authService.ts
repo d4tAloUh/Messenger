@@ -5,8 +5,9 @@ import apiClient from "../apiClient";
 const authService = {
 
     login: async (loginDto: ILoginRequest): Promise<void> => {
-        const response: ILoginResponse = await apiClient.post('/api/auth/login', loginDto);
-        tokenService.setTokens(response.accessToken, response.refreshToken);
+        const response = await apiClient.post('/api/auth/login', loginDto);
+        const tokens: ILoginResponse = response.data.data;
+        tokenService.setTokens(tokens.accessToken, tokens.refreshToken);
     },
 
     register: async (registerDto: IRegisterRequest): Promise<void> => {
@@ -20,7 +21,8 @@ const authService = {
     },
 
     me: async (): Promise<ICurrentUser> => {
-        return await apiClient.get('/api/auth/me');
+        const response = await apiClient.get('/api/auth/me');
+        return response.data.data;
     },
 
     isLoggedIn: (): boolean => {

@@ -4,11 +4,13 @@ import apiClient from "../apiClient";
 const messageService = {
 
     getMessagesByChatId: async (chatId: string): Promise<IMessage[]> => {
-        return apiClient.get(`/api/messages/chat/${chatId}`);
+        const response = await apiClient.get(`/api/messages/chat/${chatId}`);
+        return response.data.data;
     },
 
     sendMessage: async (chatId: string, text: string): Promise<IMessage> => {
-        return apiClient.post(`/api/messages/chat`, {chatId, text});
+        const response = await apiClient.post(`/api/messages/chat`, {chatId, text});
+        return response.data.data;
     },
 
 };

@@ -4,7 +4,9 @@ package messenger.backend.chat.group;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.chat.general.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
+import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,11 @@ import java.util.UUID;
 public class GroupChatController {
 
     private final GroupChatService groupChatService;
+
+    @GetMapping("/{chatId}")
+    public Response<GroupChatResponseDto> createPersonalChat(@PathVariable UUID chatId) {
+        return Response.success(groupChatService.getById(chatId));
+    }
 
     @PostMapping("/create")
     public Response<GeneralChatResponseDto> createGroupChat(@Valid @RequestBody CreateGroupChatRequestDto requestDto) {

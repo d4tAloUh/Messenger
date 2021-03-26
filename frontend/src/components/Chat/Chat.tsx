@@ -9,6 +9,7 @@ import ChatSender from "../ChatSender/ChatSender";
 import Modal from "../Modal/Modal";
 import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
 import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
+import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];
@@ -66,6 +67,12 @@ class Chat extends React.Component<IOwnProps, IState> {
                     <Modal close={() => this.setState({modalShown: false})}>
                         {chatInfo?.details?.type === ChatTypeEnum.PERSONAL && (
                             <PersonalChatDetails
+                                chatDetails={chatInfo.details}
+                                deleteChatFromList={this.deleteChatFromList}
+                            />
+                        )}
+                        {chatInfo?.details?.type === ChatTypeEnum.GROUP && (
+                            <GroupChatDetails
                                 chatDetails={chatInfo.details}
                                 deleteChatFromList={this.deleteChatFromList}
                             />

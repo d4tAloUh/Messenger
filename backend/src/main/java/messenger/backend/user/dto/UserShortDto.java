@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import messenger.backend.user.UserEntity;
+import messenger.backend.userChat.UserChat;
 
 import java.util.UUID;
 
@@ -13,12 +14,13 @@ import java.util.UUID;
 @Data
 @Builder
 public class UserShortDto {
-    public static UserShortDto fromEntity(UserEntity userEntity) {
+    public static UserShortDto fromEntity(UserChat userChat) {
         return UserShortDto.builder()
-                .id(userEntity.getId())
-                .fullName(userEntity.getFullName())
-                .username(userEntity.getUsername())
-                .bio(userEntity.getBio())
+                .id(userChat.getUser().getId())
+                .fullName(userChat.getUser().getFullName())
+                .username(userChat.getUser().getUsername())
+                .bio(userChat.getUser().getBio())
+                .permissionLevel(userChat.getPermissionLevel())
                 .build();
     }
 
@@ -26,4 +28,5 @@ public class UserShortDto {
     private String fullName;
     private String username;
     private String bio;
+    private UserChat.PermissionLevel permissionLevel;
 }

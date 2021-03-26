@@ -7,7 +7,7 @@ import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../ChatSender/ChatSender";
 import Modal from "../Modal/Modal";
-import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
+import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
 import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 
@@ -19,6 +19,7 @@ interface IOwnProps {
     currentUser?: ICurrentUser;
     sendMessage: (text: string) => Promise<void>;
     deleteChatFromList: (chatId: string) => void;
+    updateChatInList: (chat: IChatDetails) => void;
 }
 
 interface IState {
@@ -49,7 +50,7 @@ class Chat extends React.Component<IOwnProps, IState> {
     }
 
     render() {
-        const {chatsDetailsCached, selectedChatId, currentUser, sendMessage} = this.props;
+        const {chatsDetailsCached, selectedChatId, currentUser, sendMessage, updateChatInList} = this.props;
         const {modalShown} = this.state;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
@@ -75,6 +76,7 @@ class Chat extends React.Component<IOwnProps, IState> {
                             <GroupChatDetails
                                 chatDetails={chatInfo.details}
                                 deleteChatFromList={this.deleteChatFromList}
+                                updateChatInList={updateChatInList}
                             />
                         )}
                     </Modal>

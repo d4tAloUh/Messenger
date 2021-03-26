@@ -14,6 +14,11 @@ const groupChatService = {
         return response.data.data;
     },
 
+    changeInfo: async (chatId: string, newChatName: string): Promise<void> => {
+        const response = await apiClient.post(`/api/chat/group/change-info`, {chatId, newChatName});
+        return response.data.data;
+    },
+
     addMember: async (chatId: string, targetUserId: string): Promise<void> => {
         await apiClient.post(`/api/chat/group/users/add`, {chatId, targetUserId});
     },

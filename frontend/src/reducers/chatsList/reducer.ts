@@ -9,7 +9,8 @@ import {
     SET_CHAT_MESSAGES,
     SET_CHATS_LIST,
     SET_MESSAGE_LOADED,
-    SET_SELECTED
+    SET_SELECTED,
+    UPDATE_CHAT_IN_LIST
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
 
@@ -52,6 +53,18 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: [action.payload, ...(state.chatsList || [])],
+            };
+        case UPDATE_CHAT_IN_LIST:
+            return {
+                ...state,
+                chatsList: state.chatsList?.map(c => c.id !== action.payload.id
+                    ? c
+                    : action.payload
+                ),
+                chatsDetailsCached: state.chatsDetailsCached?.map(c => c.details.id !== action.payload.id
+                    ? c
+                    : {...c, details: action.payload}
+                ),
             };
         case REMOVE_CHAT_FROM_LIST:
             return {

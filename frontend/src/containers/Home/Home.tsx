@@ -30,6 +30,7 @@ interface IPropsFromDispatch {
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
         addChatToList: typeof chatsListActions.addChatToList;
+        updateChatInList: typeof chatsListActions.updateChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
@@ -113,6 +114,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.removeChatFromList(chatId);
     }
 
+    updateChatInList = (chat: IChatDetails) => {
+        this.props.actions.updateChatInList(chat);
+    }
+
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
         this.setState({creating: false});
@@ -161,6 +166,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         currentUser={currentUser}
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
+                        updateChatInList={this.updateChatInList}
                     />
                 </div>
                 <div className={styles.addWrapper}>
@@ -189,6 +195,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
                 addChatToList: typeof chatsListActions.addChatToList,
+                updateChatInList: typeof chatsListActions.updateChatInList,
                 removeChatFromList: typeof chatsListActions.removeChatFromList,
                 removeChatsList: typeof chatsListActions.removeChatsList,
                 setSelected: typeof chatsListActions.setSelected,
@@ -204,6 +211,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatsList: chatsListActions.setChatsList,
                 addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
+                updateChatInList: chatsListActions.updateChatInList,
                 removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,

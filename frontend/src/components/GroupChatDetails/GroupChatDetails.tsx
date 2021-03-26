@@ -9,25 +9,39 @@ import UserManager from "../UserManager/UserManager";
 import UserFinder from "../UserFinder/UserFinder";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 import {IUserShortDto} from "../../api/user/userModels";
+import {Form, Formik} from "formik";
+import Input from "../FormComponents/Input/Input";
+import * as Yup from "yup";
 
 interface IOwnProps {
     chatDetails: IChatDetails;
     deleteChatFromList: (chatId: string) => void;
+    updateChatInList: (chat: IChatDetails) => void;
 }
 
 interface IState {
     info?: IGroupChatInfo;
     deleting: boolean;
     adding: boolean;
+    changing: boolean;
     toAddUserId?: string;
     error?: string;
 }
+
+const validationSchema = Yup.object().shape({
+    title: Yup.string()
+        .min(4, 'Too Short! Need to be 4-16 digits.')
+        .max(16, 'Too Long! Need to be 4-16 digits.')
+        .required('This field is required'),
+
+});
 
 class GroupChatDetails extends React.Component<IOwnProps, IState> {
 
     state = {
         deleting: false,
         adding: false,
+        changing: false,
     } as IState;
 
     async componentDidMount() {
@@ -47,6 +61,26 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         await groupChatService.deleteById(id);
         this.setState({deleting: false});
         this.props.deleteChatFromList(id);
+    }
+
+    handleChange = async (values: any) => {
+        const {updateChatInList, chatDetails} = this.props;
+        const {info} = this.state;
+        if(!info) {
+            return;
+        }
+
+        this.setState({error: undefined});
+        try {
+            this.setState({changing: true});
+            await groupChatService.changeInfo(info.id, values.title);
+            updateChatInList({...chatDetails, title: values.title});
+            await this.loadData();
+        } catch (e) {
+            this.setState({error: e.message});
+        } finally {
+            this.setState({changing: false});
+        }
     }
 
     handleAddMember = async () => {
@@ -106,7 +140,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     }
 
     render() {
-        const {info, deleting, adding, error, toAddUserId} = this.state;
+        const {info, deleting, adding, changing, error, toAddUserId} = this.state;
 
         return (
             <LoaderWrapper loading={!info}>
@@ -118,6 +152,44 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                 )}
                 {error && (
                     <ErrorMessage text={error} />
+                )}
+                {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
+                    <Formik
+                        onSubmit={this.handleChange}
+                        initialValues={{title: info?.title}}
+                        validationSchema={validationSchema}
+                        render={({
+                                     errors,
+                                     touched,
+                                     handleChange,
+                                     handleBlur,
+                                     values
+                                 }) => {
+                            const valid = !errors.title;
+                            return (
+                                <Form>
+                                    <Input
+                                        label="Title"
+                                        value={values.title}
+                                        name="title"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={errors.title}
+                                        touched={touched.title}
+                                    />
+                                    <div className={styles.buttonWrapper}>
+                                        <Button
+                                            text="Change chat info"
+                                            disabled={!valid}
+                                            submit
+                                            loading={changing}
+                                        />
+                                    </div>
+                                </Form>
+                            );
+                        }
+                        }
+                    />
                 )}
                 {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
                     <div className={styles.finderWrapper}>

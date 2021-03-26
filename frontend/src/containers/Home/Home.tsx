@@ -23,6 +23,7 @@ import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePerson
 import personalChatService from "../../api/chat/personal/personalChatService";
 import groupChatService from "../../api/chat/group/groupChatService";
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
+import {toastr} from 'react-redux-toastr';
 
 interface IPropsFromDispatch {
     actions: {
@@ -66,6 +67,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
         }
+        setTimeout(() => {
+            toastr.success('New message', 'You have received a new message');
+        }, 2000);
+        // init socket
+    }
+
+    componentWillUnmount() {
+        // remove socket
     }
 
     logout = async () => {

@@ -40,6 +40,7 @@ class UserFinder extends React.Component<IOwnProps, IState> {
                 <Input
                     value={text}
                     onChange={(e: any) => this.handleChange(e.target.value)}
+                    label="Username"
                 />
             </div>
         );

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
+import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
@@ -30,7 +31,7 @@ public class GroupChatService {
     private final UserRepository userRepository;
 
 
-    public CreateGroupChatResponseDto createGroupChat(CreateGroupChatRequestDto requestDto) {
+    public GeneralChatResponseDto createGroupChat(CreateGroupChatRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
 
         GroupChatEntity groupChat = GroupChatEntity.builder().groupName(requestDto.getChatName()).build();
@@ -45,7 +46,7 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return CreateGroupChatResponseDto.of(groupChat.getId());
+        return GeneralChatResponseDto.fromGroupEntity(groupChat);
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {

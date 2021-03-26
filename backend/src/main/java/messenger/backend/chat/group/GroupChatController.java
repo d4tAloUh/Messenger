@@ -3,6 +3,7 @@ package messenger.backend.chat.group;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.GroupChatEntity;
+import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class GroupChatController {
     private final GroupChatService groupChatService;
 
     @PostMapping("/create")
-    public Response<CreateGroupChatResponseDto> createGroupChat(@Valid @RequestBody CreateGroupChatRequestDto requestDto) {
+    public Response<GeneralChatResponseDto> createGroupChat(@Valid @RequestBody CreateGroupChatRequestDto requestDto) {
         return Response.success(groupChatService.createGroupChat(requestDto));
     }
 

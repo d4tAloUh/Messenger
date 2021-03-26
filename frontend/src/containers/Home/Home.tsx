@@ -21,6 +21,8 @@ import Icon from "../../components/Icon/Icon";
 import Modal from "../../components/Modal/Modal";
 import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
 import personalChatService from "../../api/chat/personal/personalChatService";
+import groupChatService from "../../api/chat/group/groupChatService";
+import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 
 interface IPropsFromDispatch {
     actions: {
@@ -117,6 +119,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.addChatToList(chat);
     }
 
+    createGroupChat = async (title: string) => {
+        const chat = await groupChatService.create(title);
+        this.setState({creating: false});
+        this.props.actions.addChatToList(chat);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -131,6 +139,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                     <Modal close={() => this.setState({creating: false})}>
                         <CreatePersonalChat
                             createPersonalChat={this.createPersonalChat}
+                        />
+                        <CreateGroupChat
+                            createGroupChat={this.createGroupChat}
                         />
                     </Modal>
                 )}

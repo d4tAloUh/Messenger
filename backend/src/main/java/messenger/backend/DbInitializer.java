@@ -1,9 +1,7 @@
 package messenger.backend;
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.auth.access_levels.Role;
 import messenger.backend.seeds.FakerService;
-import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

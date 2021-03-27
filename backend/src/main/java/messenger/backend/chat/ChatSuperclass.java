@@ -1,15 +1,11 @@
 package messenger.backend.chat;
 
 
-
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import lombok.experimental.SuperBuilder;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -27,11 +23,6 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class ChatSuperclass {
-    public void appendUserChat(UserChat userChat){
-//        if(isNull(userChats))
-//            userChats = new ArrayList<>();
-        getUserChats().add(userChat);
-    }
 
     @Id
     @GeneratedValue(generator = "UUID")

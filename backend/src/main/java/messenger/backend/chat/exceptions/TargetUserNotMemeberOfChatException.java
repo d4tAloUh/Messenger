@@ -1,6 +1,5 @@
 package messenger.backend.chat.exceptions;
 
-import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.utils.exceptions.WebException;
 import org.springframework.http.HttpStatus;
 

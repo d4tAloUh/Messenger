@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
 import java.util.UUID;

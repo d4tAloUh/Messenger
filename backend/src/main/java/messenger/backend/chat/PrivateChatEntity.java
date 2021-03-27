@@ -2,11 +2,7 @@ package messenger.backend.chat;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import messenger.backend.user.UserEntity;
 
-import javax.persistence.*;
-import java.util.Arrays;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;

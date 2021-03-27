@@ -3,8 +3,6 @@ package messenger.backend.message;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
-import messenger.backend.chat.general.GeneralChatRepository;
-import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;

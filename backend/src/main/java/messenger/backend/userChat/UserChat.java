@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,12 +30,6 @@ public class UserChat {
                 .build();
     }
 
-    public void appendMessages(List<MessageEntity> messages){
-//        if(isNull(messageEntities))
-//            messageEntities = new ArrayList<>();
-        getMessageEntities().addAll(messages);
-
-    }
 
     public enum PermissionLevel {
         OWNER,

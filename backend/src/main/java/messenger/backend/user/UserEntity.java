@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
-
 
 @Builder
 @AllArgsConstructor
@@ -40,12 +38,6 @@ public class UserEntity {
                 .build();
     }
 
-    public void appendUserChat(UserChat userChat){
-//        if(isNull(userChats))
-//            userChats = new ArrayList<>();
-        getUserChats().add(userChat);
-
-    }
 
     public enum UserStatus {
         ONLINE,

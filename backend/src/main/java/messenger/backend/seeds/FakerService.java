@@ -28,7 +28,7 @@ public class FakerService {
     private final MessageRepository messageRepository;
     private final UserChatRepository userChatRepository;
 
-    public static Faker faker = new Faker();
+    public static final Faker faker = new Faker();
 
     public final int userCount = 20;
     public final int privateChatCount = 100;
@@ -108,7 +108,7 @@ public class FakerService {
     }
 
 
-    private List<Tuple<Integer, Integer>> getUserPairs(int pairs, int usersLength) {
+    private List<Tuple<Integer, Integer>> getUserPairs(final int pairs,final int usersLength) {
         List<Tuple<Integer, Integer>> result = new ArrayList<>();
         Random random = new Random();
         int first, second;

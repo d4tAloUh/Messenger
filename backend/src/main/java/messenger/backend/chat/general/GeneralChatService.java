@@ -3,8 +3,6 @@ package messenger.backend.chat.general;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.message.MessageEntity;
-import messenger.backend.message.MessageRepository;
 import messenger.backend.message.MessageService;
 import org.springframework.stereotype.Service;
 

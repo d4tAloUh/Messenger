@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import messenger.backend.message.MessageEntity;
 
 import java.util.Date;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor

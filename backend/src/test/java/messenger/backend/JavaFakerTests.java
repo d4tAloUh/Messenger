@@ -1,7 +1,11 @@
 package messenger.backend;
 
 import com.github.javafaker.Faker;
+import messenger.backend.seeds.Tuple;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class JavaFakerTests {
@@ -9,12 +13,17 @@ public class JavaFakerTests {
 
     @Test
     public void generateRandomText(){
-        Faker faker = new Faker();
 
-        for (int i = 0; i < 20; i++) {
-            System.out.println(faker.internet().password(2,5));
-        }
+        Tuple first = new Tuple(5,10);
+        Tuple second = new Tuple(10,5);
 
+        System.out.println("Does first equals second: " + first.equals(second));
 
+        Set<Tuple> set = new HashSet<>();
+
+        set.add(first);
+        set.add(second);
+
+        System.out.println(set);
     }
 }

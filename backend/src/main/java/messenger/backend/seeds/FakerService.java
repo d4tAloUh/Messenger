@@ -14,6 +14,7 @@ import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -62,27 +63,14 @@ public class FakerService {
         privateChatRepo.saveAll(privateChats);
 
         //generating UserChats for private chats
-        List<UserChat> privateUserChats = new ArrayList<>();
         int privateChatIndex = 0;
-        for(Tuple<Integer,Integer> pair : getUserPairs(privateChatCount,userCount)) {
+        for(Tuple pair : getUserPairs(privateChatCount,userCount)) {
             //creating one UserChat for each user
             UserChat firstLink = UserChat.generateUserChat(UserChat.PermissionLevel.OWNER, privateChats.get(privateChatIndex), users.get(pair.x));
             UserChat secondLink = UserChat.generateUserChat(UserChat.PermissionLevel.OWNER, privateChats.get(privateChatIndex), users.get(pair.y));
 
             userChatRepository.save(firstLink);
             userChatRepository.save(secondLink);
-            //adding them to List of userChats
-//            privateUserChats.add(firstLink);
-//            privateUserChats.add(secondLink);
-
-            //adding UserChats to UserEntity
-//            users.get(pair.x).appendUserChat(firstLink);
-//            users.get(pair.y).appendUserChat(secondLink);
-
-            //TODO both links? Not sure..
-            //adding UserChats to PrivateChatEntity
-//            privateChats.get(privateChatIndex).appendUserChat(firstLink);
-//            privateChats.get(privateChatIndex).appendUserChat(secondLink);
 
             List<MessageEntity> firstUserMessages = Stream
                     .generate(() -> MessageEntity.generateMessage(firstLink))
@@ -93,9 +81,6 @@ public class FakerService {
                     .generate(() -> MessageEntity.generateMessage(secondLink))
                     .limit(msgsPerChat/2)
                     .collect(Collectors.toList());
-
-//            firstLink.appendMessages(firstUserMessages);
-//            secondLink.appendMessages(secondUserMessages);
 
             messageRepository.saveAll(firstUserMessages);
             messageRepository.saveAll(secondUserMessages);
@@ -108,19 +93,23 @@ public class FakerService {
     }
 
 
-    private List<Tuple<Integer, Integer>> getUserPairs(final int pairs,final int usersLength) {
-        List<Tuple<Integer, Integer>> result = new ArrayList<>();
+    private HashSet<Tuple> getUserPairs(final int pairs,final int usersLength) {
+        HashSet<Tuple> result = new HashSet<>();
         Random random = new Random();
         int first, second;
 
-        for (int i = 0; i < pairs; i++) {
+        while(result.size() < pairs){
             first = random.nextInt(usersLength);
             do
                 second = random.nextInt(usersLength);
             while (first == second);
 
-            result.add(new Tuple<Integer, Integer>(Integer.valueOf(first), Integer.valueOf(second)));
+            result.add(new Tuple(Integer.valueOf(first), Integer.valueOf(second)));
         }
+
+//        for (Tuple pair : result){
+//            System.out.println(pair);
+//        }
 
         return result;
     }

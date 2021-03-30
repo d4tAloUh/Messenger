@@ -1,9 +1,13 @@
 package messenger.backend.seeds;
 
 import com.github.javafaker.Faker;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import messenger.backend.auth.access_levels.Role;
+import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
+import messenger.backend.chat.group.GroupChatRepository;
 import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.MessageEntity;
 import messenger.backend.message.MessageRepository;
@@ -13,27 +17,47 @@ import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FakerService {
 
     private final UserRepository userRepository;
     private final PersonalChatRepository privateChatRepo;
+    private final GroupChatRepository groupChatRepository;
     private final MessageRepository messageRepository;
     private final UserChatRepository userChatRepository;
+    private final Random random = new Random();
 
     public static final Faker faker = new Faker();
 
-    public final int userCount = 20;
-    public final int privateChatCount = 100;
-    public final int msgsPerChat = 64;
+    @Getter
+    @Setter
+    private int userCount = 20;
+    @Getter
+    @Setter
+    private int privateChatCount = 100;
+    @Getter
+    @Setter
+    private int groupChatCount = 20;
+    @Getter
+    @Setter
+    private int msgsPerChat = 64;
+    @Getter
+    @Setter
+    private int minUsersInGroupChat = 2;
+    @Getter
+    @Setter
+    private int maxUsersInGroupChat = 17;
 
     public void generateRandomData() {
         //creating users
@@ -64,7 +88,7 @@ public class FakerService {
 
         //generating UserChats for private chats
         int privateChatIndex = 0;
-        for(Tuple pair : getUserPairs(privateChatCount,userCount)) {
+        for(Tuple pair : getUserPairs()) {
             //creating one UserChat for each user
             UserChat firstLink = UserChat.generateUserChat(UserChat.PermissionLevel.OWNER, privateChats.get(privateChatIndex), users.get(pair.x));
             UserChat secondLink = UserChat.generateUserChat(UserChat.PermissionLevel.OWNER, privateChats.get(privateChatIndex), users.get(pair.y));
@@ -89,29 +113,67 @@ public class FakerService {
             ++privateChatIndex;
         }
 
+        createGroupChats(getGroupChatsLists());
 
     }
 
+    private void createGroupChats(HashSet<LinkedHashSet<Integer>> groupChatsLists) {
+        List<GroupChatEntity> groupChats =
+                Stream
+                        .generate(() -> GroupChatEntity.generateGroupChat())
+                        .limit(groupChatCount)
+                        .collect(Collectors.toList());
 
-    private HashSet<Tuple> getUserPairs(final int pairs,final int usersLength) {
+        groupChatRepository.saveAll(groupChats);
+
+        for(LinkedHashSet<Integer> chat : groupChatsLists){
+            
+
+            for (int i = 1; i < chat.size(); i++) {
+
+            }
+        }
+    }
+
+
+    private HashSet<Tuple> getUserPairs() {
         HashSet<Tuple> result = new HashSet<>();
-        Random random = new Random();
         int first, second;
 
-        while(result.size() < pairs){
-            first = random.nextInt(usersLength);
+        while(result.size() < privateChatCount){
+            first = random.nextInt(userCount);
             do
-                second = random.nextInt(usersLength);
+                second = random.nextInt(userCount);
             while (first == second);
 
             result.add(new Tuple(Integer.valueOf(first), Integer.valueOf(second)));
         }
 
-//        for (Tuple pair : result){
-//            System.out.println(pair);
-//        }
 
         return result;
+    }
+
+    private HashSet<LinkedHashSet<Integer>> getGroupChatsLists(){
+        HashSet<LinkedHashSet<Integer>> result = new HashSet<>();
+        while(result.size() < groupChatCount){
+            LinkedHashSet<Integer> groupChatUserIndices = new LinkedHashSet<>();
+
+            int groupSize = random.nextInt(maxUsersInGroupChat - minUsersInGroupChat) + minUsersInGroupChat;
+            log.debug("Desired group size {}", groupSize);
+
+            while(groupChatUserIndices.size() < groupSize){
+                groupChatUserIndices.add(random.nextInt(userCount));
+            }
+
+            log.debug("Group chat user indices {}", groupChatUserIndices);
+
+            result.add(groupChatUserIndices);
+        }
+
+        log.debug("Group Chats count {}", result.size());
+
+        return result;
+
     }
 
 }

@@ -99,12 +99,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.messageListener
         );
         this.stompClient.subscribe(
-            '/topic/chats/personal/create/' + this.props.currentUser?.id,
-            this.createPersonalChatListener
+            '/topic/chats/create/' + this.props.currentUser?.id,
+            this.createChatListener
         );
         this.stompClient.subscribe(
-            '/topic/chats/personal/delete/' + this.props.currentUser?.id,
-            this.deletePersonalChatListener
+            '/topic/chats/delete/' + this.props.currentUser?.id,
+            this.deleteChatListener
         );
         console.log('END OF Connected');
     }
@@ -129,12 +129,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     }
 
-    private createPersonalChatListener = (dataFromServer: Message) => {
+    private createChatListener = (dataFromServer: Message) => {
         const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
         this.props.actions.addChatToList(iChatDetails);
     }
 
-    private deletePersonalChatListener = (dataFromServer: Message) => {
+    private deleteChatListener = (dataFromServer: Message) => {
         const chatId: string = JSON.parse(dataFromServer.body).chatId;
         if (chatId === this.props.selectedChatId) {
             this.props.actions.removeSelected();

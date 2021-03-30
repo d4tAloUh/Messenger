@@ -13,7 +13,7 @@ import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
 import messenger.backend.message.MessageService;
 import messenger.backend.sockets.SocketSender;
-import messenger.backend.sockets.Subscribed;
+import messenger.backend.sockets.SubscribedOn;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -81,7 +81,7 @@ public class PersonalChatService {
         );
 
         socketSender.send(
-                Subscribed.CREATE_PERSONAL_CHAT,
+                SubscribedOn.CREATE_CHAT,
                 List.of(contextUser.getId(), targetUser.getId()),
                 responseDto
         );
@@ -112,7 +112,7 @@ public class PersonalChatService {
         personalChatRepository.delete(privateChatEntity);
 
         socketSender.send(
-                Subscribed.DELETE_PERSONAL_CHAT,
+                SubscribedOn.DELETE_CHAT,
                 uuidList,
                 DeleteChatDto.of(privateChatEntity.getId())
         );

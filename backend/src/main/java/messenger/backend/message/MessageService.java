@@ -7,11 +7,10 @@ import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.sockets.SocketSender;
-import messenger.backend.sockets.Subscribed;
+import messenger.backend.sockets.SubscribedOn;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public class MessageService {
 
         MessageResponseDto responseDto = MessageResponseDto.fromEntity(message);
         socketSender.send(
-                Subscribed.MESSAGE,
+                SubscribedOn.MESSAGE,
                 userChat.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
                 responseDto);
 

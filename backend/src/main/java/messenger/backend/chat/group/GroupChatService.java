@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
+import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
 import messenger.backend.message.MessageService;
+import messenger.backend.sockets.SocketSender;
+import messenger.backend.sockets.SubscribedOn;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -32,6 +35,7 @@ public class GroupChatService {
     private final UserChatRepository userChatRepository;
     private final UserRepository userRepository;
     private final MessageService messageService;
+    private final SocketSender socketSender;
 
     public GroupChatResponseDto getById(UUID chatId) {
         var currentUserId = JwtTokenService.getCurrentUserId();
@@ -72,7 +76,17 @@ public class GroupChatService {
                         && chat.getUser().getId().equals(contextUser.getId()));
         if (!isUserOwnerOfChat) throw new UserNotOwnerOfChatException();
 
+        List<UUID> uuidList = groupChatEntity.getUserChats().stream()
+                .map(chat -> chat.getUser().getId())
+                .collect(Collectors.toList());
+
         groupChatRepository.delete(groupChatEntity);
+
+        socketSender.send(
+                SubscribedOn.DELETE_CHAT,
+                uuidList,
+                DeleteChatDto.of(requestDto.getChatId())
+        );
     }
 
     public void addMemberToChat(AddMemberToGroupChatRequestDto requestDto) {
@@ -98,6 +112,16 @@ public class GroupChatService {
                 .permissionLevel(UserChat.PermissionLevel.MEMBER)
                 .build();
         userChatRepository.saveAndFlush(targetUserChat);
+
+        GeneralChatResponseDto responseDto = GeneralChatResponseDto.fromGroupEntity(
+                groupChatEntity,
+                messageService.getLastMessageByChatId(groupChatEntity.getId())
+        );
+        socketSender.send(
+                SubscribedOn.CREATE_CHAT,
+                List.of(requestDto.getTargetUserId()),
+                responseDto
+        );
     }
 
     public void removeMemberFromChat(RemoveMemberFromGroupChatRequestDto requestDto) {
@@ -117,6 +141,12 @@ public class GroupChatService {
         } else {
             throw new NotEnoughPermissionLevelException();
         }
+
+        socketSender.send(
+                SubscribedOn.DELETE_CHAT,
+                List.of(requestDto.getTargetUserId()),
+                DeleteChatDto.of(requestDto.getChatId())
+        );
     }
 
     //just for test todo delete this (or no)

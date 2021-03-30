@@ -1,14 +1,14 @@
 package messenger.backend.sockets;
 
-public enum Subscribed {
+public enum SubscribedOn {
     MESSAGE("/topic/messages/"),
-    CREATE_PERSONAL_CHAT("/topic/chats/personal/create/"),
-    DELETE_PERSONAL_CHAT("/topic/chats/personal/delete/"),
+    CREATE_CHAT("/topic/chats/create/"),
+    DELETE_CHAT("/topic/chats/delete/"),
     ;
 
     private final String text;
 
-    Subscribed(final String text) {
+    SubscribedOn(final String text) {
         this.text = text;
     }
 

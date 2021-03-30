@@ -248,6 +248,19 @@ public class GroupChatService {
         groupChatEntity.setGroupName(requestDto.getNewChatName());
 
         groupChatRepository.saveAndFlush(groupChatEntity);
+
+        List<UUID> uuidList = groupChatEntity.getUserChats().stream()
+                .map(chat -> chat.getUser().getId())
+                .collect(Collectors.toList());
+
+        socketSender.send(
+                SubscribedOn.UPDATE_CHAT,
+                uuidList,
+                GeneralChatResponseDto.fromGroupEntity(
+                        groupChatEntity,
+                        messageService.getLastMessageByChatId(groupChatEntity.getId())
+                )
+        );
     }
 
     //just for test todo delete this

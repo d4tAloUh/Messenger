@@ -106,6 +106,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             '/topic/chats/delete/' + this.props.currentUser?.id,
             this.deleteChatListener
         );
+        this.stompClient.subscribe(
+            '/topic/chats/update/' + this.props.currentUser?.id,
+            this.updateChatListener
+        );
         console.log('END OF Connected');
     }
 
@@ -140,6 +144,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.props.actions.removeSelected();
         }
         this.props.actions.removeChatFromList(chatId);
+    }
+
+    private updateChatListener = (dataFromServer: Message) => {
+        const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
+        this.props.actions.updateChatInList(iChatDetails);
     }
 
     logout = async () => {

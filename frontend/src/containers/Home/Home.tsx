@@ -24,6 +24,10 @@ import personalChatService from "../../api/chat/personal/personalChatService";
 import groupChatService from "../../api/chat/group/groupChatService";
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {toastr} from 'react-redux-toastr';
+import SockJS from "sockjs-client";
+import Stomp, {Message} from "stompjs";
+import tokenService from "../../api/token/tokenService";
+import {IMessage} from "../../api/message/messageModels";
 
 interface IPropsFromDispatch {
     actions: {
@@ -62,20 +66,51 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         loading: false,
         creating: false,
     } as IState;
+    
+    private socket = new SockJS('http://localhost:8080/ws');
+    private stompClient: Stomp.Client = Stomp.over(this.socket);
 
     async componentDidMount() {
         if (authService.isLoggedIn()) {
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
         }
-        setTimeout(() => {
+
+        this.stompClient.connect(
+            {'X-Authorization': tokenService.getAccessToken()},
+            this.afterConnect,
+            error => console.log(error)
+        );
+    }
+    
+    private afterConnect = async (frame: any) => {
+        console.log('Connected (my log): ' + frame);
+        this.stompClient.subscribe('/topic/' + this.props.currentUser?.id, this.messageListener);
+        console.log('END OF Connected');
+    }
+
+    private messageListener = (dataFromServer: Message) => {
+        const iMessage: IMessage = JSON.parse(dataFromServer.body);
+        const id = uuid();
+        this.props.actions.appendLoadingMessage(iMessage.chatId, {text: iMessage.text, id});
+        this.props.actions.setMessageLoaded(iMessage.chatId, id, iMessage);
+        const {selectedChatId} = this.props;
+        if(selectedChatId !== iMessage.chatId) {
             toastr.success('New message', 'You have received a new message');
-        }, 2000);
-        // init socket
+        }
+        const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
+        if (chat) { // todo always true?
+            this.props.actions.setFirstChatInList(chat.id);
+            this.props.actions.updateChatInList({
+                ...chat,
+                lastMessage: {text: iMessage.text, createdAt: iMessage.createdAt},
+            });
+        }
+
     }
 
     componentWillUnmount() {
-        // remove socket
+        this.stompClient.disconnect(() => console.log('disconnected'));
     }
 
     logout = async () => {

@@ -3,14 +3,13 @@ package messenger.backend.message;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
-import messenger.backend.chat.general.GeneralChatRepository;
-import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +23,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserChatRepository userChatRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public List<MessageResponseDto> getAllByChat(UUID chatId) {
         var currentUserId = JwtTokenService.getCurrentUserId();
@@ -50,7 +50,11 @@ public class MessageService {
                 .build();
         messageRepository.save(message);
 
-        return MessageResponseDto.fromEntity(message);
+        MessageResponseDto responseDto = MessageResponseDto.fromEntity(message);
+
+        userChat.getChat().getUserChats()
+                .forEach(chat -> simpMessagingTemplate.convertAndSend("/topic/" + chat.getUser().getId(), responseDto));
+        return responseDto;
     }
 
     public LastMessageResponseDto getLastMessageByChatId(UUID chatId) {

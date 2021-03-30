@@ -22,6 +22,7 @@ public class MessageResponseDto {
                 .senderName(messageEntity.getUserChat().getUser().getFullName())
                 .senderId(messageEntity.getUserChat().getUser().getId())
                 .createdAt(messageEntity.getCreatedAt())
+                .chatId(messageEntity.getUserChat().getChat().getId())
                 .build();
     }
 
@@ -30,4 +31,5 @@ public class MessageResponseDto {
     private String senderName;
     private UUID senderId;
     private Date createdAt;
+    private UUID chatId;
 }

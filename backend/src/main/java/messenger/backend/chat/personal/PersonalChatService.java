@@ -5,12 +5,15 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
+import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
 import messenger.backend.message.MessageService;
+import messenger.backend.sockets.SocketSender;
+import messenger.backend.sockets.Subscribed;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
@@ -34,6 +37,7 @@ public class PersonalChatService {
     private final PersonalChatRepository personalChatRepository;
     private final UserChatRepository userChatRepository;
     private final MessageService messageService;
+    private final SocketSender socketSender;
 
     public PersonalChatResponseDto getById(UUID chatId) {
         var currentUserId = JwtTokenService.getCurrentUserId();
@@ -69,11 +73,20 @@ public class PersonalChatService {
         userChatRepository.saveAndFlush(targetUserChat);
 
         personalChat.setUserChats(List.of(contextUserChat, targetUserChat));
-        return GeneralChatResponseDto.fromPrivateEntity(
+
+        GeneralChatResponseDto responseDto = GeneralChatResponseDto.fromPrivateEntity(
                 personalChat,
                 messageService.getLastMessageByChatId(personalChat.getId()),
                 contextUser.getId()
         );
+
+        socketSender.send(
+                Subscribed.CREATE_PERSONAL_CHAT,
+                List.of(contextUser.getId(), targetUser.getId()),
+                responseDto
+        );
+
+        return responseDto;
     }
 
     private void checkIfPersonalChatExists(UserEntity contextUser, UserEntity targetUser) {
@@ -92,7 +105,17 @@ public class PersonalChatService {
                 .anyMatch(chat -> chat.getUser().getId().equals(contextUser.getId()));
         if(!isUserMemberOfChat) throw new UserNotMemberOfChatException();
 
+        List<UUID> uuidList = privateChatEntity.getUserChats().stream()
+                .map(chat -> chat.getUser().getId())
+                .collect(Collectors.toList());
+
         personalChatRepository.delete(privateChatEntity);
+
+        socketSender.send(
+                Subscribed.DELETE_PERSONAL_CHAT,
+                uuidList,
+                DeleteChatDto.of(privateChatEntity.getId())
+        );
     }
 
     public List<Map<String, String>> getAllChats() {

@@ -78,14 +78,34 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
         this.stompClient.connect(
             {'X-Authorization': tokenService.getAccessToken()},
-            this.afterConnect,
+            this.afterSocketConnect,
             error => console.log(error)
         );
     }
-    
-    private afterConnect = async (frame: any) => {
+
+    componentWillUnmount() {
+        try {
+            this.stompClient.disconnect(() => console.log('disconnected'));
+        } catch (e) {
+            console.log("already disconnected exception:");
+            console.log(e);
+        }
+    }
+
+    private afterSocketConnect = async (frame: any) => {
         console.log('Connected (my log): ' + frame);
-        this.stompClient.subscribe('/topic/' + this.props.currentUser?.id, this.messageListener);
+        this.stompClient.subscribe(
+            '/topic/messages/' + this.props.currentUser?.id,
+            this.messageListener
+        );
+        this.stompClient.subscribe(
+            '/topic/chats/personal/create/' + this.props.currentUser?.id,
+            this.createPersonalChatListener
+        );
+        this.stompClient.subscribe(
+            '/topic/chats/personal/delete/' + this.props.currentUser?.id,
+            this.deletePersonalChatListener
+        );
         console.log('END OF Connected');
     }
 
@@ -109,8 +129,17 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     }
 
-    componentWillUnmount() {
-        this.stompClient.disconnect(() => console.log('disconnected'));
+    private createPersonalChatListener = (dataFromServer: Message) => {
+        const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
+        this.props.actions.addChatToList(iChatDetails);
+    }
+
+    private deletePersonalChatListener = (dataFromServer: Message) => {
+        const chatId: string = JSON.parse(dataFromServer.body).chatId;
+        if (chatId === this.props.selectedChatId) {
+            this.props.actions.removeSelected();
+        }
+        this.props.actions.removeChatFromList(chatId);
     }
 
     logout = async () => {

@@ -1,4 +1,4 @@
-package messenger.backend;
+package messenger.backend.sockets;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;

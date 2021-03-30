@@ -74,19 +74,29 @@ public class PersonalChatService {
 
         personalChat.setUserChats(List.of(contextUserChat, targetUserChat));
 
-        GeneralChatResponseDto responseDto = GeneralChatResponseDto.fromPrivateEntity(
+        GeneralChatResponseDto contextResponseDto = GeneralChatResponseDto.fromPrivateEntity(
                 personalChat,
                 messageService.getLastMessageByChatId(personalChat.getId()),
                 contextUser.getId()
         );
+        GeneralChatResponseDto targetResponseDto = GeneralChatResponseDto.fromPrivateEntity(
+                personalChat,
+                messageService.getLastMessageByChatId(personalChat.getId()),
+                targetUser.getId()
+        );
 
         socketSender.send(
                 SubscribedOn.CREATE_CHAT,
-                List.of(contextUser.getId(), targetUser.getId()),
-                responseDto
+                List.of(contextUser.getId()),
+                contextResponseDto
+        );
+        socketSender.send(
+                SubscribedOn.CREATE_CHAT,
+                List.of(targetUser.getId()),
+                targetResponseDto
         );
 
-        return responseDto;
+        return contextResponseDto;
     }
 
     private void checkIfPersonalChatExists(UserEntity contextUser, UserEntity targetUser) {

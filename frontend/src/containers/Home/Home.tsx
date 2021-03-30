@@ -221,13 +221,13 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
         this.setState({creating: false});
-        this.props.actions.addChatToList(chat);
+        // this.props.actions.addChatToList(chat);
     }
 
     createGroupChat = async (title: string) => {
         const chat = await groupChatService.create(title);
         this.setState({creating: false});
-        this.props.actions.addChatToList(chat);
+        // this.props.actions.addChatToList(chat);
     }
 
     render() {

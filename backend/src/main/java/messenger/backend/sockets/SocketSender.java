@@ -18,4 +18,8 @@ public class SocketSender {
         uuidList.forEach(uuid -> simpMessagingTemplate.convertAndSend(urlPrefix.toString() + uuid, data));
     }
 
+    public void send(SubscribedOn urlPrefix, UUID uuid, Object data) {
+        simpMessagingTemplate.convertAndSend(urlPrefix.toString() + uuid, data);
+    }
+
 }

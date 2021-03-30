@@ -87,12 +87,12 @@ public class PersonalChatService {
 
         socketSender.send(
                 SubscribedOn.CREATE_CHAT,
-                List.of(contextUser.getId()),
+                contextUser.getId(),
                 contextResponseDto
         );
         socketSender.send(
                 SubscribedOn.CREATE_CHAT,
-                List.of(targetUser.getId()),
+                targetUser.getId(),
                 targetResponseDto
         );
 

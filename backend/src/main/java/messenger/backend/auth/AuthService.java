@@ -61,7 +61,7 @@ public class AuthService {
         userRepository.saveAndFlush(userEntity);
     }
 
-    private AuthResponseDto buildAuthResponse(UserEntity userEntity) {
+    public AuthResponseDto buildAuthResponse(UserEntity userEntity) {
         var refreshTokenEntity = refreshTokenService.createByUserEntity(userEntity);
 
         var refreshToken = refreshTokenEntity.getId();

@@ -1,6 +1,7 @@
 package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.user.dto.ChangePasswordRequestDto;
 import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
@@ -34,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public void changeUserPassword(@Valid @RequestBody ChangePasswordRequestDto requestDto) {
-        userService.changeUserPassword(requestDto);
+    public Response<AuthResponseDto> changeUserPassword(@Valid @RequestBody ChangePasswordRequestDto requestDto) {
+        return Response.success(userService.changeUserPassword(requestDto));
     }
 
 }

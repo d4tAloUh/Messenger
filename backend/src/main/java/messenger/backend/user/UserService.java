@@ -1,6 +1,8 @@
 package messenger.backend.user;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.auth.AuthService;
+import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.PersonalChatRepository;
@@ -30,6 +32,7 @@ public class UserService {
     private final SocketSender socketSender;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuthService authService;
 
     public UserSearchInfoDto getUserSearchInfo(String username) {
         return userRepository.getByUsername(username)
@@ -68,14 +71,14 @@ public class UserService {
                 });
     }
 
-    public void changeUserPassword(ChangePasswordRequestDto requestDto) {
+    public AuthResponseDto changeUserPassword(ChangePasswordRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
         boolean isPasswordsMatches = passwordEncoder.matches(requestDto.getOldPassword(), contextUser.getPassword());
         if (!isPasswordsMatches) throw new IncorrectPasswordException();
 
         refreshTokenRepository.deleteAllByUserEntityId(contextUser.getId());
-
         contextUser.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
         userRepository.saveAndFlush(contextUser);
+        return authService.buildAuthResponse(contextUser);
     }
 }

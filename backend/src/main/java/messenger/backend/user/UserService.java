@@ -5,11 +5,15 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.MessageService;
+import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
+import messenger.backend.user.dto.ChangePasswordRequestDto;
 import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
+import messenger.backend.user.exceptions.IncorrectPasswordException;
 import messenger.backend.user.exceptions.UserNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +28,8 @@ public class UserService {
     private final PersonalChatRepository personalChatRepository;
     private final MessageService messageService;
     private final SocketSender socketSender;
+    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public UserSearchInfoDto getUserSearchInfo(String username) {
         return userRepository.getByUsername(username)
@@ -60,5 +66,16 @@ public class UserService {
                             response
                     );
                 });
+    }
+
+    public void changeUserPassword(ChangePasswordRequestDto requestDto) {
+        UserEntity contextUser = JwtTokenService.getContextUser();
+        boolean isPasswordsMatches = passwordEncoder.matches(requestDto.getOldPassword(), contextUser.getPassword());
+        if (!isPasswordsMatches) throw new IncorrectPasswordException();
+
+        refreshTokenRepository.deleteAllByUserEntityId(contextUser.getId());
+
+        contextUser.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.saveAndFlush(contextUser);
     }
 }

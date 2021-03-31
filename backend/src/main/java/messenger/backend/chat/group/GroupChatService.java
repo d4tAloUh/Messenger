@@ -6,7 +6,6 @@ import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.group.dto.*;
 import messenger.backend.chat.group.exceptions.NotEnoughPermissionLevelException;
 import messenger.backend.chat.group.exceptions.UserNotOwnerOfChatException;
@@ -60,10 +59,14 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return GeneralChatResponseDto.fromGroupEntity(
+        GeneralChatResponseDto responseDto = GeneralChatResponseDto.fromGroupEntity(
                 groupChat,
                 messageService.getLastMessageByChatId(groupChat.getId())
         );
+
+        socketSender.send(SubscribedOn.CREATE_CHAT, contextUser.getId(), responseDto);
+
+        return responseDto;
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {

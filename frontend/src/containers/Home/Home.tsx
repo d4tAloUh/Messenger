@@ -25,9 +25,9 @@ import groupChatService from "../../api/chat/group/groupChatService";
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
-import Stomp, {Message} from "stompjs";
 import tokenService from "../../api/token/tokenService";
 import {IMessage} from "../../api/message/messageModels";
+import {CompatClient, Stomp} from "@stomp/stompjs";
 
 interface IPropsFromDispatch {
     actions: {
@@ -67,8 +67,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         creating: false,
     } as IState;
     
-    private socket = new SockJS('http://localhost:8080/ws');
-    private stompClient: Stomp.Client = Stomp.over(this.socket);
+    private socket: WebSocket = new SockJS('http://localhost:8080/ws');
+    private stompClient: CompatClient = Stomp.over(this.socket);
 
     async componentDidMount() {
         if (authService.isLoggedIn()) {
@@ -76,19 +76,37 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.props.actions.setCurrentUser(currentUser);
         }
 
-        this.stompClient.connect(
-            {'X-Authorization': tokenService.getAccessToken()},
-            this.afterSocketConnect,
-            error => console.log(error)
-        );
+        this.configureSocket();
+        this.connectSocket();
     }
 
     componentWillUnmount() {
+        this.disconnectSocket();
+    }
+
+    private configureSocket = () => {
+        this.stompClient.debug = str => {
+            // todo change to empty function
+            console.log('----- DEBUG SOCKET LOG:\n' + str);
+        };
+        this.stompClient.reconnectDelay = 5000;
+        this.stompClient.connectionTimeout = 5000;
+    }
+
+    private connectSocket = () => {
+        this.stompClient.connect(
+            {'X-Authorization': tokenService.getAccessToken()},
+            this.afterSocketConnect,
+            (error: any) => console.log(error)
+        );
+    }
+
+    private disconnectSocket = () => {
         try {
             this.stompClient.disconnect(() => console.log('disconnected'));
         } catch (e) {
             console.log("already disconnected exception:");
-            console.log(e);
+            // console.log(e);
         }
     }
 
@@ -113,7 +131,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         console.log('END OF Connected');
     }
 
-    private messageListener = (dataFromServer: Message) => {
+    private messageListener = (dataFromServer: any) => {
         const iMessage: IMessage = JSON.parse(dataFromServer.body);
         const id = uuid();
         this.props.actions.appendLoadingMessage(iMessage.chatId, {text: iMessage.text, id});
@@ -133,12 +151,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     }
 
-    private createChatListener = (dataFromServer: Message) => {
+    private createChatListener = (dataFromServer: any) => {
         const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
         this.props.actions.addChatToList(iChatDetails);
     }
 
-    private deleteChatListener = (dataFromServer: Message) => {
+    private deleteChatListener = (dataFromServer: any) => {
         const chatId: string = JSON.parse(dataFromServer.body).chatId;
         if (chatId === this.props.selectedChatId) {
             this.props.actions.removeSelected();
@@ -146,7 +164,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.removeChatFromList(chatId);
     }
 
-    private updateChatListener = (dataFromServer: Message) => {
+    private updateChatListener = (dataFromServer: any) => {
         const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
         this.props.actions.updateChatInList(iChatDetails);
     }

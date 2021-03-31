@@ -3,7 +3,6 @@ package messenger.backend.chat.personal;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
-import messenger.backend.chat.personal.dto.CreatePersonalChatResponseDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.utils.Response;
@@ -24,7 +23,7 @@ public class PersonalChatController {
     private final PersonalChatService personalChatService;
 
     @GetMapping("/{chatId}")
-    public Response<PersonalChatResponseDto> createPersonalChat(@PathVariable UUID chatId) {
+    public Response<PersonalChatResponseDto> getPersonalChatInfo(@PathVariable UUID chatId) {
         return Response.success(personalChatService.getById(chatId));
     }
 

@@ -24,6 +24,10 @@ import personalChatService from "../../api/chat/personal/personalChatService";
 import groupChatService from "../../api/chat/group/groupChatService";
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {toastr} from 'react-redux-toastr';
+import SockJS from "sockjs-client";
+import Stomp, {Message} from "stompjs";
+import tokenService from "../../api/token/tokenService";
+import {IMessage} from "../../api/message/messageModels";
 
 interface IPropsFromDispatch {
     actions: {
@@ -62,20 +66,89 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         loading: false,
         creating: false,
     } as IState;
+    
+    private socket = new SockJS('http://localhost:8080/ws');
+    private stompClient: Stomp.Client = Stomp.over(this.socket);
 
     async componentDidMount() {
         if (authService.isLoggedIn()) {
             const currentUser = await authService.me();
             this.props.actions.setCurrentUser(currentUser);
         }
-        setTimeout(() => {
-            toastr.success('New message', 'You have received a new message');
-        }, 2000);
-        // init socket
+
+        this.stompClient.connect(
+            {'X-Authorization': tokenService.getAccessToken()},
+            this.afterSocketConnect,
+            error => console.log(error)
+        );
     }
 
     componentWillUnmount() {
-        // remove socket
+        try {
+            this.stompClient.disconnect(() => console.log('disconnected'));
+        } catch (e) {
+            console.log("already disconnected exception:");
+            console.log(e);
+        }
+    }
+
+    private afterSocketConnect = async (frame: any) => {
+        console.log('Connected (my log): ' + frame);
+        this.stompClient.subscribe(
+            '/topic/messages/' + this.props.currentUser?.id,
+            this.messageListener
+        );
+        this.stompClient.subscribe(
+            '/topic/chats/create/' + this.props.currentUser?.id,
+            this.createChatListener
+        );
+        this.stompClient.subscribe(
+            '/topic/chats/delete/' + this.props.currentUser?.id,
+            this.deleteChatListener
+        );
+        this.stompClient.subscribe(
+            '/topic/chats/update/' + this.props.currentUser?.id,
+            this.updateChatListener
+        );
+        console.log('END OF Connected');
+    }
+
+    private messageListener = (dataFromServer: Message) => {
+        const iMessage: IMessage = JSON.parse(dataFromServer.body);
+        const id = uuid();
+        this.props.actions.appendLoadingMessage(iMessage.chatId, {text: iMessage.text, id});
+        this.props.actions.setMessageLoaded(iMessage.chatId, id, iMessage);
+        const {selectedChatId} = this.props;
+        if(selectedChatId !== iMessage.chatId) {
+            toastr.success('New message', 'You have received a new message');
+        }
+        const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
+        if (chat) { // todo always true?
+            this.props.actions.setFirstChatInList(chat.id);
+            this.props.actions.updateChatInList({
+                ...chat,
+                lastMessage: {text: iMessage.text, createdAt: iMessage.createdAt},
+            });
+        }
+
+    }
+
+    private createChatListener = (dataFromServer: Message) => {
+        const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
+        this.props.actions.addChatToList(iChatDetails);
+    }
+
+    private deleteChatListener = (dataFromServer: Message) => {
+        const chatId: string = JSON.parse(dataFromServer.body).chatId;
+        if (chatId === this.props.selectedChatId) {
+            this.props.actions.removeSelected();
+        }
+        this.props.actions.removeChatFromList(chatId);
+    }
+
+    private updateChatListener = (dataFromServer: Message) => {
+        const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
+        this.props.actions.updateChatInList(iChatDetails);
     }
 
     logout = async () => {
@@ -148,13 +221,13 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
         this.setState({creating: false});
-        this.props.actions.addChatToList(chat);
+        // this.props.actions.addChatToList(chat);
     }
 
     createGroupChat = async (title: string) => {
         const chat = await groupChatService.create(title);
         this.setState({creating: false});
-        this.props.actions.addChatToList(chat);
+        // this.props.actions.addChatToList(chat);
     }
 
     render() {

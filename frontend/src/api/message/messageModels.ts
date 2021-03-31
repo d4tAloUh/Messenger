@@ -4,6 +4,7 @@ export interface IMessage {
     senderName: string;
     senderId: string;
     createdAt: number;
+    chatId: string;
 }
 
 export interface ILastMessage {

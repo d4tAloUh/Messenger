@@ -95,7 +95,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     private connectSocket = () => {
         this.stompClient.connect(
-            {'X-Authorization': tokenService.getAccessToken()},
+            {},
             this.afterSocketConnect,
             (error: any) => console.log(error)
         );
@@ -112,22 +112,30 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     private afterSocketConnect = async (frame: any) => {
         console.log('Connected (my log): ' + frame);
+        let accessToken = tokenService.getAccessToken();
+        if (accessToken === null) {
+            accessToken = '';
+        }
         this.stompClient.subscribe(
             '/topic/messages/' + this.props.currentUser?.id,
-            this.messageListener
+            this.messageListener,
+            {'Authorization': accessToken}
         );
         this.stompClient.subscribe(
             '/topic/chats/create/' + this.props.currentUser?.id,
-            this.createChatListener
+            this.createChatListener,
+            {'Authorization': accessToken}
         );
         this.stompClient.subscribe(
             '/topic/chats/delete/' + this.props.currentUser?.id,
-            this.deleteChatListener
+            this.deleteChatListener,
+            {'Authorization': accessToken}
         );
         this.stompClient.subscribe(
             '/topic/chats/update/' + this.props.currentUser?.id,
-            this.updateChatListener
-        );
+            this.updateChatListener,
+            {'Authorization': accessToken}
+            );
         console.log('END OF Connected');
     }
 

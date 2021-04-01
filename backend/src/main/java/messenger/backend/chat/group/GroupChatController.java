@@ -21,7 +21,7 @@ public class GroupChatController {
     private final GroupChatService groupChatService;
 
     @GetMapping("/{chatId}")
-    public Response<GroupChatResponseDto> createPersonalChat(@PathVariable UUID chatId) {
+    public Response<GroupChatResponseDto> getGroupChatInfo(@PathVariable UUID chatId) {
         return Response.success(groupChatService.getById(chatId));
     }
 

@@ -23,7 +23,7 @@ public class PersonalChatController {
     private final PersonalChatService personalChatService;
 
     @GetMapping("/{chatId}")
-    public Response<PersonalChatResponseDto> createPersonalChat(@PathVariable UUID chatId) {
+    public Response<PersonalChatResponseDto> getPersonalChatInfo(@PathVariable UUID chatId) {
         return Response.success(personalChatService.getById(chatId));
     }
 

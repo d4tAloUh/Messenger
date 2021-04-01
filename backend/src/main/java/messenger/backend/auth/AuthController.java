@@ -5,14 +5,16 @@ import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.dto.RefreshTokenDto;
 import messenger.backend.auth.dto.RegisterRequestDto;
-import messenger.backend.refreshToken.RefreshTokenEntity;
 import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.user.dto.CurrentUserInfoDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,8 +50,16 @@ public class AuthController {
     }
 
     @GetMapping("/tokens") // just for test todo delete this
-    public List<RefreshTokenEntity> getTokens() {
-        return refreshTokenRepository.findAll();
+    public List<Map<String, String>> getTokens() {
+        return refreshTokenRepository.findAll().stream()
+                .map(refreshTokenEntity -> {
+                    Map<String, String> responseMap = new HashMap<>();
+                    responseMap.put("username", refreshTokenEntity.getUserEntity().getUsername());
+                    responseMap.put("refreshToken", refreshTokenEntity.getId().toString());
+                    responseMap.put("createdAt", refreshTokenEntity.getCreatedAt().toString());
+                    return responseMap;
+                })
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/logout/all") // just for test (or no) todo delete this?

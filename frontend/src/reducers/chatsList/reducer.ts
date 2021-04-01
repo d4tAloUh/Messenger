@@ -4,10 +4,12 @@ import {
     ADD_CHAT_TO_LIST,
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
+    APPEND_READY_MESSAGE,
     REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST, SET_FIRST_CHAT_IN_LIST,
+    SET_CHATS_LIST,
+    SET_FIRST_CHAT_IN_LIST,
     SET_MESSAGE_LOADED,
     SET_SELECTED,
     UPDATE_CHAT_IN_LIST
@@ -52,7 +54,9 @@ export const authReducer = (
         case ADD_CHAT_TO_LIST:
             return {
                 ...state,
-                chatsList: [action.payload, ...(state.chatsList || [])],
+                chatsList: state.chatsList?.find(c => c.id === action.payload.id)
+                    ? state.chatsList
+                    : [action.payload, ...(state.chatsList || [])],
             };
         case SET_FIRST_CHAT_IN_LIST:
             return {
@@ -127,11 +131,27 @@ export const authReducer = (
                     chat => chat.details.id === action.payload.chatId
                         ? {
                             ...chat,
-                            messages: chat.messages?.map(
-                                message => message.loading?.id === action.payload.loadingId
-                                ? {info: action.payload.message}
-                                : message
-                            ),
+                            messages: chat.messages?.find(mw => mw.info?.id === action.payload.message.id)
+                                ? chat.messages?.filter(mw => mw.loading?.id !== action.payload.loadingId)
+                                : chat.messages?.map(
+                                    message => message.loading?.id === action.payload.loadingId
+                                    ? {info: action.payload.message}
+                                    : message
+                                )
+                        }
+                        : chat
+                ),
+            };
+        case APPEND_READY_MESSAGE:
+            return {
+                ...state,
+                chatsDetailsCached: state.chatsDetailsCached.map(
+                    chat => chat.details.id === action.payload.chatId
+                        ? {
+                            ...chat,
+                            messages: chat.messages?.find(mw => mw.info?.id === action.payload.message.id)
+                                ? chat.messages
+                                : [...(chat.messages || []), {info: action.payload.message}],
                         }
                         : chat
                 ),

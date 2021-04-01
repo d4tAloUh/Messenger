@@ -59,10 +59,14 @@ public class GroupChatService {
 
         userChatRepository.saveAndFlush(contextUserChat);
 
-        return GeneralChatResponseDto.fromGroupEntity(
+        GeneralChatResponseDto responseDto = GeneralChatResponseDto.fromGroupEntity(
                 groupChat,
                 messageService.getLastMessageByChatId(groupChat.getId())
         );
+
+        socketSender.send(SubscribedOn.CREATE_CHAT, contextUser.getId(), responseDto);
+
+        return responseDto;
     }
 
     public void deleteGroupChat(DeleteGroupChatRequestDto requestDto) {

@@ -284,6 +284,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             <LoaderWrapper loading={!currentUser || loading}>
                 {profile && currentUser && (
                     <Modal close={() => this.setState({profile: false})}>
+                        <div className={styles.modalUsername}>
+                            {currentUser?.username}
+                        </div>
                         <ProfileEdit
                             currentUser={currentUser}
                             editProfile={this.handleEditProfile}

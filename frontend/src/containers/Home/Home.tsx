@@ -262,6 +262,14 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     handleEditProfile = async (request: IProfileEdit) => {
         await userService.editProfile(request);
+        toastr.success('Success', 'Profile successfully updated');
+        const currentUser = this.props.currentUser;
+        if (currentUser) {
+            this.props.actions.setCurrentUser({
+                ...currentUser,
+                ...request,
+            });
+        }
     }
 
     render() {

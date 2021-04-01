@@ -16,7 +16,12 @@ class Header extends React.Component<IOwnProps> {
             <div className={styles.header}>
                 <h1>Messenger</h1>
                 <div className={styles.links}>
-                    <span onClick={openModal}>{currentUser?.fullName}</span>
+                    <span
+                        className={styles.name}
+                        onClick={openModal}
+                    >
+                        {currentUser?.fullName}
+                    </span>
                     <span className={styles.link} onClick={logout}>Logout</span>
                 </div>
             </div>

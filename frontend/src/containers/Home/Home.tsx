@@ -29,8 +29,9 @@ import tokenService from "../../api/token/tokenService";
 import {IMessage} from "../../api/message/messageModels";
 import {CompatClient, Stomp} from "@stomp/stompjs";
 import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
-import {IProfileEdit} from "../../api/user/userModels";
+import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
 import userService from "../../api/user/userService";
+import PasswordChange from "../../components/PasswordChange/PasswordChange";
 
 interface IPropsFromDispatch {
     actions: {
@@ -260,6 +261,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.addChatToList(chat);
     }
 
+    handleChangePassword = async (request: IPasswordChange) => {
+        await userService.changePassword(request);
+        toastr.success('Success', 'Password successfully updated');
+    }
+
     handleEditProfile = async (request: IProfileEdit) => {
         await userService.editProfile(request);
         toastr.success('Success', 'Profile successfully updated');
@@ -290,6 +296,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         <ProfileEdit
                             currentUser={currentUser}
                             editProfile={this.handleEditProfile}
+                        />
+                        <PasswordChange
+                            changePassword={this.handleChangePassword}
                         />
                     </Modal>
                 )}

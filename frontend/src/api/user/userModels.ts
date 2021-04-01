@@ -13,6 +13,11 @@ export interface IProfileEdit {
     bio: string;
 }
 
+export interface IPasswordChange {
+    oldPassword: string;
+    newPassword: string;
+}
+
 export interface IUserSearchDto {
     id: string;
     username: string;

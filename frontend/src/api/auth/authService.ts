@@ -1,4 +1,4 @@
-import {ICurrentUser, ILoginRequest, ILoginResponse, IRegisterRequest} from "./authModels";
+import {ICurrentUser, ILoginRequest, IAuthResponse, IRegisterRequest} from "./authModels";
 import tokenService from "../token/tokenService";
 import apiClient from "../apiClient";
 
@@ -6,7 +6,7 @@ const authService = {
 
     login: async (loginDto: ILoginRequest): Promise<void> => {
         const response = await apiClient.post('/api/auth/login', loginDto);
-        const tokens: ILoginResponse = response.data.data;
+        const tokens: IAuthResponse = response.data.data;
         tokenService.setTokens(tokens.accessToken, tokens.refreshToken);
     },
 

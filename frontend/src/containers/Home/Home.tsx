@@ -45,6 +45,7 @@ interface IPropsFromDispatch {
         setChatMessages: typeof chatsListActions.setChatMessages;
         appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
         setMessageLoaded: typeof chatsListActions.setMessageLoaded;
+        appendReadyMessage: typeof chatsListActions.appendReadyMessage,
     };
 }
 
@@ -66,7 +67,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         loading: false,
         creating: false,
     } as IState;
-    
+
     private socket: WebSocket = new SockJS('http://localhost:8080/ws');
     private stompClient: CompatClient = Stomp.over(this.socket);
 
@@ -141,9 +142,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     private messageListener = (dataFromServer: any) => {
         const iMessage: IMessage = JSON.parse(dataFromServer.body);
-        const id = uuid();
-        this.props.actions.appendLoadingMessage(iMessage.chatId, {text: iMessage.text, id});
-        this.props.actions.setMessageLoaded(iMessage.chatId, id, iMessage);
+        this.props.actions.appendReadyMessage(iMessage.chatId, iMessage);
         const {selectedChatId} = this.props;
         if(selectedChatId !== iMessage.chatId) {
             toastr.success('New message', 'You have received a new message');
@@ -247,13 +246,13 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
         this.setState({creating: false});
-        // this.props.actions.addChatToList(chat);
+        this.props.actions.addChatToList(chat);
     }
 
     createGroupChat = async (title: string) => {
         const chat = await groupChatService.create(title);
         this.setState({creating: false});
-        // this.props.actions.addChatToList(chat);
+        this.props.actions.addChatToList(chat);
     }
 
     render() {
@@ -331,6 +330,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatMessages: typeof chatsListActions.setChatMessages,
                 appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
                 setMessageLoaded: typeof chatsListActions.setMessageLoaded,
+                appendReadyMessage: typeof chatsListActions.appendReadyMessage,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -347,6 +347,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setChatMessages: chatsListActions.setChatMessages,
                 appendLoadingMessage: chatsListActions.appendLoadingMessage,
                 setMessageLoaded: chatsListActions.setMessageLoaded,
+                appendReadyMessage: chatsListActions.appendReadyMessage,
             }, dispatch),
 });
 

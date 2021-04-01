@@ -18,4 +18,5 @@ export interface ICurrentUser {
     id: string;
     username: string;
     fullName: string;
+    bio: string;
 }

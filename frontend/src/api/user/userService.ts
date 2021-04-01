@@ -1,4 +1,4 @@
-import {IUserSearchDto} from "./userModels";
+import {IProfileEdit, IUserSearchDto} from "./userModels";
 import apiClient from "../apiClient";
 
 const userService = {
@@ -8,6 +8,10 @@ const userService = {
         params.append('username', username);
         const response = await apiClient.get(`/api/users/search?${params.toString()}`);
         return response.data.data;
+    },
+
+    editProfile: async (request: IProfileEdit): Promise<void> => {
+        await apiClient.post(`/api/users/update-profile`, request);
     },
 };
 

@@ -28,6 +28,9 @@ import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {IMessage} from "../../api/message/messageModels";
 import {CompatClient, Stomp} from "@stomp/stompjs";
+import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
+import {IProfileEdit} from "../../api/user/userModels";
+import userService from "../../api/user/userService";
 
 interface IPropsFromDispatch {
     actions: {
@@ -59,6 +62,7 @@ interface IPropsFromState {
 interface IState {
     loading: boolean;
     creating: boolean;
+    profile: boolean;
 }
 
 class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
@@ -66,6 +70,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     state = {
         loading: false,
         creating: false,
+        profile: false,
     } as IState;
 
     private socket: WebSocket = new SockJS('http://localhost:8080/ws');
@@ -255,16 +260,28 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.addChatToList(chat);
     }
 
+    handleEditProfile = async (request: IProfileEdit) => {
+        await userService.editProfile(request);
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 
         const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
-        const {loading, creating} = this.state;
+        const {loading, creating, profile} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
+                {profile && currentUser && (
+                    <Modal close={() => this.setState({profile: false})}>
+                        <ProfileEdit
+                            currentUser={currentUser}
+                            editProfile={this.handleEditProfile}
+                        />
+                    </Modal>
+                )}
                 {creating && (
                     <Modal close={() => this.setState({creating: false})}>
                         <CreatePersonalChat
@@ -275,7 +292,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         />
                     </Modal>
                 )}
-                <Header logout={this.logout} />
+                <Header
+                    logout={this.logout}
+                    openModal={() => this.setState({profile: true})}
+                    currentUser={currentUser}
+                />
                 <div className={styles.content}>
                     <ChatsList
                         chatsList={chatsList}

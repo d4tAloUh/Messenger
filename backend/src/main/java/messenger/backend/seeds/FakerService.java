@@ -17,10 +17,7 @@ import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,7 +72,7 @@ public class FakerService {
         );
         userRepository.saveAll(users);
 
-        users.stream().map(UserEntity::getUsername).forEach(System.out::println);
+        users.stream().map(UserEntity::getUsername).forEach(log::debug);
 
         //creating private chats
         List<PrivateChatEntity> privateChats =
@@ -113,11 +110,11 @@ public class FakerService {
             ++privateChatIndex;
         }
 
-        createGroupChats(getGroupChatsLists());
+        createGroupChats(getGroupChatsLists(),users);
 
     }
 
-    private void createGroupChats(HashSet<LinkedHashSet<Integer>> groupChatsLists) {
+    private void createGroupChats(HashSet<LinkedHashSet<Integer>> groupChatsLists, List<UserEntity> users) {
         List<GroupChatEntity> groupChats =
                 Stream
                         .generate(() -> GroupChatEntity.generateGroupChat())
@@ -126,13 +123,22 @@ public class FakerService {
 
         groupChatRepository.saveAll(groupChats);
 
-        for(LinkedHashSet<Integer> chat : groupChatsLists){
-            
+        List<UserChat> groupUserChats = new ArrayList<>();
+        int groupChatsIndex = 0;
 
-            for (int i = 1; i < chat.size(); i++) {
-
+        for(LinkedHashSet<Integer> chatSet : groupChatsLists){
+            ArrayList<Integer> chat = new ArrayList<>(chatSet);
+            log.debug("HashSet -> ArrayList of chats {}", chat);
+            groupUserChats.add(UserChat.generateUserChat(UserChat.PermissionLevel.OWNER,groupChats.get(groupChatsIndex),users.get(chat.get(0))));
+            groupUserChats.add(UserChat.generateUserChat(UserChat.PermissionLevel.ADMIN,groupChats.get(groupChatsIndex),users.get(chat.get(1))));
+            for (int i = 2; i < chat.size(); i++) {
+                groupUserChats.add(UserChat.generateUserChat(UserChat.PermissionLevel.MEMBER,groupChats.get(groupChatsIndex),users.get(chat.get(i))));
             }
+
+            groupChatsIndex++;
         }
+
+        userChatRepository.saveAll(groupUserChats);
     }
 
 

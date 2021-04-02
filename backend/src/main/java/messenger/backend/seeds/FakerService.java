@@ -60,12 +60,19 @@ public class FakerService {
         //creating users
         List<UserEntity> users =
                 Stream
-                        .generate(() -> UserEntity.generateUser())
+                        .generate(UserEntity::generateUser)
                         .limit(userCount - 1)
                         .collect(Collectors.toList());
         users.add(UserEntity.builder()
                 .username("user")
                 .fullName("userFullName")
+                .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
+                .role(Role.USER)
+                .build()
+        );
+        users.add(UserEntity.builder()
+                .username("user2")
+                .fullName("user2FullName")
                 .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
                 .role(Role.USER)
                 .build()

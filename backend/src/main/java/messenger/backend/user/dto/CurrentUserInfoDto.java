@@ -15,11 +15,13 @@ public class CurrentUserInfoDto {
         return CurrentUserInfoDto.builder()
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
-                .fullName(userEntity.getUsername())
+                .fullName(userEntity.getFullName())
+                .bio(userEntity.getBio())
                 .build();
     }
 
     private UUID id;
     private String username;
     private String fullName;
+    private String bio;
 }

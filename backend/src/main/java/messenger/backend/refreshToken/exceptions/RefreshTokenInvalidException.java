@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class RefreshTokenInvalidException extends WebException {
 
     public RefreshTokenInvalidException() {
-        super("Refresh token invalid or not found", HttpStatus.UNAUTHORIZED);
+        super("Refresh token invalid or not found", HttpStatus.FORBIDDEN);
     }
 
 }

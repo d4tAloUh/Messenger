@@ -9,7 +9,7 @@ export interface IRegisterRequest {
     password: string;
 }
 
-export interface ILoginResponse {
+export interface IAuthResponse {
     accessToken: string;
     refreshToken: string;
 }
@@ -18,4 +18,5 @@ export interface ICurrentUser {
     id: string;
     username: string;
     fullName: string;
+    bio: string | null;
 }

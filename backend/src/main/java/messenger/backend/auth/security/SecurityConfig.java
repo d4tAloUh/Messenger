@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/register").permitAll()
                 .antMatchers("/api/auth/refresh").permitAll()
                 .antMatchers("/api/auth/tokens").permitAll()//just for test todo delete this
+                .antMatchers("/ws/**").permitAll()//just for test todo delete this (or no)
                 .anyRequest()
                 .authenticated()
                 .and()

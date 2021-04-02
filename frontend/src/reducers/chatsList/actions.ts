@@ -2,7 +2,7 @@ import {ActionsUnion, createAction} from "../../helpers/action.helper";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
     ADD_CHAT_TO_LIST,
-    APPEND_CHAT_DETAILS_CACHED, APPEND_LOADING_MESSAGE, REMOVE_CHAT_FROM_LIST,
+    APPEND_CHAT_DETAILS_CACHED, APPEND_LOADING_MESSAGE, APPEND_READY_MESSAGE, REMOVE_CHAT_FROM_LIST,
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
     SET_CHATS_LIST, SET_FIRST_CHAT_IN_LIST, SET_MESSAGE_LOADED,
@@ -29,6 +29,9 @@ export const chatsListActions = {
     ),
     setMessageLoaded: (chatId: string, loadingId: string, message: IMessage) => createAction(
         SET_MESSAGE_LOADED, {chatId, loadingId, message}
+    ),
+    appendReadyMessage: (chatId: string, message: IMessage) => createAction(
+        APPEND_READY_MESSAGE, {chatId, message}
     ),
 };
 

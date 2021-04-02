@@ -1,5 +1,7 @@
-import {IUserSearchDto} from "./userModels";
+import {IPasswordChange, IProfileEdit, IUserSearchDto} from "./userModels";
 import apiClient from "../apiClient";
+import {IAuthResponse} from "../auth/authModels";
+import tokenService from "../token/tokenService";
 
 const userService = {
 
@@ -8,6 +10,16 @@ const userService = {
         params.append('username', username);
         const response = await apiClient.get(`/api/users/search?${params.toString()}`);
         return response.data.data;
+    },
+
+    editProfile: async (request: IProfileEdit): Promise<void> => {
+        await apiClient.post(`/api/users/update-profile`, request);
+    },
+
+    changePassword: async (request: IPasswordChange): Promise<void> => {
+        const response = await apiClient.post(`/api/users/change-password`, request);
+        const {accessToken, refreshToken} = response.data.data;
+        tokenService.setTokens(accessToken, refreshToken);
     },
 };
 

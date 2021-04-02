@@ -8,6 +8,16 @@ export interface IUserShortDto {
     permissionLevel: RoleEnum;
 }
 
+export interface IProfileEdit {
+    fullName: string;
+    bio: string;
+}
+
+export interface IPasswordChange {
+    oldPassword: string;
+    newPassword: string;
+}
+
 export interface IUserSearchDto {
     id: string;
     username: string;

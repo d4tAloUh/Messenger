@@ -28,6 +28,10 @@ import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {IMessage} from "../../api/message/messageModels";
 import {CompatClient, Stomp} from "@stomp/stompjs";
+import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
+import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
+import userService from "../../api/user/userService";
+import PasswordChange from "../../components/PasswordChange/PasswordChange";
 
 interface IPropsFromDispatch {
     actions: {
@@ -59,6 +63,7 @@ interface IPropsFromState {
 interface IState {
     loading: boolean;
     creating: boolean;
+    profile: boolean;
 }
 
 class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
@@ -66,6 +71,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     state = {
         loading: false,
         creating: false,
+        profile: false,
     } as IState;
 
     private socket: WebSocket = new SockJS('http://localhost:8080/ws');
@@ -255,16 +261,47 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.addChatToList(chat);
     }
 
+    handleChangePassword = async (request: IPasswordChange) => {
+        await userService.changePassword(request);
+        toastr.success('Success', 'Password successfully updated');
+    }
+
+    handleEditProfile = async (request: IProfileEdit) => {
+        await userService.editProfile(request);
+        toastr.success('Success', 'Profile successfully updated');
+        const currentUser = this.props.currentUser;
+        if (currentUser) {
+            this.props.actions.setCurrentUser({
+                ...currentUser,
+                ...request,
+            });
+        }
+    }
+
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
         }
 
         const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
-        const {loading, creating} = this.state;
+        const {loading, creating, profile} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
+                {profile && currentUser && (
+                    <Modal close={() => this.setState({profile: false})}>
+                        <div className={styles.modalUsername}>
+                            {currentUser?.username}
+                        </div>
+                        <ProfileEdit
+                            currentUser={currentUser}
+                            editProfile={this.handleEditProfile}
+                        />
+                        <PasswordChange
+                            changePassword={this.handleChangePassword}
+                        />
+                    </Modal>
+                )}
                 {creating && (
                     <Modal close={() => this.setState({creating: false})}>
                         <CreatePersonalChat
@@ -275,7 +312,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         />
                     </Modal>
                 )}
-                <Header logout={this.logout} />
+                <Header
+                    logout={this.logout}
+                    openModal={() => this.setState({profile: true})}
+                    currentUser={currentUser}
+                />
                 <div className={styles.content}>
                     <ChatsList
                         chatsList={chatsList}

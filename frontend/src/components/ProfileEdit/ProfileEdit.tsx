@@ -58,7 +58,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                     onSubmit={this.handleEdit}
                     initialValues={{
                         fullName: currentUser.fullName,
-                        bio: currentUser.bio,
+                        bio: currentUser.bio || '',
                     }}
                     validationSchema={validationSchema}
                     render={({

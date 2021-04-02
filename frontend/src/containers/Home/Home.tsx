@@ -304,6 +304,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 )}
                 {creating && (
                     <Modal close={() => this.setState({creating: false})}>
+                        <div className={styles.modalUsername}>
+                            Create new chat...
+                        </div>
                         <CreatePersonalChat
                             createPersonalChat={this.createPersonalChat}
                         />

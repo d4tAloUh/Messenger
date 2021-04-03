@@ -57,6 +57,13 @@ public class FakerService {
     private int maxUsersInGroupChat = 17;
 
     public void generateRandomData() {
+        List<UserEntity> users = createUsers();
+        createPrivateChats(users);
+        createGroupChats(getGroupChatsLists(),users);
+
+    }
+
+    private List<UserEntity> createUsers() {
         //creating users
         List<UserEntity> users =
                 Stream
@@ -80,7 +87,10 @@ public class FakerService {
         userRepository.saveAll(users);
 
         users.stream().map(UserEntity::getUsername).forEach(log::debug);
+        return users;
+    }
 
+    private void createPrivateChats(List<UserEntity> users) {
         //creating private chats
         List<PrivateChatEntity> privateChats =
                 Stream
@@ -116,9 +126,6 @@ public class FakerService {
 
             ++privateChatIndex;
         }
-
-        createGroupChats(getGroupChatsLists(),users);
-
     }
 
     private void createGroupChats(HashSet<LinkedHashSet<Integer>> groupChatsLists, List<UserEntity> users) {
@@ -146,6 +153,18 @@ public class FakerService {
         }
 
         userChatRepository.saveAll(groupUserChats);
+
+        int debugMessagePerUser = 0;
+        for(UserChat groupUserChat : groupUserChats){
+            List<MessageEntity> userMessages = Stream
+                    .generate(() -> MessageEntity.generateGroupChatMessage(groupUserChat))
+                    .limit(random.nextInt(msgsPerChat/2 - 2) + 2)
+                    .collect(Collectors.toList());
+
+            log.debug("User {} sent {} messages in group chat {}",groupUserChat.getUser().getFullName(),userMessages.size(),groupUserChat.getChat().getId());
+            messageRepository.saveAll(userMessages);
+        }
+
     }
 
 

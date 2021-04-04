@@ -1,10 +1,10 @@
 package messenger.backend.seeds;
 
-public class Tuple<X, Y> {
-    public final X x;
-    public final Y y;
+public class Tuple {
+    public final Integer x;
+    public final Integer y;
 
-    public Tuple(X x, Y y) {
+    public Tuple(Integer x, Integer y) {
         this.x = x;
         this.y = y;
     }
@@ -24,18 +24,24 @@ public class Tuple<X, Y> {
             return false;
         }
 
-        Tuple<X, Y> other_ = (Tuple<X, Y>) other;
+        Tuple other_ = (Tuple) other;
 
         // this may cause NPE if nulls are valid values for x or y. The logic may be improved to handle nulls properly, if needed.
-        return other_.x.equals(this.x) && other_.y.equals(this.y);
+        return (other_.x.equals(this.x) && other_.y.equals(this.y)) || (other_.y.equals(this.x) && other_.x.equals(this.y));
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((x == null) ? 0 : x.hashCode());
-        result = prime * result + ((y == null) ? 0 : y.hashCode());
+        int a = 0, b = 0;
+        if (x > y) {
+            a = x;
+            b = y;
+        } else {
+            a = y;
+            b = x;
+        }
+        int result = a; result = 31 * result + b;
         return result;
+
     }
 }

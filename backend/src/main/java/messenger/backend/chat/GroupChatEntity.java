@@ -34,6 +34,7 @@ public class GroupChatEntity extends ChatSuperclass {
     private String groupName;
 
     @Lob
+    @ToString.Exclude
     @Column(name = "GroupPicture")
     private Byte[] groupPicture;
 

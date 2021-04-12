@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class UserChat {
     public static UserChat generateUserChat(PermissionLevel permLvl, ChatSuperclass chat, UserEntity user) {
 
         return UserChat.builder()
-                .permissionLevel(PermissionLevel.MEMBER)
+                .permissionLevel(permLvl)
                 .user(user)
                 .chat(chat)
                 .build();
@@ -48,7 +49,7 @@ public class UserChat {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 //    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "UserId")
+    @JoinColumn(name = "UserId", nullable = false)
     private UserEntity user;
 
 
@@ -57,11 +58,11 @@ public class UserChat {
     private ChatSuperclass chat;
 
     @Enumerated
-    @Column(name = "PermissionLevel")
+    @Column(name = "PermissionLevel", nullable = false)
     private PermissionLevel permissionLevel;
 
-    @OneToMany(mappedBy = "userChat", cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    private List<MessageEntity> messageEntities = new ArrayList<>();
-
+    @Column(name = "SentTime", nullable = false)
+    @Builder.Default
+    private Date seenAt = new Date(0);
 
 }

@@ -13,9 +13,9 @@ import java.util.UUID;
 public interface MessageRepository extends JpaRepository<MessageEntity, UUID> {
     @Query("SELECT m1 " +
             "FROM MessageEntity m1 " +
-            "WHERE m1.userChat.chat.id = :chatId " +
+            "WHERE m1.chat.id = :chatId " +
             "ORDER BY m1.createdAt DESC ")
     List<MessageEntity> findLastByChatId(UUID chatId, Pageable pageable);
 
-    List<MessageEntity> findAllMessagesByUserChatChatIdOrderByCreatedAtAsc(UUID chatId);
+    List<MessageEntity> findAllMessagesByChatIdOrderByCreatedAtAsc(UUID chatId);
 }

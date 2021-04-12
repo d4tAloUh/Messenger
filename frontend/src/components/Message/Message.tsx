@@ -6,22 +6,28 @@ import moment from "moment";
 
 interface IOwnProps {
     message: IMessageWrapper;
+    isVisibleName?: boolean;
 }
 
 class Message extends React.Component<IOwnProps> {
     render() {
-        const {message} = this.props;
+        const {message, isVisibleName} = this.props;
         const classes = classnames(styles.message, message.loading && styles.loading);
         const text = message.info?.text || message.loading?.text;
         const momentCreatedAt = moment(message.info?.createdAt);
 
         return (
             <div className={classes}>
+                {isVisibleName && (
+                    <div className={styles.name}>
+                        {message.info?.senderName}
+                    </div>
+                )}
                 <div className={styles.text}>
                     {text}
                 </div>
                 <div className={styles.datetime}>
-                    {momentCreatedAt.format("HH:mm")}
+                    {momentCreatedAt.format("DD MMM HH:mm")}
                 </div>
             </div>
         );

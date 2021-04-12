@@ -12,7 +12,7 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatDetails} from "../../api/chat/general/generalChatModels";
+import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
@@ -38,6 +38,8 @@ interface IPropsFromDispatch {
         removeCurrentUser: typeof authActions.removeCurrentUser;
         setCurrentUser: typeof authActions.setCurrentUser;
         setChatsList: typeof chatsListActions.setChatsList;
+        setSeenList: typeof chatsListActions.setSeenList;
+        setSeenChat: typeof chatsListActions.setSeenChat;
         addChatToList: typeof chatsListActions.addChatToList;
         updateChatInList: typeof chatsListActions.updateChatInList;
         setFirstChatInList: typeof chatsListActions.setFirstChatInList;
@@ -129,6 +131,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             {'Authorization': accessToken}
         );
         this.stompClient.subscribe(
+            '/topic/chats/read/' + this.props.currentUser?.id,
+            this.readChatListener,
+            {'Authorization': accessToken}
+        );
+        this.stompClient.subscribe(
             '/topic/chats/create/' + this.props.currentUser?.id,
             this.createChatListener,
             {'Authorization': accessToken}
@@ -152,6 +159,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         const {selectedChatId} = this.props;
         if(selectedChatId !== iMessage.chatId) {
             toastr.success('New message', 'You have received a new message');
+        } else {
+            this.readChat(iMessage.chatId).then();
         }
         const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
         if (chat) { // todo always true?
@@ -162,6 +171,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             });
         }
 
+    }
+
+    private readChatListener = (dataFromServer: any) => {
+        const seenDto: ILastSeen = JSON.parse(dataFromServer.body);
+        this.props.actions.setSeenChat(seenDto.chatId, seenDto.seenAt);
     }
 
     private createChatListener = (dataFromServer: any) => {
@@ -203,10 +217,18 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return b.lastMessage.createdAt - a.lastMessage.createdAt;
         });
         this.props.actions.setChatsList(list);
+        const seenAtList = await generalChatService.getSeenAt();
+        this.props.actions.setSeenList(seenAtList);
     }
 
     selectChat = (chat: IChatDetails) => {
         this.props.actions.setSelected(chat.id);
+        this.readChat(chat.id).then();
+    }
+
+    readChat = async (chatId: string) => {
+        const seen = await generalChatService.readChat(chatId);
+        this.props.actions.setSeenChat(chatId, seen);
     }
 
     loadChatDetails = async (id: string) => {
@@ -363,6 +385,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: typeof authActions.removeCurrentUser,
                 setCurrentUser: typeof authActions.setCurrentUser,
                 setChatsList: typeof chatsListActions.setChatsList,
+                setSeenList: typeof chatsListActions.setSeenList,
+                setSeenChat: typeof chatsListActions.setSeenChat,
                 addChatToList: typeof chatsListActions.addChatToList,
                 updateChatInList: typeof chatsListActions.updateChatInList,
                 setFirstChatInList: typeof chatsListActions.setFirstChatInList,
@@ -380,6 +404,8 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeCurrentUser: authActions.removeCurrentUser,
                 setCurrentUser: authActions.setCurrentUser,
                 setChatsList: chatsListActions.setChatsList,
+                setSeenList: chatsListActions.setSeenList,
+                setSeenChat: chatsListActions.setSeenChat,
                 addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
                 setFirstChatInList: chatsListActions.setFirstChatInList,

@@ -11,6 +11,8 @@ import {
     SET_CHATS_LIST,
     SET_FIRST_CHAT_IN_LIST,
     SET_MESSAGE_LOADED,
+    SET_SEEN_CHAT,
+    SET_SEEN_LIST,
     SET_SELECTED,
     UPDATE_CHAT_IN_LIST
 } from "./actionTypes";
@@ -50,6 +52,25 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: action.payload,
+            };
+        case SET_SEEN_LIST:
+            return {
+                ...state,
+                chatsList: state.chatsList?.map(chat => ({
+                    ...chat,
+                    seenAt: action.payload.find(s => s.chatId === chat.id)?.seenAt
+                }))
+            };
+        case SET_SEEN_CHAT:
+            return {
+                ...state,
+                chatsList: state.chatsList?.map(chat => chat.id === action.payload.chatId
+                    ? {
+                        ...chat,
+                        seenAt: action.payload.seen,
+                    }
+                    : chat
+                )
             };
         case ADD_CHAT_TO_LIST:
             return {

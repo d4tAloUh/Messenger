@@ -14,7 +14,6 @@ public class GroupChatUserInfoDto {
     private String username;
     private String fullName;
     private UserChat.PermissionLevel permissionLevel;
-    private Byte[] profilePicture;
 
     public static GroupChatUserInfoDto from(UserChat userChat) {
         return GroupChatUserInfoDto.builder()
@@ -22,7 +21,6 @@ public class GroupChatUserInfoDto {
                 .username(userChat.getUser().getUsername())
                 .fullName(userChat.getUser().getFullName())
                 .permissionLevel(userChat.getPermissionLevel())
-                .profilePicture(userChat.getUser().getProfilePicture())
                 .build();
     }
 }

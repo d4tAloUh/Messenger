@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./MessagesListWrapper.module.sass";
-import {IMessage} from "../../api/message/messageModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import MessageWrapper from "../MessageWrapper/MessageWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
-import {IMessageWrapper} from "../../reducers/chatsList/reducer";
+import {IChatCache} from "../../reducers/chatsList/reducer";
+import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
 
 interface IOwnProps {
-    messages?: IMessageWrapper[];
+    chatInfo?: IChatCache;
     currentUser?: ICurrentUser;
 }
 
@@ -25,7 +25,10 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
     listBottom = null as any;
 
     render() {
-        const {messages, currentUser} = this.props;
+        const {chatInfo, currentUser} = this.props;
+        const messages = chatInfo?.messages;
+        const isVisibleName = chatInfo?.details.type !== ChatTypeEnum.PERSONAL;
+
         return (
             <div className={styles.wrapper}>
                 <LoaderWrapper loading={!messages}>
@@ -33,6 +36,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
                        <MessageWrapper
                            message={message}
                            currentUser={currentUser}
+                           isVisibleName={isVisibleName}
                        />
                     ))}
                     <div className={styles.listBottom} ref={el => this.listBottom = el}/>

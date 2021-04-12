@@ -19,10 +19,10 @@ public class MessageResponseDto {
         return MessageResponseDto.builder()
                 .id(messageEntity.getId())
                 .text(messageEntity.getMessageBody())
-                .senderName(messageEntity.getUserChat().getUser().getFullName())
-                .senderId(messageEntity.getUserChat().getUser().getId())
-                .createdAt(messageEntity.getCreatedAt())
-                .chatId(messageEntity.getUserChat().getChat().getId())
+                .senderName(messageEntity.getUser().getFullName())
+                .senderId(messageEntity.getUser().getId())
+                .createdAt(messageEntity.getCreatedAt().getTime())
+                .chatId(messageEntity.getChat().getId())
                 .build();
     }
 
@@ -30,6 +30,6 @@ public class MessageResponseDto {
     private String text;
     private String senderName;
     private UUID senderId;
-    private Date createdAt;
+    private Long createdAt;
     private UUID chatId;
 }

@@ -68,7 +68,7 @@ public class FakerService {
         List<UserEntity> users =
                 Stream
                         .generate(UserEntity::generateUser)
-                        .limit(userCount - 1)
+                        .limit(userCount - 2)
                         .collect(Collectors.toList());
         users.add(UserEntity.builder()
                 .username("user")
@@ -131,7 +131,7 @@ public class FakerService {
     private void createGroupChats(HashSet<LinkedHashSet<Integer>> groupChatsLists, List<UserEntity> users) {
         List<GroupChatEntity> groupChats =
                 Stream
-                        .generate(() -> GroupChatEntity.generateGroupChat())
+                        .generate(GroupChatEntity::generateGroupChat)
                         .limit(groupChatCount)
                         .collect(Collectors.toList());
 

@@ -11,7 +11,6 @@ import javax.persistence.Table;
 
 
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -26,10 +25,4 @@ public class PrivateChatEntity extends ChatSuperclass {
         return PrivateChatEntity.builder()
                 .build();
     }
-
-
-    @Lob
-    @ToString.Exclude
-    @Column(name = "chatPicture")
-    private Byte[] chatPicture;
 }

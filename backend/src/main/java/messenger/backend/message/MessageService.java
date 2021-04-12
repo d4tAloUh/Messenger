@@ -33,7 +33,7 @@ public class MessageService {
                 .map(UserChat::getChat)
                 .orElseThrow(ChatNotFoundException::new);
 
-        return messageRepository.findAllMessagesByUserChatChatIdOrderByCreatedAtAsc(chat.getId())
+        return messageRepository.findAllMessagesByChatIdOrderByCreatedAtAsc(chat.getId())
                 .stream()
                 .map(MessageResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -47,7 +47,8 @@ public class MessageService {
 
         var message = MessageEntity.builder()
                 .messageBody(requestDto.getText())
-                .userChat(userChat)
+                .user(userChat.getUser())
+                .chat(userChat.getChat())
                 .build();
         messageRepository.save(message);
 

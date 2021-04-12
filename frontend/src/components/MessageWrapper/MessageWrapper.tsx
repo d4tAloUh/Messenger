@@ -9,11 +9,12 @@ import {IMessageWrapper} from "../../reducers/chatsList/reducer";
 interface IOwnProps {
     message: IMessageWrapper;
     currentUser?: ICurrentUser;
+    isVisibleName?: boolean;
 }
 
 class MessageWrapper extends React.Component<IOwnProps> {
     render() {
-        const {message, currentUser} = this.props;
+        const {message, currentUser, isVisibleName} = this.props;
         const ownMessage = message.info?.senderId === currentUser?.id || message.loading;
         const classes = classnames(
             styles.messageWrapper,
@@ -22,7 +23,7 @@ class MessageWrapper extends React.Component<IOwnProps> {
 
         return (
             <div className={classes}>
-                <Message message={message} />
+                <Message message={message} isVisibleName={isVisibleName} />
             </div>
         );
     }

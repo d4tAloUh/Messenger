@@ -36,11 +36,11 @@ public class RefreshTokenEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", nullable = false)
     @CreatedDate
     private Date createdAt;
 
     @OneToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private UserEntity userEntity;
 }

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import tokenService from "./token/tokenService";
+import {env} from "../env";
 
 const apiClient = axios.create();
 
@@ -33,7 +34,7 @@ apiClient.interceptors.request.use(request => {
     if (token) {
         request.headers.Authorization = token;
     }
-    const prefix = 'http://localhost:8080';
+    const prefix = `${env.backendProtocol}://${env.backendHost}:${env.backendPort}`;
     if (!request.url?.startsWith(prefix)) {
         request.url = prefix + request.url;
     }

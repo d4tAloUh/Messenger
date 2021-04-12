@@ -2,7 +2,9 @@ package messenger.backend.message;
 
 
 import lombok.*;
+import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.seeds.FakerService;
+import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -27,9 +29,8 @@ public class MessageEntity {
     public static MessageEntity generateMessage(UserChat userChat) {
 
         return MessageEntity.builder()
-                .userChat(userChat)
-                .messageType(MessageType.TEXT)
-                .createdAt(FakerService.faker.date().between(new Date(2020,4,1),new Date(2021,3,21)))
+                .user(userChat.getUser())
+                .chat(userChat.getChat())
                 .messageBody(FakerService.faker.elderScrolls().quote())
                 .build();
     }
@@ -37,16 +38,10 @@ public class MessageEntity {
     public static MessageEntity generateGroupChatMessage(UserChat userChat) {
 
         return MessageEntity.builder()
-                .userChat(userChat)
-                .messageType(MessageType.TEXT)
-                .createdAt(FakerService.faker.date().between(new Date(2020,4,1),new Date(2021,3,21)))
+                .user(userChat.getUser())
+                .chat(userChat.getChat())
                 .messageBody(FakerService.faker.book().title())
                 .build();
-    }
-
-    public enum MessageType {
-        TEXT,
-        IMAGE,
     }
 
     @Id
@@ -58,22 +53,18 @@ public class MessageEntity {
     @Column(name = "MessageId")
     private UUID id;
 
+    @Column(name = "SentTime", nullable = false)
     @CreatedDate
-    @Column(name = "SentTime")
     private Date createdAt;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "MessageType")
-    private MessageType messageType;
-
-    //TODO FK to messageId / Null value
-//    @Column(name = "ResponseTo")
-//    private UUID responseTo;
-
-    @Column(name = "MessageBody",length = 1024)
+    @Column(name = "MessageBody",length = 1024, nullable = false)
     private String messageBody;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="UserChat")
-    private UserChat userChat;
+    @JoinColumn(name="User", nullable = false)
+    private UserEntity user;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @JoinColumn(name="Chat", nullable = false)
+    private ChatSuperclass chat;
 }

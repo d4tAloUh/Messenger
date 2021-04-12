@@ -30,12 +30,6 @@ public class GroupChatEntity extends ChatSuperclass {
                 .build();
     }
 
-    @Column(name = "GroupName", length = 64)
+    @Column(name = "GroupName", length = 64, nullable = false)
     private String groupName;
-
-    @Lob
-    @ToString.Exclude
-    @Column(name = "GroupPicture")
-    private Byte[] groupPicture;
-
 }

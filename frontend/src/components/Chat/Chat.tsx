@@ -86,7 +86,7 @@ class Chat extends React.Component<IOwnProps, IState> {
                     openModal={() => this.setState({modalShown: true})}
                 />
                 <MessagesListWrapper
-                    messages={chatInfo?.messages}
+                    chatInfo={chatInfo}
                     currentUser={currentUser}
                 />
                 <ChatSender sendMessage={sendMessage}/>

@@ -10,4 +10,10 @@ export interface IChatDetails {
     type: ChatTypeEnum;
     title: string;
     lastMessage: ILastMessage | null;
+    seenAt?: number;
+}
+
+export interface ILastSeen {
+    chatId: string;
+    seenAt: number;
 }

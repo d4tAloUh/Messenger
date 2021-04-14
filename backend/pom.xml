@@ -16,6 +16,10 @@
 	<properties>
 		<java.version>11</java.version>
 		<jjwt.version>0.9.1</jjwt.version>
+		
+		<sonar.projectKey>LordNani_messenger-ci</sonar.projectKey>
+		<sonar.organization>lordnani</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 <!--	<profiles>-->

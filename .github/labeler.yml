@@ -1,15 +1,15 @@
 theme:build:
   - ".github/**"
-  - "pom.xml"
+  - "./backend/pom.xml"
   - ".travis.yml"
   - ".gitignore"
   - "Dockerfile"
 
 theme:code:
-  - "src/main/*"
+  - "./backend/src/main/*"
 
 theme:tests:
-  - "src/test/*"
+  - "./backend/src/test/*"
 
 theme:documentation:
   - "docs/**"

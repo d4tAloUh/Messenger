@@ -33,7 +33,7 @@ public class TemporarySetTests {
 
     @Test
     public void test(){
-
+        log.debug("testing");
         assertTrue((true || true));
     }
 

@@ -32,6 +32,12 @@ public class TemporarySetTests {
     }
 
     @Test
+    public void test(){
+
+        assertTrue((true || true));
+    }
+
+    @Test
     public void checkHashSetListForDuplicates(){
         Set<List<Integer>> setList = new HashSet<>();
 

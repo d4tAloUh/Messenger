@@ -22,9 +22,7 @@ public class TemporarySetTests {
         Tuple second = new Tuple(10,5);
 
         Set<Tuple> set = new HashSet<>();
-	   
-
-
+        
         set.add(first);
         set.add(second);
 

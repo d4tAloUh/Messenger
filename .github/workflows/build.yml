@@ -19,7 +19,14 @@ jobs:
           java-version: 1.11
       - name: Ensure we are in the correct directory context
         run: pwd
-      - name: Maven Package
+      - name: Maven Clean Build and Verify
         working-directory: ./backend
-        run: mvn -B clean package -DskipTests
+        run: mvn -B clean verify
+
+#       Upload code coverage report to Codecov
+      - name: Test Coverage
+        uses: codecov/codecov-action@v1
+        working-directory: ./backend
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 

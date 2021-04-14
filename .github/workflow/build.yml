@@ -19,6 +19,8 @@ jobs:
           java-version: 1.11
       - name: Cd into backend
         run: cd backend
+      - name: Ensure we are in the correct directory context
+        run: pwd
       - name: Maven Package
         run: mvn -B clean package -DskipTests
 

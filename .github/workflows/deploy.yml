@@ -40,4 +40,6 @@ jobs:
         - name: Publish image
           env:
             IMAGE_NAME: ${{ steps.global_env.outputs.GITHUB_REPO }}
-          run: docker push "docker.pkg.github.com/${{ steps.global_env.outputs.GITHUB_REPO }}/${{ steps.global_env.outputs.IMAGE_NAME }}" 
+          run: |
+            docker push "docker.pkg.github.com/${{ steps.global_env.outputs.GITHUB_REPO }}/${{ steps.global_env.outputs.IMAGE_NAME }}" 
+            docker push lordnani/messenger-main:${GITHUB_SHA::8}

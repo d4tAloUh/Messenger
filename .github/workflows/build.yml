@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-18.04
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - uses: actions/checkout@v1
       - name: set up JDK 11
@@ -20,13 +23,11 @@ jobs:
       - name: Ensure we are in the correct directory context
         run: pwd
       - name: Maven Clean Build and Verify
-        working-directory: ./backend
         run: mvn -B clean verify
 
 #       Upload code coverage report to Codecov
       - name: Test Coverage
         uses: codecov/codecov-action@v1
-        working-directory: ./backend
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 

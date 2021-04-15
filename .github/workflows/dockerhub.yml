@@ -29,4 +29,5 @@ jobs:
         with:
           context: ./backend
           file: ./backend/Dockerfile
+          push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/messenger:latest

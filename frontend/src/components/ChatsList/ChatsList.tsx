@@ -29,6 +29,8 @@ class ChatsList extends React.Component<IOwnProps, IState> {
     render() {
         const {chatsList, selectChat, selectedChatId} = this.props;
         const {filter} = this.state;
+        const filteredChatsList = chatsList
+            ?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()));
 
         return (
             <div className={styles.wrapper}>
@@ -41,9 +43,8 @@ class ChatsList extends React.Component<IOwnProps, IState> {
                             className={styles.search}
                         />
                     </div>
-                    {chatsList
-                        ?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()))
-                        .map(chat => (
+                    {filteredChatsList
+                        ?.map(chat => (
                             <ChatListElement
                                 key={chat.id}
                                 elementData={chat}
@@ -52,6 +53,11 @@ class ChatsList extends React.Component<IOwnProps, IState> {
                             />
                         ))
                     }
+                    {!filteredChatsList?.length && (
+                        <div className={styles.empty}>
+                            No chats found.
+                        </div>
+                    ) }
                 </LoaderWrapper>
             </div>
         );

@@ -8,11 +8,12 @@ interface IOwnProps {
     onBlur?: any;
     name: string;
     className?: string;
+    onKeyDown?: any;
 }
 
 class Textarea extends React.Component<IOwnProps> {
     render() {
-        const {value, onChange, onBlur, name, className} = this.props;
+        const {value, onChange, onBlur, name, className, onKeyDown} = this.props;
         const classes = classnames(styles.textarea, className);
 
         return (
@@ -23,6 +24,7 @@ class Textarea extends React.Component<IOwnProps> {
                     onChange={onChange}
                     onBlur={onBlur}
                     name={name}
+                    onKeyDown={onKeyDown}
                 />
             </div>
         );

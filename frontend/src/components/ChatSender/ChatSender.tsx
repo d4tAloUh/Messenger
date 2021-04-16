@@ -28,6 +28,13 @@ class ChatSender extends React.Component<IOwnProps, IState> {
 
     }
 
+    handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.handleSend();
+        }
+    };
+
     render() {
         const {text} = this.state;
 
@@ -39,6 +46,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
                         onChange={e => this.setState({text: e.target.value})}
                         name="text"
                         className={styles.textarea}
+                        onKeyDown={this.handleTextAreaKeyPress}
                     />
                 </div>
                 <div className={styles.buttonsWrapper}>

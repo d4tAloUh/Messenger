@@ -24,11 +24,13 @@ class Message extends React.Component<IOwnProps> {
                         {message.info?.senderName}
                     </div>
                 )}
-                <div className={styles.text}>
-                    {text}
-                </div>
-                <div className={styles.datetime}>
-                    {momentCreatedAt.format("DD MMM HH:mm")}
+                <div className={styles.content}>
+                    <div className={styles.text}>
+                        {text}
+                    </div>
+                    <div className={styles.datetime}>
+                        {momentCreatedAt.format("DD MMM HH:mm")}
+                    </div>
                 </div>
             </div>
         );

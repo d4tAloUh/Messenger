@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Data
@@ -14,5 +15,6 @@ public class ChangeGroupChatNameRequestDto {
     @NonNull
     private UUID chatId;
     @NotBlank
+    @Size(min = 4, max = 32)
     private String newChatName;
 }

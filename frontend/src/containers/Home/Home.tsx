@@ -153,20 +153,23 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         console.log('END OF Connected');
     }
 
-    private messageListener = (dataFromServer: any) => {
+    private messageListener = async (dataFromServer: any) => {
         const iMessage: IMessage = JSON.parse(dataFromServer.body);
         this.props.actions.appendReadyMessage(iMessage.chatId, iMessage);
         const {selectedChatId} = this.props;
-        if(selectedChatId !== iMessage.chatId) {
+        let seenAt;
+        if(selectedChatId !== iMessage.chatId && iMessage.senderId !== this.props.currentUser?.id) {
             toastr.success('New message', 'You have received a new message');
-        } else {
-            this.readChat(iMessage.chatId).then();
+        }
+        if(selectedChatId === iMessage.chatId) {
+            seenAt = await generalChatService.readChat(iMessage.chatId);
         }
         const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
         if (chat) { // todo always true?
             this.props.actions.setFirstChatInList(chat.id);
             this.props.actions.updateChatInList({
                 ...chat,
+                seenAt: seenAt || chat.seenAt,
                 lastMessage: {text: iMessage.text, createdAt: iMessage.createdAt},
             });
         }
@@ -223,7 +226,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     selectChat = (chat: IChatDetails) => {
         this.props.actions.setSelected(chat.id);
-        this.readChat(chat.id).then();
     }
 
     readChat = async (chatId: string) => {
@@ -252,11 +254,12 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
             const message = await messageService.sendMessage(selectedChatId, text);
             this.props.actions.setMessageLoaded(selectedChatId, id, message);
-            this.readChat(selectedChatId).then();
+            const seenAt = await generalChatService.readChat(selectedChatId);
             if (chat) {
                 this.props.actions.setFirstChatInList(chat.id);
                 this.props.actions.updateChatInList({
                     ...chat,
+                    seenAt,
                     lastMessage: {text, createdAt: message.createdAt},
                 });
             }
@@ -359,6 +362,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
                         updateChatInList={this.updateChatInList}
+                        readChat={this.readChat}
                     />
                 </div>
                 <div className={styles.addWrapper}>

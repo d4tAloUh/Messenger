@@ -13,25 +13,25 @@ const responseErrorHandler = (e: any) => {
     }
 
     const refreshToken = tokenService.getRefreshToken();
-    tokenService.removeTokens();
 
-    if (originalRequest._retry) {
-        window.location.replace('/auth');
+    if (e.response.config.url.includes("/api/auth/refresh")) {
         return Promise.reject(e);
     }
-
-    originalRequest._retry = true;
 
     return apiClient.post('/api/auth/refresh', {refreshToken})
         .then(res => {
             tokenService.setTokens(res.data.data.accessToken, res.data.data.refreshToken);
             return apiClient(originalRequest);
+        })
+        .catch(e => {
+            tokenService.removeTokens();
+            window.location.replace('/auth');
         });
 };
 
 apiClient.interceptors.request.use(request => {
     const token = tokenService.getAccessToken();
-    if (token) {
+    if (token && !request.url?.includes("/api/auth/refresh")) {
         request.headers.Authorization = token;
     }
     const prefix = `${env.backendProtocol}://${env.backendHost}:${env.backendPort}`;

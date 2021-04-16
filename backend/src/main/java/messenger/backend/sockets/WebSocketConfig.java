@@ -5,6 +5,7 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
 import messenger.backend.utils.exceptions.ValidationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -29,6 +30,9 @@ import java.util.UUID;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private final JwtTokenService jwtTokenService;
 
     @Override
@@ -39,7 +43,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000").withSockJS();
+        System.out.println(frontendUrl);
+        registry.addEndpoint("/ws").setAllowedOrigins(frontendUrl).withSockJS();
     }
 
     @Override

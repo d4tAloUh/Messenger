@@ -75,7 +75,7 @@ public class AuthService {
         var refreshTokenEntity = refreshTokenService.getById(refreshToken);
 
         var userEntity = refreshTokenEntity.getUserEntity();
-        refreshTokenService.deleteById(refreshTokenEntity.getId());
+//        refreshTokenService.deleteById(refreshTokenEntity.getId());
 
         return buildAuthResponse(userEntity);
     }

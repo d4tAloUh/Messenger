@@ -18,10 +18,8 @@ public class DbInitializer {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-
-
-        
-
-        fakerService.generateRandomData();
+        if (userRepository.count() == 0) {
+            fakerService.generateRandomData();
+        }
     }
 }

@@ -22,7 +22,6 @@ import java.util.UUID;
 @Setter
 @ToString
 
-@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "Message")
 public class MessageEntity {
@@ -54,8 +53,8 @@ public class MessageEntity {
     private UUID id;
 
     @Column(name = "SentTime", nullable = false)
-    @CreatedDate
-    private Date createdAt;
+    @Builder.Default
+    private Date createdAt = new Date();
 
     @Column(name = "MessageBody",length = 1024, nullable = false)
     private String messageBody;

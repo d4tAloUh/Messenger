@@ -22,7 +22,7 @@ import java.util.UUID;
 @ToString
 
 @Entity
-@Table(name = "User")
+@Table(name = "Users")
 public class UserEntity {
 
     public static UserEntity generateUser() {

@@ -23,7 +23,11 @@ class MessageWrapper extends React.Component<IOwnProps> {
 
         return (
             <div className={classes}>
-                <Message message={message} isVisibleName={isVisibleName} />
+                <Message
+                    message={message}
+                    isVisibleName={isVisibleName}
+                    ownMessage={!!ownMessage}
+                />
             </div>
         );
     }

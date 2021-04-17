@@ -7,8 +7,6 @@ import messenger.backend.seeds.FakerService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -22,7 +20,6 @@ import java.util.UUID;
 @Setter
 @ToString
 
-@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "Message")
 public class MessageEntity {
@@ -54,8 +51,8 @@ public class MessageEntity {
     private UUID id;
 
     @Column(name = "SentTime", nullable = false)
-    @CreatedDate
-    private Date createdAt;
+    @Builder.Default
+    private Date createdAt = new Date();
 
     @Column(name = "MessageBody",length = 1024, nullable = false)
     private String messageBody;

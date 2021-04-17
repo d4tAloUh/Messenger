@@ -19,6 +19,7 @@ interface IOwnProps {
     currentUser?: ICurrentUser;
     sendMessage: (text: string) => Promise<void>;
     deleteChatFromList: (chatId: string) => void;
+    readChat: (chatId: string) => Promise<void>;
     updateChatInList: (chat: IChatDetails) => void;
 }
 
@@ -36,11 +37,13 @@ class Chat extends React.Component<IOwnProps, IState> {
         const {selectedChatId, chatsDetailsCached} = this.props;
         if (
             selectedChatId &&
-            prevProps.selectedChatId !== selectedChatId &&
-            !chatsDetailsCached.find(c => c.details.id === selectedChatId)
+            prevProps.selectedChatId !== selectedChatId
         ) {
-            await this.props.loadChatDetails(selectedChatId);
-            await this.props.loadChatMessages(selectedChatId);
+            if (!chatsDetailsCached.find(c => c.details.id === selectedChatId)) {
+                await this.props.loadChatDetails(selectedChatId);
+                await this.props.loadChatMessages(selectedChatId);
+            }
+            await this.props.readChat(selectedChatId);
         }
     }
 

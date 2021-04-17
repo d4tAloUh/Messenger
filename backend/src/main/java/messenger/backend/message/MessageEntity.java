@@ -58,7 +58,7 @@ public class MessageEntity {
     private String messageBody;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="User", nullable = false)
+    @JoinColumn(name="UserId", nullable = false)
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)

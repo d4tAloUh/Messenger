@@ -32,6 +32,7 @@ import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
 import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
 import userService from "../../api/user/userService";
 import PasswordChange from "../../components/PasswordChange/PasswordChange";
+import {env} from "../../env";
 
 interface IPropsFromDispatch {
     actions: {
@@ -76,7 +77,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         profile: false,
     } as IState;
 
-    private socket: WebSocket = new SockJS('http://localhost:8080/ws');
+    private socket: WebSocket = new SockJS(`${env.backendProtocol}://${env.backendHost}:${env.backendPort}/ws`);
     private stompClient: CompatClient = Stomp.over(this.socket);
 
     async componentDidMount() {

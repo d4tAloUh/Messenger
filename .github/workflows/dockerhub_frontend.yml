@@ -4,7 +4,7 @@ on:
     types: [published]
   push:
     branches:
-      - 'feature/docker'
+      - 'main'
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub

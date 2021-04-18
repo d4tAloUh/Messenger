@@ -5,12 +5,14 @@ import messenger.backend.auth.AuthService;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.chat.group.GroupChatRepository;
 import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.MessageService;
 import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
 import messenger.backend.user.dto.ChangePasswordRequestDto;
+import messenger.backend.user.dto.ChangeUsernameResponseDto;
 import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.user.exceptions.IncorrectPasswordException;
@@ -28,6 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PersonalChatRepository personalChatRepository;
+    private final GroupChatRepository groupChatRepository;
     private final MessageService messageService;
     private final SocketSender socketSender;
     private final PasswordEncoder passwordEncoder;
@@ -68,6 +71,16 @@ public class UserService {
                             targetUserId,
                             response
                     );
+                });
+
+        groupChatRepository.findAllByUserId(contextUser.getId())
+                .forEach(groupChat -> {
+                    groupChat.getUserChats().forEach(userChat -> {
+                        socketSender.send(
+                                SubscribedOn.UPDATE_MESSAGES_USERNAME,
+                                userChat.getUser().getId(),
+                                new ChangeUsernameResponseDto(contextUser.getId(), contextUser.getFullName()));
+                    });
                 });
     }
 

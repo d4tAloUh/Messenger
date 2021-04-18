@@ -6,6 +6,7 @@ public enum SubscribedOn {
     CREATE_CHAT("/topic/chats/create/"),
     DELETE_CHAT("/topic/chats/delete/"),
     UPDATE_CHAT("/topic/chats/update/"),
+    UPDATE_MESSAGES_USERNAME("/topic/messages/update/username/"),
     ;
 
     private final String text;

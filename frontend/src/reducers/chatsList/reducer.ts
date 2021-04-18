@@ -14,7 +14,8 @@ import {
     SET_SEEN_CHAT,
     SET_SEEN_LIST,
     SET_SELECTED,
-    UPDATE_CHAT_IN_LIST
+    UPDATE_CHAT_IN_LIST,
+    UPDATE_SENDER_USERNAME
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
 
@@ -178,6 +179,27 @@ export const authReducer = (
                                 : [...(chat.messages || []), {info: action.payload.message}],
                         }
                         : chat
+                ),
+            };
+        case UPDATE_SENDER_USERNAME:
+            return {
+                ...state,
+                chatsDetailsCached: state.chatsDetailsCached.map(chat => (
+                        {
+                            ...chat,
+                            messages: chat.messages?.map(
+                                    message => message.info?.senderId === action.payload.userId
+                                        ? {
+                                            ...message,
+                                            info: {
+                                                ...message.info,
+                                                senderName: action.payload.newUsername
+                                            }
+                                        }
+                                        : message
+                                )
+                        }
+                    )
                 ),
             };
         default:

@@ -53,6 +53,7 @@ interface IPropsFromDispatch {
         appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
         setMessageLoaded: typeof chatsListActions.setMessageLoaded;
         appendReadyMessage: typeof chatsListActions.appendReadyMessage,
+        updateSenderUsername: typeof chatsListActions.updateSenderUsername,
     };
 }
 
@@ -69,7 +70,7 @@ interface IState {
     profile: boolean;
 }
 
-interface IChangeMessagesUsername {
+export interface IChangeMessagesUsername {
     newUsername: string,
     userId: string
 }
@@ -211,20 +212,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     }
 
     private updateMessagesUsernameListener = async (dataFromServer: any) => {
-        // todo
-        console.log("\n\n\n-------------UPDATE-------------");
         const iChangeUsername: IChangeMessagesUsername = JSON.parse(dataFromServer.body);
-        console.log(iChangeUsername);
-        const list = await generalChatService.getChatsList();
-        list.filter(chat => chat.type === ChatTypeEnum.GROUP /* && groupChatService.getById(chat.id) */)
-            .forEach(chat => {
-
-                messageService.getMessagesByChatId(chat.id)
-                    .then(messages => {
-                        messages.filter(m => m.senderId===iChangeUsername.userId)
-                            .forEach(m => m.senderName = iChangeUsername.newUsername);
-                    });
-            });
+        this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
     logout = async () => {
@@ -432,6 +421,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
                 setMessageLoaded: typeof chatsListActions.setMessageLoaded,
                 appendReadyMessage: typeof chatsListActions.appendReadyMessage,
+                updateSenderUsername: typeof chatsListActions.updateSenderUsername,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -451,6 +441,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 appendLoadingMessage: chatsListActions.appendLoadingMessage,
                 setMessageLoaded: chatsListActions.setMessageLoaded,
                 appendReadyMessage: chatsListActions.appendReadyMessage,
+                updateSenderUsername: chatsListActions.updateSenderUsername,
             }, dispatch),
 });
 

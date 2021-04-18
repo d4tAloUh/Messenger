@@ -31,7 +31,9 @@ class ChatSender extends React.Component<IOwnProps, IState> {
     handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            this.handleSend();
+            if (this.isValid()) {
+                this.handleSend();
+            }
         }
     };
 

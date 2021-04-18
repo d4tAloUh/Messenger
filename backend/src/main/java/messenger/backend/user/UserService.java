@@ -40,11 +40,6 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    // TODO delete
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
-    }
-
     public void updateProfile(UpdateProfileRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
         contextUser.setFullName(requestDto.getFullName());

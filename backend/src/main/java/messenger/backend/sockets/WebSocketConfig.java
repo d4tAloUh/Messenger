@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
-        System.out.println("FRONTEND URL:  " + frontendUrl);
+//        System.out.println("FRONTEND URL:  " + frontendUrl);
     }
 
     @Override
@@ -58,7 +58,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
                     List<String> authorization = accessor.getNativeHeader("Authorization");
                     String accessToken = authorization.get(0);
-//                    System.out.println("token " + accessToken);
                     Authentication authentication = jwtTokenService.getAuthentication(accessToken);
                     UserEntity contextUser = ((SecurityUser) authentication.getPrincipal()).getUserEntity();
 

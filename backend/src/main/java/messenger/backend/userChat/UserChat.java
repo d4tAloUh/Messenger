@@ -45,25 +45,25 @@ public class UserChat {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "UserChatId")
+    @Column(name = "id")
     @Type(type="uuid-char")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 //    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "UserId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ChatId", nullable = false)
+    @JoinColumn(name="chat_id", nullable = false)
     private ChatSuperclass chat;
 
-    @Enumerated
-    @Column(name = "PermissionLevel", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "permissionLevel", nullable = false)
     private PermissionLevel permissionLevel;
 
-    @Column(name = "SentTime", nullable = false)
+    @Column(name = "seen_time", nullable = false)
     @Builder.Default
     private Date seenAt = new Date(0);
 

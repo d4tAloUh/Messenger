@@ -8,8 +8,8 @@ const messageService = {
         return response.data.data;
     },
 
-    sendMessage: async (chatId: string, text: string): Promise<IMessage> => {
-        const response = await apiClient.post(`/api/messages/chat`, {chatId, text});
+    sendMessage: async (chatId: string, text: string, loadingId: string): Promise<IMessage> => {
+        const response = await apiClient.post(`/api/messages/chat`, {chatId, text, loadingId});
         return response.data.data;
     },
 

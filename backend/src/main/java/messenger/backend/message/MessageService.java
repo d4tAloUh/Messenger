@@ -5,6 +5,7 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
+import messenger.backend.message.dto.MessageSocketResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
@@ -56,7 +57,8 @@ public class MessageService {
         socketSender.send(
                 SubscribedOn.MESSAGE,
                 userChat.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
-                responseDto);
+                new MessageSocketResponseDto(requestDto.getLoadingId(), responseDto)
+        );
 
         return responseDto;
     }

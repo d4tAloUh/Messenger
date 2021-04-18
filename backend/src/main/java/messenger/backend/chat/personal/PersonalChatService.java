@@ -11,6 +11,7 @@ import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
 import messenger.backend.chat.personal.exceptions.PersonalChatAlreadyExistsException;
+import messenger.backend.chat.personal.exceptions.SelfChatCreationException;
 import messenger.backend.message.MessageService;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
@@ -52,6 +53,8 @@ public class PersonalChatService {
         UserEntity contextUser = JwtTokenService.getContextUser();
         UserEntity targetUser = userRepository.findById(requestDto.getTargetId())
                 .orElseThrow(UserNotFoundException::new);
+
+        if (contextUser.getId().equals(targetUser.getId())) throw new SelfChatCreationException();
 
         checkIfPersonalChatExists(contextUser, targetUser);
 

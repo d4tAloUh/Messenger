@@ -7,6 +7,7 @@ import messenger.backend.utils.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -36,7 +37,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (JwtAuthException e) {
+        } catch (JwtAuthException | UsernameNotFoundException e) {
             SecurityContextHolder.clearContext();
             //todo find better way to send error
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;

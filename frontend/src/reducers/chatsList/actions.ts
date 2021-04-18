@@ -6,10 +6,11 @@ import {
     REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
     SET_CHATS_LIST, SET_FIRST_CHAT_IN_LIST, SET_MESSAGE_LOADED, SET_SEEN_CHAT, SET_SEEN_LIST,
-    SET_SELECTED, UPDATE_CHAT_IN_LIST
+    SET_SELECTED, UPDATE_CHAT_IN_LIST, UPDATE_SENDER_USERNAME
 } from "./actionTypes";
 import {IMessage} from "../../api/message/messageModels";
 import {IMessageLoading} from "./reducer";
+import {IChangeMessagesUsername} from "../../containers/Home/Home";
 
 export const chatsListActions = {
     setChatsList: (list: IChatDetails[]) => createAction(SET_CHATS_LIST, list),
@@ -34,6 +35,9 @@ export const chatsListActions = {
     ),
     appendReadyMessage: (chatId: string, message: IMessage, loadingId: string) => createAction(
         APPEND_READY_MESSAGE, {chatId, message, loadingId}
+    ),
+    updateSenderUsername: ({newUsername, userId}: IChangeMessagesUsername) => createAction(
+        UPDATE_SENDER_USERNAME, {newUsername, userId}
     ),
 };
 

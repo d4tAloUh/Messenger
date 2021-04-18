@@ -12,7 +12,7 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
+import {ChatTypeEnum, IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
@@ -53,6 +53,7 @@ interface IPropsFromDispatch {
         appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
         setMessageLoaded: typeof chatsListActions.setMessageLoaded;
         appendReadyMessage: typeof chatsListActions.appendReadyMessage,
+        updateSenderUsername: typeof chatsListActions.updateSenderUsername,
     };
 }
 
@@ -67,6 +68,11 @@ interface IState {
     loading: boolean;
     creating: boolean;
     profile: boolean;
+}
+
+export interface IChangeMessagesUsername {
+    newUsername: string,
+    userId: string
 }
 
 class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IPropsFromState, IState> {
@@ -151,6 +157,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.updateChatListener,
             {'Authorization': accessToken}
             );
+        this.stompClient.subscribe(
+            '/topic/messages/update/username/' + this.props.currentUser?.id,
+            this.updateMessagesUsernameListener,
+            {'Authorization': accessToken}
+        );
         console.log('END OF Connected');
     }
 
@@ -198,6 +209,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     private updateChatListener = (dataFromServer: any) => {
         const iChatDetails: IChatDetails = JSON.parse(dataFromServer.body);
         this.props.actions.updateChatInList(iChatDetails);
+    }
+
+    private updateMessagesUsernameListener = async (dataFromServer: any) => {
+        const iChangeUsername: IChangeMessagesUsername = JSON.parse(dataFromServer.body);
+        this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
     logout = async () => {
@@ -405,6 +421,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
                 setMessageLoaded: typeof chatsListActions.setMessageLoaded,
                 appendReadyMessage: typeof chatsListActions.appendReadyMessage,
+                updateSenderUsername: typeof chatsListActions.updateSenderUsername,
             }>(
             {
                 removeCurrentUser: authActions.removeCurrentUser,
@@ -424,6 +441,7 @@ const mapDispatchToProps = (dispatch: any) => ({
                 appendLoadingMessage: chatsListActions.appendLoadingMessage,
                 setMessageLoaded: chatsListActions.setMessageLoaded,
                 appendReadyMessage: chatsListActions.appendReadyMessage,
+                updateSenderUsername: chatsListActions.updateSenderUsername,
             }, dispatch),
 });
 

@@ -18,4 +18,6 @@ public class SendMessageRequestDto {
     private String text;
     @NotNull
     private UUID chatId;
+    @NotNull
+    private UUID loadingId;
 }

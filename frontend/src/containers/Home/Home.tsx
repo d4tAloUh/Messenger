@@ -155,8 +155,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     }
 
     private messageListener = async (dataFromServer: any) => {
-        const iMessage: IMessage = JSON.parse(dataFromServer.body);
-        this.props.actions.appendReadyMessage(iMessage.chatId, iMessage);
+        const {loadingId, message: iMessage} = JSON.parse(dataFromServer.body);
+        this.props.actions.appendReadyMessage(iMessage.chatId, iMessage, loadingId);
         const {selectedChatId} = this.props;
         let seenAt;
         if(selectedChatId !== iMessage.chatId && iMessage.senderId !== this.props.currentUser?.id) {
@@ -253,7 +253,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         if (selectedChatId) {
             const id = uuid();
             this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
-            const message = await messageService.sendMessage(selectedChatId, text);
+            const message = await messageService.sendMessage(selectedChatId, text, id);
             this.props.actions.setMessageLoaded(selectedChatId, id, message);
             const seenAt = await generalChatService.readChat(selectedChatId);
             if (chat) {

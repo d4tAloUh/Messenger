@@ -14,8 +14,4 @@ public interface GroupChatRepository extends JpaRepository<GroupChatEntity, UUID
             "WHERE c.id=:chatId AND uc.user.id = :userId")
     Optional<GroupChatEntity> findByIdAndUserId(UUID chatId, UUID userId);
 
-    @Query("SELECT c " +
-            "FROM GroupChatEntity as c INNER JOIN c.userChats uc " +
-            "WHERE uc.user.id = :userId")
-    List<GroupChatEntity> findAllByUserId(UUID userId);
 }

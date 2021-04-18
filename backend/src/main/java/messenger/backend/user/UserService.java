@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.AuthService;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.auth.jwt.JwtTokenService;
+import messenger.backend.chat.general.GeneralChatRepository;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.group.GroupChatRepository;
 import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.MessageService;
 import messenger.backend.refreshToken.RefreshTokenRepository;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
@@ -30,7 +31,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PersonalChatRepository personalChatRepository;
-    private final GroupChatRepository groupChatRepository;
+    private final GeneralChatRepository generalChatRepository;
     private final MessageService messageService;
     private final SocketSender socketSender;
     private final PasswordEncoder passwordEncoder;
@@ -73,15 +74,16 @@ public class UserService {
                     );
                 });
 
-        groupChatRepository.findAllByUserId(contextUser.getId())
-                .forEach(groupChat -> {
-                    groupChat.getUserChats().forEach(userChat -> {
-                        socketSender.send(
-                                SubscribedOn.UPDATE_MESSAGES_USERNAME,
-                                userChat.getUser().getId(),
-                                new ChangeUsernameResponseDto(contextUser.getId(), contextUser.getFullName()));
-                    });
-                });
+        generalChatRepository.findAllByMemberId(contextUser.getId()).stream()
+                .flatMap(groupChat -> groupChat.getUserChats().stream())
+                .map(userChat -> userChat.getUser().getId())
+                .distinct()
+                .forEach(targetUserId ->
+                    socketSender.send(
+                            SubscribedOn.UPDATE_MESSAGES_USERNAME,
+                            targetUserId,
+                            new ChangeUsernameResponseDto(contextUser.getId(), contextUser.getFullName()))
+                );
     }
 
     public AuthResponseDto changeUserPassword(ChangePasswordRequestDto requestDto) {

@@ -24,11 +24,6 @@ public class UserController {
         return Response.success(userService.getUserSearchInfo(username));
     }
 
-    @GetMapping("/all") //todo delete this
-    public List<UserEntity> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
     @PostMapping("/update-profile")
     public void updateProfile(@Valid @RequestBody UpdateProfileRequestDto requestDto) {
         userService.updateProfile(requestDto);

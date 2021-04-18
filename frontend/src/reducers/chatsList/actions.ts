@@ -32,8 +32,8 @@ export const chatsListActions = {
     setMessageLoaded: (chatId: string, loadingId: string, message: IMessage) => createAction(
         SET_MESSAGE_LOADED, {chatId, loadingId, message}
     ),
-    appendReadyMessage: (chatId: string, message: IMessage) => createAction(
-        APPEND_READY_MESSAGE, {chatId, message}
+    appendReadyMessage: (chatId: string, message: IMessage, loadingId: string) => createAction(
+        APPEND_READY_MESSAGE, {chatId, message, loadingId}
     ),
 };
 

@@ -170,7 +170,10 @@ export const authReducer = (
                     chat => chat.details.id === action.payload.chatId
                         ? {
                             ...chat,
-                            messages: chat.messages?.find(mw => mw.info?.id === action.payload.message.id)
+                            messages: chat.messages?.find(
+                                mw => mw.info?.id === action.payload.message.id ||
+                                    mw.loading?.id === action.payload.loadingId
+                            )
                                 ? chat.messages
                                 : [...(chat.messages || []), {info: action.payload.message}],
                         }

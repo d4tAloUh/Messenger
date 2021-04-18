@@ -19,7 +19,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
     }
 
     scrollToBottom = () => {
-        this.listBottom.scrollIntoView({ behavior: "smooth" });
+        this.listBottom.scrollIntoView({ behavior: "auto" });
     }
 
     listBottom = null as any;

@@ -43,22 +43,22 @@ public class UserEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "UserId")
+    @Column(name = "id")
     @Type(type="uuid-char")
     private UUID id;
 
-    @Column(name = "Username", unique = true, length = 64, nullable = false)
+    @Column(name = "username", unique = true, length = 64, nullable = false)
     private String username;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ToString.Exclude
-    @Column(name = "FullName", length = 128, nullable = false)
+    @Column(name = "full_name", length = 128, nullable = false)
     private String fullName;
 
     @ToString.Exclude
-    @Column(name = "Bio", length = 512)
+    @Column(name = "bio", length = 512)
     private String bio;
 
     @Enumerated(value = EnumType.STRING)

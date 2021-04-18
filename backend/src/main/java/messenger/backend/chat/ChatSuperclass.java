@@ -31,7 +31,7 @@ public class ChatSuperclass {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "ChatId")
+    @Column(name = "id")
     @Type(type="uuid-char")
     private UUID id;
 

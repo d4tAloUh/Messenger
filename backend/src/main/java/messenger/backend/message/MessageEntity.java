@@ -48,22 +48,22 @@ public class MessageEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "MessageId")
+    @Column(name = "id")
     @Type(type="uuid-char")
     private UUID id;
 
-    @Column(name = "SentTime", nullable = false)
+    @Column(name = "created_at", nullable = false)
     @Builder.Default
     private Date createdAt = new Date();
 
-    @Column(name = "MessageBody",length = 1024, nullable = false)
+    @Column(name = "message_body",length = 1024, nullable = false)
     private String messageBody;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="UserId", nullable = false)
+    @JoinColumn(name="user_id", nullable = false)
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name="Chat", nullable = false)
+    @JoinColumn(name="chat_id", nullable = false)
     private ChatSuperclass chat;
 }

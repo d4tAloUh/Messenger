@@ -30,6 +30,6 @@ public class GroupChatEntity extends ChatSuperclass {
                 .build();
     }
 
-    @Column(name = "GroupName", length = 64, nullable = false)
+    @Column(name = "group_name", length = 64, nullable = false)
     private String groupName;
 }

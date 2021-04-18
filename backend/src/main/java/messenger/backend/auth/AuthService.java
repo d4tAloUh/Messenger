@@ -90,9 +90,4 @@ public class AuthService {
                 .orElseThrow(UserNotFoundException::new);
         return CurrentUserInfoDto.from(userEntity);
     }
-
-    public void logoutAll() {
-        var userId = getCurrentUserId();
-        refreshTokenService.deleteAllByUserEntityId(userId);
-    }
 }

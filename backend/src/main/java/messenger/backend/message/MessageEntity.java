@@ -7,6 +7,7 @@ import messenger.backend.seeds.FakerService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -48,6 +49,7 @@ public class MessageEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "MessageId")
+    @Type(type="uuid-char")
     private UUID id;
 
     @Column(name = "SentTime", nullable = false)

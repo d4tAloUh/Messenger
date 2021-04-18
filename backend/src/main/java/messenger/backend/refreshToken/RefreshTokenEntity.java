@@ -3,6 +3,7 @@ package messenger.backend.refreshToken;
 import lombok.*;
 import messenger.backend.user.UserEntity;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -34,6 +35,7 @@ public class RefreshTokenEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "id")
+    @Type(type="uuid-char")
     private UUID id;
 
     @Column(name = "createdAt", nullable = false)

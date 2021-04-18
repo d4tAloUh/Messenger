@@ -11,10 +11,6 @@ import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,23 +44,4 @@ public class AuthController {
     public Response<AuthResponseDto> refresh(@Valid @RequestBody RefreshTokenDto refreshTokenDto) {
             return Response.success(authService.refreshToken(refreshTokenDto));
     }
-
-    @GetMapping("/tokens") // just for test todo delete this
-    public List<Map<String, String>> getTokens() {
-        return refreshTokenRepository.findAll().stream()
-                .map(refreshTokenEntity -> {
-                    Map<String, String> responseMap = new HashMap<>();
-                    responseMap.put("username", refreshTokenEntity.getUserEntity().getUsername());
-                    responseMap.put("refreshToken", refreshTokenEntity.getId().toString());
-                    responseMap.put("createdAt", refreshTokenEntity.getCreatedAt().toString());
-                    return responseMap;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @PostMapping("/logout/all") // just for test (or no) todo delete this?
-    public void logoutFromAllDevices() {
-        authService.logoutAll();
-    }
-
 }

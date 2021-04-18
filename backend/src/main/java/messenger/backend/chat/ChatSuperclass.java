@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import messenger.backend.userChat.UserChat;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ChatSuperclass {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "ChatId")
-
+    @Type(type="uuid-char")
     private UUID id;
 
 

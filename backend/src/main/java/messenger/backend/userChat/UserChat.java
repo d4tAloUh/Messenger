@@ -6,6 +6,7 @@ import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.message.MessageEntity;
 import messenger.backend.user.UserEntity;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class UserChat {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "UserChatId")
+    @Type(type="uuid-char")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)

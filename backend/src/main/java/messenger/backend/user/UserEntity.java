@@ -6,6 +6,7 @@ import messenger.backend.seeds.FakerService;
 import messenger.backend.userChat.UserChat;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +44,7 @@ public class UserEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "UserId")
+    @Type(type="uuid-char")
     private UUID id;
 
     @Column(name = "Username", unique = true, length = 64, nullable = false)

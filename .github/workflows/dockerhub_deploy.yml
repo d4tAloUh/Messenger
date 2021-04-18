@@ -1,0 +1,63 @@
+name: Build and Publish to Dockerhub
+on:
+  release:
+    types: [published]
+jobs:
+  build_push_backend:
+    name: Push backend image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Maven Package
+        run: mvn -B clean compile package -DskipTests
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/messenger:latest
+  build_push_frontend:
+    name: Push frontend image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/messenger-front:latest
+  trigger_webhook:
+    runs-on: ubuntu-latest
+    name: Trigger server redeploy webhook
+    needs: [build_push_frontend,build_push_backend]
+    steps:
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: http://35.210.34.138:9000/hooks/redeploy?token=${{ secrets.REDEPLOY_TOKEN }}
+      
